@@ -1,5 +1,7 @@
 # Architecture
 
+> **Sprint 3 background.** The build now follows `docs/01-system-overview.md`. Its repository layout replaces the "Suggested folder layout" below.
+
 Source: Team 5 design document (Traceability section and Sprint 3 decisions).
 
 The **Ground Station** runs in Python and serves a browser-based **Operator Screen** over a local WebSocket. The **Payload Controller** runs on the vehicle so safety checks hold even when the link is down.

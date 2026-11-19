@@ -1,5 +1,10 @@
 # How we work (from the Project AEGIS handbook)
 
+> **Sprint 3 background.** For Sprint 4 onward:
+> - The build order and phases are in `docs/01-system-overview.md`.
+> - The task lists are in `HANDOFF-ZIZWE.md` and `HANDOFF-EMMANUEL.md`.
+> - Branches are named `feature/<TASK-ID>-short-name`, for example `feature/A4-payload-controller`. That replaces `feature/WI-###` below.
+
 ## Sprint schedule
 
 | Phase | Focus | Outcome |
@@ -41,8 +46,8 @@ A work item is Done only when:
 
 ## Git conventions
 
-- Branch per work item: `feature/WI-###-short-name`
-- PR title starts with the requirement ID: `[AEG-506] Block release while moving`
+- Branch per task: `feature/<TASK-ID>-short-name`, for example `feature/A4-payload-controller`
+- PR title starts with the task ID and the requirement ID: `[A4][AEG-506] Block release while moving`
 - At least one teammate approves before merging to `main`
 - Never hard-code a limit; put it in the config file
 

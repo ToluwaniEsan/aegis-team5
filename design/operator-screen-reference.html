@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Operator Screen reference</title>
+<!--
+  Static reference for Workstream C. Not production code: it shows the look, the tokens and the layout
+  at one moment of IRON HAWK (travelling, link degraded, payload shift warning, route blocked,
+  one failed command, one queued mission, previous delivery shown).
+  Render: open in a browser at exactly 1366 x 768.
+-->
+<style>
+  @font-face { font-family: "IBM Plex Sans"; font-weight: 400; src: url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: "IBM Plex Sans"; font-weight: 600; src: url(fonts/ibm-plex-sans-latin-600-normal.woff2) format("woff2"); }
+  @font-face { font-family: "IBM Plex Mono"; font-weight: 400; src: url(fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: "IBM Plex Mono"; font-weight: 600; src: url(fonts/ibm-plex-mono-latin-600-normal.woff2) format("woff2"); }
+
+  :root {
+    --canvas: #DCE0E5; --panel: #F3F4F6; --panel-raised: #FAFAFB; --line: #B8BFC8; --line-strong: #8A939E;
+    --text: #17202B; --text-muted: #4D5764; --text-label: #5F6874;
+    --action: #1D4E89; --action-hover: #163E6E; --action-text: #FFFFFF;
+    --critical: #B42318; --critical-bg: #FCE9E7;
+    --warning: #A6480C; --warning-bg: #FDEEE3;
+    --caution-fill: #F0C33C; --caution-text: #5C4500; --caution-bg: #FFF6D6;
+    --done: #2E6B45; --done-bg: #E6F2EA;
+    --estop: #C4161C; --estop-border: #8C0F14; --estop-text: #FFFFFF;
+    --stale-text: #525A64;
+    --stale-pattern: repeating-linear-gradient(135deg, #ECEEF1 0 6px, #E2E5E9 6px 12px);
+    --font-ui: "IBM Plex Sans", Arial, sans-serif;
+    --font-num: "IBM Plex Mono", "Courier New", monospace;
+    --fs-label: 11px; --fs-body: 13px; --fs-value: 15px; --fs-big: 22px; --fs-title: 14px;
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --radius: 4px; --row-h: 26px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; overflow: hidden; background: var(--canvas); color: var(--text); font-family: var(--font-ui); font-size: var(--fs-body); }
+  #app { width: 1366px; height: 768px; display: grid; grid-template-columns: 420px 526px 420px; grid-template-rows: 64px 544px 160px; }
+
+  .label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-label); }
+  .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+  .muted { color: var(--text-muted); }
+  .glyph { display: inline-block; vertical-align: -1px; }
+
+  /* top bar */
+  .top { grid-column: 1 / 4; display: flex; align-items: center; gap: var(--s4); padding: 0 var(--s3) 0 var(--s4); background: var(--panel); border-bottom: 1px solid var(--line-strong); }
+  .mission { display: flex; flex-direction: column; gap: 2px; width: 380px; }
+  .mission .name { font-weight: 600; font-size: var(--fs-title); }
+  .mission .pid { font-family: var(--font-num); font-size: 12px; color: var(--text-muted); }
+  .center { flex: 1; display: flex; align-items: center; gap: var(--s2); }
+  .clock { font-family: var(--font-num); font-size: 18px; font-weight: 600; margin-right: var(--s3); }
+  .badge { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--panel-raised); font-size: 12px; font-weight: 600; }
+  .badge .sub { font-weight: 400; color: var(--text-muted); font-family: var(--font-num); }
+  .badge.warn { border-color: var(--warning); background: var(--warning-bg); color: var(--warning); }
+  .badge.warn .sub { color: var(--warning); }
+  .estop { width: 152px; height: 44px; border: 2px solid var(--estop-border); border-radius: var(--radius); background: var(--estop); color: var(--estop-text); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-ui); cursor: pointer; }
+  .estop b { font-size: 16px; letter-spacing: 0.08em; }
+  .estop span { font-size: 10px; opacity: 0.95; }
+
+  /* panels */
+  .panel { background: var(--panel); border-right: 1px solid var(--line); padding: var(--s3); display: flex; flex-direction: column; gap: var(--s2); overflow: hidden; }
+  .panel:nth-of-type(4) { border-right: none; }
+  .card { background: var(--panel-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px var(--s3); }
+  .card-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .age { font-family: var(--font-num); font-size: 11px; color: var(--text-muted); }
+  .row { display: flex; justify-content: space-between; align-items: center; height: 24px; border-top: 1px solid #E6E9ED; }
+  .row .k { color: var(--text-muted); }
+  .row .v { font-family: var(--font-num); font-size: 14px; text-align: right; }
+  .v.warn { color: var(--warning); font-weight: 600; }
+
+  .state { display: flex; align-items: baseline; justify-content: space-between; }
+  .state .big { font-size: var(--fs-big); font-weight: 600; letter-spacing: 0.02em; }
+  .stepper { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin: 8px 0 8px; }
+  .step { height: 22px; border: 1px solid var(--line); border-radius: 3px; font-size: 9px; font-weight: 600; letter-spacing: 0.03em; display: flex; align-items: center; justify-content: center; color: var(--text-label); background: var(--panel); }
+  .step.done { color: var(--text-muted); background: #E7EAEE; }
+  .step.now { background: var(--action); border-color: var(--action); color: #fff; }
+
+  .health-overall { display: flex; justify-content: space-between; align-items: center; padding: 4px 0 6px; }
+  .hrow { display: grid; grid-template-columns: 1fr 64px 108px 46px; align-items: center; height: 24px; border-top: 1px solid #E6E9ED; gap: 6px; }
+  .hrow .team { font-size: 10px; color: var(--text-label); margin-left: 4px; }
+  .hstat { font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+  .hstat.ok { color: var(--text-muted); font-weight: 400; }
+  .hstat.warn { color: var(--warning); }
+  .hrow .detail { font-family: var(--font-num); font-size: 12px; color: var(--text-muted); text-align: right; }
+  .hrow .a { font-family: var(--font-num); font-size: 11px; color: var(--text-muted); text-align: right; }
+  .hrow.stale { background: var(--stale-pattern); color: var(--stale-text); }
+  .hrow.stale .a { color: var(--text); font-weight: 600; }
+
+  /* center */
+  .ptitle { display: flex; justify-content: space-between; align-items: baseline; }
+  .ptitle .t { font-size: var(--fs-title); font-weight: 600; }
+  .map { position: relative; height: 330px; background: var(--panel-raised); border: 1px solid var(--line); border-radius: var(--radius); }
+  .map .lbl { position: absolute; font-size: 11px; font-weight: 600; color: var(--text); background: var(--panel-raised); padding: 1px 4px; }
+  .banner { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 6px 10px; border-radius: var(--radius); font-size: 12px; }
+  .banner.caution { background: var(--caution-bg); border: 1px solid #D9AE2C; color: var(--caution-text); }
+  .progress { height: 10px; background: #E3E6EA; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .progress > div { height: 100%; width: 46%; background: var(--action); }
+  .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .stat { background: var(--panel-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 10px; }
+  .stat .v { font-family: var(--font-num); font-size: var(--fs-value); margin-top: 2px; }
+  .stat .v.big { font-size: var(--fs-big); font-weight: 600; }
+
+  /* right */
+  .btn { height: 34px; border-radius: var(--radius); font-family: var(--font-ui); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn.primary { background: var(--action); color: var(--action-text); border: 1px solid var(--action); }
+  .btn.secondary { background: var(--panel-raised); color: var(--text); border: 1px solid var(--line-strong); }
+  .btn[disabled] { background: #E7EAEE; color: #8A929C; border-color: #C8CDD4; cursor: not-allowed; }
+  .ctrl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; }
+  .ctrl .why { font-size: 11px; color: var(--text-muted); margin-top: 2px; height: 14px; }
+  .ctrl .btn { width: 100%; }
+  .list-h { display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
+  .crow { display: grid; grid-template-columns: 1fr 96px 74px; align-items: center; height: var(--row-h); border-top: 1px solid #E6E9ED; font-size: 12px; }
+  .crow .st { font-weight: 600; font-size: 11px; letter-spacing: 0.04em; }
+  .crow .st.ok { color: var(--text-muted); font-weight: 400; }
+  .crow .st.fail { color: var(--critical); display: inline-flex; align-items: center; gap: 4px; }
+  .crow .t { font-family: var(--font-num); font-size: 11px; color: var(--text-muted); text-align: right; }
+  .reason { font-size: 11px; color: var(--critical); padding: 0 0 4px; border-top: none; }
+  .qrow { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; align-items: center; padding: 6px 0; border-top: 1px solid #E6E9ED; font-size: 12px; }
+  .mini { height: 26px; padding: 0 10px; font-size: 12px; }
+
+  /* bottom */
+  .bottom { grid-column: 1 / 4; display: grid; grid-template-columns: 1fr 300px; border-top: 1px solid var(--line-strong); background: var(--panel); }
+  .alerts { padding: 8px var(--s3); display: flex; flex-direction: column; gap: 4px; border-right: 1px solid var(--line); }
+  .arow { display: grid; grid-template-columns: 124px 1fr 150px 92px; align-items: center; gap: 10px; height: 32px; padding: 0 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-raised); }
+  .arow.warning { border-left: 4px solid var(--warning); background: var(--warning-bg); }
+  .arow.caution { border-left: 4px solid #C99A12; background: var(--caution-bg); }
+  .sev { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; }
+  .sev.warning { color: var(--warning); }
+  .sev.caution { color: var(--caution-text); }
+  .atext { display: flex; flex-direction: column; line-height: 1.25; overflow: hidden; }
+  .atext .ti { font-weight: 600; font-size: 13px; white-space: nowrap; }
+  .atext .ac { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .atime { font-family: var(--font-num); font-size: 11px; color: var(--text-muted); text-align: right; }
+  .acked { font-size: 11px; color: var(--text-muted); text-align: center; }
+  .delivery { padding: 10px var(--s3); background: var(--done-bg); display: flex; flex-direction: column; gap: 3px; }
+  .delivery .h { display: flex; align-items: center; gap: 6px; color: var(--done); font-weight: 600; font-size: 13px; }
+  .drow { display: flex; justify-content: space-between; font-size: 12px; }
+  .drow .k { color: var(--text-muted); }
+  .drow .v { font-family: var(--font-num); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP BAR -->
+  <header class="top">
+    <div class="mission">
+      <span class="name">MSN-2026-007 · FOB Alpha → Outpost Bravo</span>
+      <span class="pid">PAYLOAD PAY-2026-007 · PRIORITY</span>
+    </div>
+    <div class="center">
+      <span class="clock">14:22:07 Z</span>
+      <span class="badge warn">
+        <svg class="glyph" width="11" height="11" viewBox="0 0 10 10"><path d="M5 0 L10 5 L5 10 L0 5 Z" fill="currentColor"/></svg>
+        LINK DEGRADED <span class="sub">1,480 ms</span>
+      </span>
+      <span class="badge warn">
+        <svg class="glyph" width="11" height="11" viewBox="0 0 10 10"><path d="M5 0 L10 5 L5 10 L0 5 Z" fill="currentColor"/></svg>
+        VEHICLE DEGRADED <span class="sub">2 of 5 rows</span>
+      </span>
+    </div>
+    <button class="estop"><b>E-STOP</b><span>Stops vehicle · holds payload</span></button>
+  </header>
+
+  <!-- LEFT -->
+  <section class="panel">
+    <div class="card">
+      <div class="card-h"><span class="label">Payload</span><span class="age">updated 1 s ago</span></div>
+      <div class="state"><span class="big">TRAVELLING</span><span class="muted" style="font-size:12px">release blocked</span></div>
+      <div class="stepper">
+        <div class="step done">EMPTY</div><div class="step done">LOADED</div><div class="step done">SECURED</div>
+        <div class="step now">TRAVEL</div><div class="step">AT DEST</div><div class="step">RELEASED</div><div class="step">DELIVERED</div>
+      </div>
+      <div class="row"><span class="k">Lock</span><span class="v">Closed</span></div>
+      <div class="row"><span class="k">Weight</span><span class="v">810.2 kg</span></div>
+      <div class="row"><span class="k">Shift</span><span class="v warn">
+        <svg class="glyph" width="10" height="10" viewBox="0 0 10 10"><path d="M5 0 L10 5 L5 10 L0 5 Z" fill="currentColor"/></svg>
+        3.1 cm <span style="font-weight:400">(limit 2.0)</span></span></div>
+      <div class="row"><span class="k">Release energy</span><span class="v">3.2 Wh <span class="muted">/ 5.0 max</span></span></div>
+      <div class="row"><span class="k">Sensors</span><span class="v" style="font-size:12px">load OK · lock OK · shift OK</span></div>
+      <div class="row"><span class="k">Pre-authorized release</span><span class="v">No</span></div>
+      <div class="row"><span class="k">Departure</span><span class="v warn" style="font-size:13px">Blocked: shift over limit</span></div>
+    </div>
+
+    <div class="card">
+      <div class="health-overall">
+        <span class="label">Vehicle health</span>
+        <span class="hstat warn"><svg class="glyph" width="10" height="10" viewBox="0 0 10 10"><path d="M5 0 L10 5 L5 10 L0 5 Z" fill="currentColor"/></svg>DEGRADED</span>
+      </div>
+      <div class="hrow stale"><span>Power &amp; Battery<span class="team">T4</span></span><span class="hstat ok">OK</span><span class="detail">81 % · 40 km</span><span class="a">7 s</span></div>
+      <div class="hrow"><span>Mobility &amp; Drive<span class="team">T4</span></span><span class="hstat ok">OK</span><span class="detail">drivetrain OK</span><span class="a">1 s</span></div>
+      <div class="hrow"><span>Navigation<span class="team">T2</span></span><span class="hstat ok">OK</span><span class="detail">8.0 m/s</span><span class="a">1 s</span></div>
+      <div class="hrow"><span>Comms Link<span class="team">T3</span></span><span class="hstat warn"><svg class="glyph" width="9" height="9" viewBox="0 0 10 10"><path d="M5 0 L10 5 L5 10 L0 5 Z" fill="currentColor"/></svg>WARN</span><span class="detail">1,480 ms · 0 %</span><span class="a">0 s</span></div>
+      <div class="hrow"><span>Payload Sensors<span class="team">T5</span></span><span class="hstat ok">OK</span><span class="detail">3 of 3 OK</span><span class="a">1 s</span></div>
+      <div style="font-size:11px;color:var(--stale-text);margin-top:4px">Hatched rows are OUT OF DATE (older than 5 s). Last known value shown.</div>
+    </div>
+  </section>
+
+  <!-- CENTER -->
+  <section class="panel">
+    <div class="ptitle"><span class="t">Route &amp; navigation</span><span class="age">updated 1 s ago</span></div>
+    <div class="map">
+      <svg width="500" height="286" viewBox="0 0 500 286" style="position:absolute;left:0;top:21px">
+        <!-- abandoned segment -->
+        <polyline points="248,150 330,118 430,70" fill="none" stroke="#8A939E" stroke-width="2" stroke-dasharray="6 5"/>
+        <line x1="322" y1="112" x2="338" y2="124" stroke="#B42318" stroke-width="2.5"/>
+        <line x1="338" y1="112" x2="322" y2="124" stroke="#B42318" stroke-width="2.5"/>
+        <!-- travelled -->
+        <polyline points="58,232 120,214 180,184 248,150" fill="none" stroke="#1D4E89" stroke-width="3"/>
+        <!-- new route -->
+        <polyline points="248,150 300,182 372,160 430,70" fill="none" stroke="#8A939E" stroke-width="2"/>
+        <!-- origin -->
+        <circle cx="58" cy="232" r="7" fill="#FAFAFB" stroke="#17202B" stroke-width="2"/>
+        <!-- destination -->
+        <rect x="423" y="63" width="14" height="14" fill="#17202B"/>
+        <!-- vehicle -->
+        <path d="M0,-8 L6,6 L-6,6 Z" transform="translate(252,149) rotate(60)" fill="#17202B"/>
+      </svg>
+      <span class="lbl" style="left:22px;top:265px">FOB Alpha</span>
+      <span class="lbl" style="left:390px;top:61px">Outpost Bravo</span>
+      <span class="lbl" style="left:300px;top:149px;color:var(--critical)">Blocked</span>
+      <span class="lbl" style="left:226px;top:187px">Vehicle</span>
+    </div>
+    <div class="banner caution">
+      <svg class="glyph" width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#5C4500"/></svg>
+      <b>ROUTE BLOCKED</b>&nbsp;Bridge out at grid 4471 · new route from Team 2 · ETA +01:50
+    </div>
+    <div>
+      <div class="list-h" style="margin:0 0 4px"><span class="label">Route progress</span><span class="num" style="font-size:12px">46 %</span></div>
+      <div class="progress"><div></div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">ETA</div><div class="v big">07:40</div></div>
+      <div class="stat"><div class="label">Motion · moving</div><div class="v big">8.0 m/s</div></div>
+      <div class="stat"><div class="label">Position</div><div class="v" style="font-size:13px">34.7398 N<br>86.6105 W</div></div>
+    </div>
+  </section>
+
+  <!-- RIGHT -->
+  <section class="panel">
+    <button class="btn primary" style="height:38px">+ Queue mission <span style="font-weight:400">(mission active)</span></button>
+    <div class="label" style="margin-top:4px">Mission controls</div>
+    <div class="ctrl-grid">
+      <div class="ctrl"><button class="btn secondary">Abort mission</button><div class="why">Asks for confirmation</div></div>
+      <div class="ctrl"><button class="btn secondary">Return to origin</button><div class="why">Asks for confirmation</div></div>
+      <div class="ctrl"><button class="btn secondary">Change destination</button><div class="why">Asks for confirmation</div></div>
+      <div class="ctrl"><button class="btn" disabled>Update payload</button><div class="why">Only before departure</div></div>
+      <div class="ctrl" style="grid-column: 1 / 3"><button class="btn" disabled>Release payload</button><div class="why">Vehicle is moving · release only at the destination</div></div>
+    </div>
+
+    <div class="list-h"><span class="label">Command tracker</span><span class="age">last 4</span></div>
+    <div>
+      <div class="crow"><span>Change destination → Outpost Charlie</span><span class="st fail">
+        <svg class="glyph" width="10" height="10" viewBox="0 0 10 10"><path d="M5 0 L10 10 L0 10 Z" fill="currentColor"/></svg>FAILED</span><span class="t">14:21:41Z</span></div>
+      <div class="reason">No confirmation in 5 s. Not resent.</div>
+      <div class="crow"><span>Update payload · 810 kg</span><span class="st ok">COMPLETED</span><span class="t">14:16:02Z</span></div>
+      <div class="crow"><span>Assign mission MSN-2026-007</span><span class="st ok">COMPLETED</span><span class="t">14:14:55Z</span></div>
+    </div>
+
+    <div class="list-h"><span class="label">Mission queue · 1</span><span class="age">starts only when you confirm</span></div>
+    <div class="qrow"><span><b class="num">MSN-2026-008</b> · FOB Alpha → LZ Delta · 600 kg</span>
+      <button class="btn mini" disabled title="A mission is active">Start</button>
+      <button class="btn secondary mini">Remove</button></div>
+    <div style="font-size:11px;color:var(--text-muted)">Start is available when MSN-2026-007 is complete or aborted.</div>
+  </section>
+
+  <!-- BOTTOM -->
+  <footer class="bottom">
+    <div class="alerts">
+      <div class="list-h" style="margin:0 0 2px"><span class="label">Alerts &amp; recommended actions · 3</span><span class="age">critical first, then newest</span></div>
+      <div class="arow warning">
+        <span class="sev warning"><svg class="glyph" width="11" height="11" viewBox="0 0 10 10"><path d="M5 0 L10 5 L5 10 L0 5 Z" fill="currentColor"/></svg>WARNING</span>
+        <span class="atext"><span class="ti">Payload shifted 3.1 cm (limit 2.0) · Payload</span><span class="ac">Reduce speed and inspect the payload at the next stop</span></span>
+        <span class="atime">14:21:58Z · 9 s</span>
+        <button class="btn primary mini">Acknowledge</button>
+      </div>
+      <div class="arow caution">
+        <span class="sev caution"><svg class="glyph" width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="currentColor"/></svg>CAUTION</span>
+        <span class="atext"><span class="ti">Route blocked: bridge out at grid 4471 · Team 2</span><span class="ac">Review the new route and arrival time</span></span>
+        <span class="atime">14:21:12Z · 55 s</span>
+        <button class="btn primary mini">Acknowledge</button>
+      </div>
+      <div class="arow caution">
+        <span class="sev caution"><svg class="glyph" width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="currentColor"/></svg>CAUTION</span>
+        <span class="atext"><span class="ti">Link degraded: 1,480 ms latency · Team 3</span><span class="ac">Check data ages before acting</span></span>
+        <span class="atime">14:20:30Z · 1 m 37 s</span>
+        <span class="acked">Acknowledged</span>
+      </div>
+    </div>
+    <div class="delivery">
+      <div class="h"><svg class="glyph" width="12" height="12" viewBox="0 0 12 12"><path d="M1 6.5 L4.5 10 L11 2" fill="none" stroke="currentColor" stroke-width="2"/></svg>LAST DELIVERY · CONFIRMED</div>
+      <div class="drow"><span class="k">Payload</span><span class="v">PAY-2026-006</span></div>
+      <div class="drow"><span class="k">Destination</span><span class="v">Outpost Charlie</span></div>
+      <div class="drow"><span class="k">Released</span><span class="v">13:48:22Z</span></div>
+      <div class="drow"><span class="k">Confirmed in</span><span class="v">3.4 s</span></div>
+      <div class="drow"><span class="k">Mass · energy</span><span class="v">655.0 kg · 3.2 Wh</span></div>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
