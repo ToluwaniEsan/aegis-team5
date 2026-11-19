@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AEGIS Operator Screen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a fixed 1366x768 ground-station console (scaled to fit) under a separate tester / fault-injector strip */
+:root{
+  --bg:#e4e9ee; --panel:#f9fbfc; --panel-2:#eef2f6; --line:#cdd6df; --line-2:#b7c3ce;
+  --ink:#142030; --ink-2:#465668; --ink-3:#768596;
+  --accent:#1c5bbd; --accent-2:#e3ecfa; --on-accent:#ffffff;
+  --ok:#1b7743; --ok-bg:#dff1e6;
+  --caut:#806a00; --caut-bg:#f5eec6;
+  --warn:#b4530a; --warn-bg:#fce6d3;
+  --crit:#c1232b; --crit-bg:#fbe0e0;
+  --stale:#9a5b00; --stale-bg:#fbf0dc;
+  --map:#edf1ea; --grid:#dce3d8; --contour:#ccd6c6;
+  --tester:#1c2633; --tester-ink:#dfe7ef; --tester-2:#2a3746; --tester-line:#3a4a5c;
+  --f-sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-cond:"IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0d1319; --panel:#151e27; --panel-2:#1b2631; --line:#2a3846; --line-2:#3a4b5c;
+  --ink:#e2e9f0; --ink-2:#a4b3c1; --ink-3:#73828f;
+  --accent:#5c9cf2; --accent-2:#1b2c45; --on-accent:#0b1420;
+  --ok:#4fc68a; --ok-bg:#12301f; --caut:#dcc14a; --caut-bg:#2f2a0d;
+  --warn:#f29a4a; --warn-bg:#38230f; --crit:#ff6b6b; --crit-bg:#3c1519;
+  --stale:#f0b357; --stale-bg:#33250e;
+  --map:#121b15; --grid:#1c271f; --contour:#243128;
+  --tester:#0a0f14; --tester-ink:#d3dce5; --tester-2:#18222d; --tester-line:#2b3a49;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0d1319; --panel:#151e27; --panel-2:#1b2631; --line:#2a3846; --line-2:#3a4b5c;
+  --ink:#e2e9f0; --ink-2:#a4b3c1; --ink-3:#73828f;
+  --accent:#5c9cf2; --accent-2:#1b2c45; --on-accent:#0b1420;
+  --ok:#4fc68a; --ok-bg:#12301f; --caut:#dcc14a; --caut-bg:#2f2a0d;
+  --warn:#f29a4a; --warn-bg:#38230f; --crit:#ff6b6b; --crit-bg:#3c1519;
+  --stale:#f0b357; --stale-bg:#33250e;
+  --map:#121b15; --grid:#1c271f; --contour:#243128;
+  --tester:#0a0f14; --tester-ink:#d3dce5; --tester-2:#18222d; --tester-line:#2b3a49;
+  color-scheme:dark }
+
+html,body{background:var(--bg);color:var(--ink);margin:0}
+body{font-family:var(--f-sans);padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:12px 24px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* ---------- Tester strip ---------- */
+#tester{background:var(--tester);color:var(--tester-ink);border-radius:10px;padding:12px 14px;display:grid;gap:10px;max-width:1366px;margin:0 auto 12px}
+#tester .row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+#tester .tag{font-family:var(--f-cond);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8fa2b5}
+#tester h1{font-family:var(--f-cond);font-size:15px;font-weight:700;margin:0;letter-spacing:.02em}
+.steps{display:flex;flex-wrap:wrap;gap:4px}
+.stepbtn{background:var(--tester-2);border:1px solid var(--tester-line);border-radius:6px;padding:4px 8px;font-size:12px;font-family:var(--f-cond);font-weight:600;color:var(--tester-ink);min-width:30px}
+.stepbtn.done{background:#24415f;border-color:#3c6895}
+.stepbtn.next{border-color:#7fb0ef;box-shadow:0 0 0 1px #7fb0ef inset}
+.tbtn{background:var(--tester-2);border:1px solid var(--tester-line);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--tester-ink)}
+.tbtn.primary{background:#3b78d8;border-color:#3b78d8;color:#fff;font-weight:600}
+.tbtn[aria-pressed="true"]{background:#2f4d6e;border-color:#6d9bd0}
+.seg{display:inline-flex;border:1px solid var(--tester-line);border-radius:6px;overflow:hidden}
+.seg button{background:var(--tester-2);border:0;border-right:1px solid var(--tester-line);padding:5px 9px;font-size:12px;color:var(--tester-ink)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:#2f4d6e;color:#fff}
+.note{font-size:13px;line-height:1.45;color:#c6d2de;min-width:0}
+.note b{color:#fff;font-weight:600}
+.note .pt{color:#8fb8ea}
+.group{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+/* ---------- Stage ---------- */
+#stage-wrap{margin:0 auto;position:relative;overflow:hidden;border-radius:6px;box-shadow:0 1px 0 var(--line-2),0 8px 28px rgba(20,32,48,.12)}
+#stage-wrap:fullscreen{background:var(--bg);border-radius:0;display:grid;place-items:center}
+#stage{width:1366px;height:768px;transform-origin:0 0;background:var(--bg);display:grid;grid-template-rows:64px 544px 160px;font-size:13px;position:absolute;top:0;left:0;overflow:hidden}
+#stage-wrap:fullscreen #stage{position:relative}
+
+.req{display:none;font-family:var(--f-mono);font-size:9.5px;font-weight:500;color:var(--accent);background:var(--accent-2);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:3px;padding:0 3px;margin-left:5px;vertical-align:1px;white-space:nowrap;letter-spacing:0}
+#stage.show-req .req{display:inline-block}
+
+/* top bar */
+#topbar{display:flex;align-items:stretch;background:var(--panel);border-bottom:1px solid var(--line)}
+.tb{display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-right:1px solid var(--line);gap:2px;min-width:0}
+.lbl{font-family:var(--f-cond);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.tb .v{font-size:15px;font-weight:600;white-space:nowrap}
+.brand{flex-direction:row;align-items:center;gap:10px;padding-right:16px}
+.brand .mark{width:30px;height:30px;border-radius:6px;background:var(--ink);color:var(--panel);display:grid;place-items:center;font-family:var(--f-cond);font-weight:700;font-size:13px;letter-spacing:.04em}
+.brand .t1{font-family:var(--f-cond);font-weight:700;font-size:15px;letter-spacing:.04em}
+.brand .t2{font-size:11px;color:var(--ink-3)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-cond);font-weight:700;font-size:13px;letter-spacing:.05em;padding:3px 9px;border-radius:4px;border:1.5px solid currentColor;white-space:nowrap}
+.s-ok{color:var(--ok);background:var(--ok-bg)}
+.s-caut{color:var(--caut);background:var(--caut-bg)}
+.s-warn{color:var(--warn);background:var(--warn-bg)}
+.s-crit{color:var(--crit);background:var(--crit-bg)}
+.s-off{color:var(--ink-3);background:var(--panel-2)}
+.spacer{flex:1}
+#estop-wrap{display:flex;align-items:center;gap:8px;padding:0 12px;border-left:1px solid var(--line)}
+#estop{background:var(--crit);color:#fff;border:0;border-radius:8px;height:46px;padding:0 18px;font-family:var(--f-cond);font-weight:700;font-size:16px;letter-spacing:.08em;display:flex;align-items:center;gap:8px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+#estop .oct{width:18px;height:18px;background:#fff;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
+#estop.active{background:repeating-linear-gradient(45deg,var(--crit),var(--crit) 10px,#8f1219 10px,#8f1219 20px)}
+#estop-clear{font-size:11.5px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:5px;padding:4px 8px}
+
+/* middle */
+#mid{display:grid;grid-template-columns:420px 526px 420px;min-height:0}
+.col{padding:10px;min-height:0;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+#left,#center{border-right:1px solid var(--line)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;min-height:0}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 11px 7px;border-bottom:1px solid var(--line)}
+.card-h h2{margin:0;font-family:var(--f-cond);font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.card-b{padding:8px 11px;min-height:0}
+.age{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);white-space:nowrap}
+.age.stale{color:var(--stale);background:var(--stale-bg);border:1px solid currentColor;border-radius:3px;padding:0 4px;font-weight:600}
+.kv{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:5px;align-items:baseline}
+.kv .k{color:var(--ink-2);font-size:12.5px}
+.kv .val{text-align:right;font-family:var(--f-mono);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bigstate{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 0 8px;margin-bottom:6px;border-bottom:1px dashed var(--line)}
+.bigstate .st{font-family:var(--f-cond);font-weight:700;font-size:21px;letter-spacing:.04em}
+.mini{display:inline-flex;align-items:center;gap:4px;font-family:var(--f-cond);font-weight:700;font-size:11.5px;letter-spacing:.05em;padding:1px 6px;border-radius:3px;border:1px solid currentColor}
+.dimmed{opacity:.55}
+.hrow{display:grid;grid-template-columns:1fr auto 64px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.hrow:first-of-type{border-top:0}
+.hrow .nm{font-size:12.5px}
+.hrow .src{font-size:11px;color:var(--ink-3)}
+.hrow .age{text-align:right}
+
+/* center */
+#mapbox{position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:var(--map);height:318px;flex:none}
+#map{display:block;width:100%;height:100%}
+#map text{font-family:var(--f-cond);font-weight:600;font-size:11px;letter-spacing:.06em;fill:var(--ink-2)}
+#vehicle{transition:transform 1s linear}
+#vehicle.instant{transition:none}
+.maphead{position:absolute;left:8px;top:8px;display:flex;gap:6px;align-items:center}
+.maphead .chip{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:2px 7px;font-family:var(--f-cond);font-weight:600;font-size:11.5px;letter-spacing:.05em}
+#reroute{position:absolute;left:8px;top:38px;max-width:250px;background:var(--warn-bg);color:var(--warn);border:1.5px solid currentColor;border-radius:5px;padding:6px 9px;font-size:12px;line-height:1.35}
+#reroute b{font-family:var(--f-cond);letter-spacing:.05em}
+#reroute span{color:var(--ink)}
+#lastknown{position:absolute;left:8px;bottom:8px;background:var(--stale-bg);color:var(--stale);border:1.5px solid currentColor;border-radius:4px;padding:3px 8px;font-family:var(--f-cond);font-weight:700;font-size:11.5px;letter-spacing:.05em}
+.navgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:6px;background:var(--panel);flex:1;min-height:0}
+.navgrid .cell{padding:8px 11px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:3px;min-width:0}
+.navgrid .cell:nth-child(3n){border-right:0}
+.navgrid .cell:nth-child(n+4){border-bottom:0}
+.navgrid .big{font-family:var(--f-mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.navgrid .sub{font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:5px;background:var(--panel-2);border-radius:3px;overflow:hidden;margin-top:2px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width 1s linear}
+
+/* right */
+#right{gap:6px}
+#right .card-h{padding:6px 11px 5px}
+#right .card-b{padding:6px 11px}
+form{margin:0}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.field{display:flex;flex-direction:column;gap:2px;min-width:0}
+.field label,.field .lbl2{font-size:11px;color:var(--ink-2);font-weight:500}
+.field input,.field select{height:25px;border:1px solid var(--line-2);border-radius:4px;background:var(--panel);color:var(--ink);padding:0 7px;font:inherit;font-size:12.5px;min-width:0;width:100%}
+.field input[readonly]{background:var(--panel-2);font-family:var(--f-mono);font-size:12px;color:var(--ink)}
+.dims{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px}
+.dims input{padding:0 4px;text-align:center}
+.prio{display:flex;border:1px solid var(--line-2);border-radius:4px;overflow:hidden;height:25px}
+.prio button{flex:1;border:0;border-right:1px solid var(--line-2);background:var(--panel);font-size:11.5px;padding:0 2px}
+.prio button:last-child{border-right:0}
+.prio button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);font-weight:600}
+.check{display:flex;align-items:center;gap:6px;font-size:12px;height:25px}
+.check input{width:15px;height:15px;accent-color:var(--accent)}
+.btn{height:28px;border-radius:5px;border:1px solid var(--line-2);background:var(--panel);font-weight:600;font-size:12.5px;padding:0 10px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.danger{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 55%,var(--line-2))}
+.btn[aria-disabled="true"]{opacity:.42;cursor:not-allowed}
+.formfoot{display:flex;align-items:center;gap:8px;margin-top:6px}
+.formfoot .btn{flex:none}
+#form-msg{font-size:11.5px;line-height:1.3;min-width:0}
+#form-msg.bad{color:var(--crit)}
+#form-msg.good{color:var(--ok)}
+.cmds{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.cmds .btn{font-size:12px;padding:0 4px}
+#refuse{font-size:11.5px;color:var(--crit);min-height:15px;margin-top:4px;line-height:1.3}
+.trk{display:flex;flex-direction:column;gap:4px;overflow-y:auto;flex:1}
+#trk-card{overflow:hidden;flex:1 1 0}
+#right>.card:not(#trk-card){flex:none}
+.trow{display:grid;grid-template-columns:52px 1fr auto;gap:7px;align-items:center;font-size:12px}
+.trow .id{font-family:var(--f-mono);font-size:11px;color:var(--ink-3)}
+.trow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow .why{grid-column:2 / 4;font-size:11px;color:var(--ink-3);margin-top:-3px}
+.pill{font-family:var(--f-cond);font-weight:700;font-size:11px;letter-spacing:.05em;padding:1px 6px;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.p-sent{color:var(--ink-2);background:var(--panel-2)}
+.p-recv{color:var(--accent);background:var(--accent-2)}
+.p-done{color:var(--ok);background:var(--ok-bg)}
+.p-fail{color:var(--crit);background:var(--crit-bg)}
+.p-ref{color:var(--warn);background:var(--warn-bg)}
+.empty{font-size:12px;color:var(--ink-3)}
+.qrow{display:flex;align-items:center;gap:8px;font-size:12px}
+.qrow .grow{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* bottom */
+#bottom{display:grid;grid-template-columns:1fr 400px;border-top:1px solid var(--line);background:var(--panel);min-height:0}
+#alerts-col{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line)}
+.bh{display:flex;align-items:center;gap:10px;padding:6px 12px;border-bottom:1px solid var(--line)}
+.bh h2{margin:0;font-family:var(--f-cond);font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.bh .cnt{font-size:11.5px;color:var(--ink-3)}
+#alerts{flex:1;min-height:0;overflow-y:auto;padding:6px 10px;display:flex;flex-direction:column;gap:5px}
+.al{display:grid;grid-template-columns:104px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-left-width:5px;border-radius:5px;padding:5px 8px;background:var(--panel)}
+.al .sev{font-family:var(--f-cond);font-weight:700;font-size:12px;letter-spacing:.06em;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.al .tt{font-weight:600;font-size:12.5px}
+.al .tt .tm{font-family:var(--f-mono);font-weight:400;font-size:11px;color:var(--ink-3);margin-left:6px}
+.al .ac{font-size:11.5px;color:var(--ink-2);margin-top:1px}
+.al .ac b{color:var(--ink);font-weight:600}
+.al.crit{border-left-color:var(--crit)} .al.crit .sev{color:var(--crit)}
+.al.warn{border-left-color:var(--warn)} .al.warn .sev{color:var(--warn)}
+.al.caut{border-left-color:var(--caut)} .al.caut .sev{color:var(--caut)}
+.al.info{border-left-color:var(--accent)} .al.info .sev{color:var(--accent)}
+.al.crit.live{background:var(--crit-bg);animation:pulse 1s ease-in-out infinite}
+.al.acked{opacity:.5}
+.al.deliv{border-left-color:var(--ok);background:var(--ok-bg)} .al.deliv .sev{color:var(--ok)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--crit) 0%,transparent)}50%{box-shadow:0 0 0 3px color-mix(in srgb,var(--crit) 45%,transparent)}}
+.ack{height:26px;font-size:12px;padding:0 10px}
+#log{flex:1;min-height:0;overflow-y:auto;padding:5px 12px;font-family:var(--f-mono);font-size:11px;line-height:1.55;color:var(--ink-2)}
+#log .lt{color:var(--ink-3)} #log .ls{color:var(--accent);font-weight:500}
+#log .buf{color:var(--stale)}
+#log-col{display:flex;flex-direction:column;min-height:0}
+
+/* modal */
+#modal{position:absolute;inset:0;background:color-mix(in srgb,var(--ink) 38%,transparent);display:grid;place-items:center;z-index:5}
+.dlg{width:440px;background:var(--panel);border:1px solid var(--line-2);border-radius:8px;box-shadow:0 18px 50px rgba(0,0,0,.3);overflow:hidden}
+.dlg-h{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.dlg-h h3{margin:0;font-family:var(--f-cond);font-size:16px;font-weight:700;letter-spacing:.03em}
+.dlg-b{padding:12px 16px;font-size:13px;line-height:1.45;display:grid;gap:10px}
+.dlg-f{padding:10px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;background:var(--panel-2)}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.checks li{display:flex;gap:8px;align-items:center;font-size:12.5px}
+.checks .y{color:var(--ok);font-weight:700} .checks .n{color:var(--crit);font-weight:700}
+.step-tag{font-family:var(--f-cond);font-weight:700;font-size:11px;letter-spacing:.06em;color:var(--ink-3)}
+
+@media (prefers-reduced-motion: reduce){ #vehicle,.bar i{transition:none} .al.crit.live{animation:none} }
+@media (max-width:700px){ #tester .note{font-size:12.5px} }
+</style>
+</head>
+<body>
+
+<section id="tester" aria-label="Test controls">
+  <div class="row">
+    <h1>Operation IRON HAWK walkthrough</h1>
+    <span class="tag">Tester / fault injector · not part of the operator screen</span>
+    <span class="spacer" style="flex:1"></span>
+    <button class="tbtn" id="t-req" aria-pressed="false">Show requirement IDs</button>
+    <button class="tbtn" id="t-sound" aria-pressed="true">Sound on</button>
+    <button class="tbtn" id="t-full">Full screen</button>
+    <button class="tbtn" id="t-reset">Reset</button>
+  </div>
+  <div class="row">
+    <div class="steps" id="steps"></div>
+    <button class="tbtn primary" id="t-next">Run step 1 ▸</button>
+  </div>
+  <div class="note" id="note"></div>
+  <div class="row">
+    <div class="group"><span class="tag">Link (Team 3)</span>
+      <div class="seg" id="t-link"><button data-l="CONNECTED">Connected</button><button data-l="DEGRADED">Degraded</button><button data-l="LOST">Lost</button></div>
+    </div>
+    <div class="group"><span class="tag">Inject</span>
+      <button class="tbtn" data-inj="shift">Payload shift 3 cm</button>
+      <button class="tbtn" data-inj="sensor">Weight sensor fault</button>
+      <button class="tbtn" data-inj="drive">Drivetrain fault</button>
+      <button class="tbtn" data-inj="clear">Clear faults</button>
+    </div>
+  </div>
+</section>
+
+<div id="stage-wrap">
+<div id="stage">
+  <header id="topbar">
+    <div class="tb brand"><div class="mark">T5</div><div><div class="t1">AEGIS GROUND STATION</div><div class="t2">Payload &amp; Operator Interface</div></div></div>
+    <div class="tb" style="min-width:150px"><span class="lbl">Mission</span><span class="v" id="tb-mission">No mission</span></div>
+    <div class="tb"><span class="lbl">Payload ID<span class="req">AEG-510</span></span><span class="v mono" id="tb-pid">—</span></div>
+    <div class="tb"><span class="lbl">UTC<span class="req">GEN-002</span></span><span class="v mono" id="tb-utc">00:00:00Z</span></div>
+    <div class="spacer"></div>
+    <div class="tb"><span class="lbl">Link<span class="req">OI-007</span></span><span id="tb-link"></span></div>
+    <div class="tb"><span class="lbl">Vehicle health</span><span id="tb-vh"></span></div>
+    <div id="estop-wrap">
+      <button id="estop-clear" hidden>Clear E-Stop</button>
+      <button id="estop" title="Emergency stop. One click, no confirmation."><span class="oct"></span><span id="estop-t">EMERGENCY STOP</span></button>
+      <span class="req">OI-019</span>
+    </div>
+  </header>
+
+  <div id="mid">
+    <aside class="col" id="left">
+      <section class="card" id="pl-card">
+        <div class="card-h"><h2>Payload<span class="req">AEG-505</span></h2><span class="age" id="pl-age"></span></div>
+        <div class="card-b" id="pl-body"></div>
+      </section>
+      <section class="card" id="vh-card" style="flex:1">
+        <div class="card-h"><h2>Vehicle health</h2><span id="vh-overall"></span></div>
+        <div class="card-b" id="vh-body"></div>
+      </section>
+    </aside>
+
+    <main class="col" id="center">
+      <div id="mapbox">
+        <svg id="map" viewBox="0 0 504 316" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Route map">
+          <defs>
+            <pattern id="g" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M36 0H0V36" fill="none" stroke="var(--grid)" stroke-width="1"/></pattern>
+          </defs>
+          <rect width="504" height="316" fill="url(#g)"/>
+          <g fill="none" stroke="var(--contour)" stroke-width="1.2">
+            <path d="M-10 95 C70 70 140 105 210 80 S330 30 400 55 S480 90 520 70"/>
+            <path d="M-10 120 C80 95 150 130 220 108 S340 60 410 85 S490 120 520 100"/>
+            <path d="M120 316 C160 270 230 285 270 250 S350 230 390 260 S470 300 520 280"/>
+            <path d="M150 316 C190 285 250 300 290 270 S360 255 400 282 S470 316 500 316"/>
+            <path d="M300 200 C320 175 360 178 372 200 S350 236 322 228 S290 215 300 200Z"/>
+          </g>
+          <path id="m-truth" d="" fill="none" stroke="none"/>
+          <path id="m-shown" d="" fill="none" stroke="none"/>
+          <path id="m-primary" d="" fill="none" stroke="none"/>
+          <g id="routes"></g>
+          <g id="places"></g>
+          <g id="blockmark" hidden></g>
+          <g id="ghost" hidden><circle r="9" fill="none" stroke="var(--stale)" stroke-width="1.5" stroke-dasharray="3 2"/></g>
+          <g id="vehicle"><circle r="10" fill="var(--accent)" opacity=".18"/><circle r="6" fill="var(--accent)" stroke="var(--panel)" stroke-width="2"/></g>
+          <g id="scale" transform="translate(386 300)"><line x1="0" y1="0" x2="0" y2="0" id="scale-line" stroke="var(--ink-2)" stroke-width="2"/><text id="scale-t" x="0" y="-5">2 km</text></g>
+          <g transform="translate(482 26)"><path d="M0 -12 L6 6 L0 2 L-6 6Z" fill="var(--ink-2)"/><text x="-4" y="20">N</text></g>
+        </svg>
+        <div class="maphead"><span class="chip" id="map-chip">ROUTE</span><span class="req">OI-005</span></div>
+        <div id="reroute" hidden></div>
+        <div id="lastknown" hidden>LAST KNOWN POSITION</div>
+      </div>
+      <div class="navgrid" id="navgrid"></div>
+    </main>
+
+    <aside class="col" id="right">
+      <section class="card">
+        <div class="card-h"><h2 id="form-title">Assign mission<span class="req">OI-001</span></h2><span class="empty" id="form-sub">All fields required</span></div>
+        <div class="card-b">
+          <form id="mform" autocomplete="off">
+            <div class="fgrid">
+              <div class="field"><label for="f-name">Mission name</label><input id="f-name" placeholder="e.g. IRON HAWK"></div>
+              <div class="field"><label for="f-pid">Payload ID (auto)<span class="req">AEG-510</span></label><input id="f-pid" readonly></div>
+              <div class="field"><label for="f-origin">Origin</label><select id="f-origin"><option value="">Select…</option><option>FOB Talon</option></select></div>
+              <div class="field"><label for="f-dest">Destination</label><select id="f-dest"><option value="">Select…</option><option>LZ Kestrel</option><option>LZ Osprey</option></select></div>
+              <div class="field"><span class="lbl2">Priority</span><div class="prio" id="f-prio"><button type="button" data-p="Routine">Routine</button><button type="button" data-p="Priority">Priority</button><button type="button" data-p="Immediate">Immediate</button></div></div>
+              <div class="field"><label for="f-w">Payload weight (kg)<span class="req">AEG-503</span></label><input id="f-w" type="number" step="0.1" placeholder="max 227 (500 lb)"></div>
+              <div class="field"><span class="lbl2">Size L × W × H (cm)<span class="req">AEG-501</span></span><div class="dims"><input id="f-l" type="number" aria-label="Length cm"><input id="f-wd" type="number" aria-label="Width cm"><input id="f-h" type="number" aria-label="Height cm"></div></div>
+              <div class="field"><span class="lbl2">Release at destination<span class="req">AEG-507</span></span><label class="check"><input type="checkbox" id="f-pre"> Pre-authorize if link lost</label></div>
+            </div>
+            <div class="formfoot"><button class="btn primary" id="f-submit" type="submit">Assign mission</button><div id="form-msg"></div></div>
+          </form>
+          <div id="queue" style="margin-top:5px"></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Commands<span class="req">OI-002</span><span class="req">OI-003</span></h2><span class="empty">Risky commands ask twice</span></div>
+        <div class="card-b">
+          <div class="cmds" id="cmds">
+            <button class="btn danger" data-c="abort">Abort</button>
+            <button class="btn" data-c="rto">Return to origin</button>
+            <button class="btn" data-c="dest">Change dest.</button>
+            <button class="btn" data-c="payload" style="grid-column:span 1">Update payload</button>
+            <button class="btn primary" data-c="release" style="grid-column:span 2">Release payload</button>
+          </div>
+          <div id="refuse"></div>
+        </div>
+      </section>
+      <section class="card" id="trk-card">
+        <div class="card-h"><h2>Command tracker<span class="req">OI-006</span><span class="req">OI-009</span></h2><span class="empty">5 s timeout · never resent</span></div>
+        <div class="card-b trk" id="trk"></div>
+      </section>
+    </aside>
+  </div>
+
+  <footer id="bottom">
+    <div id="alerts-col">
+      <div class="bh"><h2>Alerts &amp; recommended actions<span class="req">OI-010</span><span class="req">OI-018</span></h2><span class="cnt" id="al-cnt"></span></div>
+      <div id="alerts"></div>
+    </div>
+    <div id="log-col">
+      <div class="bh"><h2>Mission log<span class="req">OI-013</span></h2><span class="cnt">UTC · every command and status change</span></div>
+      <div id="log"></div>
+    </div>
+  </footer>
+
+  <div id="modal" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-t">
+    <div class="dlg-h"><span class="step-tag" id="dlg-tag">CONFIRM · STEP 2 OF 2</span></div>
+    <div class="dlg-b"><h3 id="dlg-t"></h3><div id="dlg-body"></div></div>
+    <div class="dlg-f"><button class="btn" id="dlg-cancel">Cancel</button><button class="btn primary" id="dlg-ok">Confirm</button></div>
+  </div></div>
+</div>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const lb=kg=>Math.round(kg*2.20462);
+const LIMIT='227 kg (500 lb)';
+const CFG={wMin:0.1,wMax:227,dimMax:[60,40,40],shiftMax:2.0,eNom:3.2,eMax:5.0,timeout:5000,stale:5,routeKm:16.1,kmh:40};
+const PLACES={'FOB Talon':[40,262],'LZ Kestrel':[462,52],'LZ Osprey':[452,226]};
+const KESTREL_PRIMARY='M40 262 C100 250 160 190 230 160 C270 143 300 136 330 128 C380 113 425 86 462 52';
+const PER={payload:8,power:7,mobility:6,nav:3,route:7};
+const STEPS=[
+ ['Start-up','The operator screen connects to the ground station. The link badge in the top bar turns CONNECTED.','Top bar, Link badge'],
+ ['Assign mission','The operator enters mission name, origin, destination, priority and payload details. The Payload ID is generated automatically as PAY-YYYY-NNN.','Right panel, Assign mission form'],
+ ['Load and check','The payload is weighed (limit 227 kg / 500 lb) and secured. The vehicle refuses to leave if the payload is loose or out of range. Try the "Payload shift 3 cm" injector before step 4 to see departure blocked.','Left panel, Payload card'],
+ ['Travel','Position, route, ETA, power, payload and link status update once per second.','Map and the cards beneath it'],
+ ['Comms degrade','The link shows DEGRADED. Every value shows its age, and anything older than 5 s is marked OUT OF DATE. Click any command now: it fails at 5 s and is never resent.','Data age labels, Command tracker'],
+ ['Route blocked','Team 2 reports the route ahead is blocked. The new route appears on the map with the added distance and ETA.','Map, reroute notice'],
+ ['Payload change','The operator updates payload details. Up to 227 kg (500 lb) is accepted and sent to Team 4. Try 250 kg to see it refused with a reason.','Update payload dialog'],
+ ['New mission','A second mission goes into the queue instead of appearing beside the active one. It never starts on its own; the operator confirms it later.','Right panel, Queue'],
+ ['Fault','Team 4 reports a drivetrain fault. A critical alert shows severity, sound and a recommended action. The vehicle stops and the payload stays secured. Acknowledge it; Team 4 clears the fault a few seconds later.','Bottom, Alerts feed'],
+ ['Arrival','The vehicle stops at the destination. Release Payload becomes available only now.','Release button, Payload card'],
+ ['Release and delivery','Release asks for a second confirmation and shows the safety checks. A delivery confirmation goes to the operator and Team 1 within 10 s.','Release dialog, Delivery card']
+];
+let S, k=1, actx=null;
+const clone=o=>JSON.parse(JSON.stringify(o));
+const utc=(d=new Date())=>d.toISOString().slice(11,19)+'Z';
+const pad=(n,l=3)=>String(n).padStart(l,'0');
+
+function fresh(){
+  const truth={payload:{state:'EMPTY',secured:false,weight:null,shift:0,energy:CFG.eNom,sensor:'OK',dims:null},
+    power:{s:'OK',batt:97},mobility:{s:'OK'},nav:{s:'OK'},
+    route:{d:'',dist:0,moving:false,kind:'none',baseKm:0,dest:null,blocked:null}};
+  return {t:0,link:'LOST',mission:null,phase:'STANDBY',truth,shown:clone(truth),
+    last:{payload:0,power:0,mobility:0,nav:0,route:0,comms:0},
+    cap:Infinity,fast:false,pause:0,estop:false,alerts:[],log:[],cmds:[],queue:[],buffer:[],
+    nextPayload:41,nextMission:14,nextCmd:1,nextAlert:1,step:0,faultClearAt:null,
+    releasedAt:null,startedAt:null,prio:null,refuse:'',sound:true,showReq:false};
+}
+
+/* ---------- geometry ---------- */
+function curve(P,Q,bow){const dx=Q[0]-P[0],dy=Q[1]-P[1],L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L;
+  const c1=[P[0]+dx*.33+nx*bow,P[1]+dy*.33+ny*bow],c2=[P[0]+dx*.67+nx*bow,P[1]+dy*.67+ny*bow];
+  return `M${P[0].toFixed(1)} ${P[1].toFixed(1)} C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${Q[0]} ${Q[1]}`;}
+function primaryFor(dest){return dest==='LZ Kestrel'?KESTREL_PRIMARY:curve(PLACES['FOB Talon'],PLACES[dest],-30);}
+function len(id,d){const p=$(id);if(p.getAttribute('d')!==d)p.setAttribute('d',d);return d?p.getTotalLength():0;}
+function pt(id,d,dist){const p=$(id);if(p.getAttribute('d')!==d)p.setAttribute('d',d);const q=p.getPointAtLength(Math.max(0,dist));return [q.x,q.y];}
+
+/* ---------- logging, alerts ---------- */
+function log(src,text,buf){S.log.unshift({t:utc(),src,text,buf:!!buf});if(S.log.length>80)S.log.pop();}
+function vEvent(text){ if(S.link==='LOST'){S.buffer.push({t:utc(),text});} else log('Vehicle',text); }
+function alert(sev,title,action,opts={}){const a={id:S.nextAlert++,sev,title,action,t:utc(),acked:false,...opts};S.alerts.unshift(a);log('Alert',`${sevName(sev)}: ${title}`);return a;}
+function sevName(s){return {crit:'CRITICAL',warn:'WARNING',caut:'CAUTION',info:'INFO',deliv:'DELIVERED'}[s];}
+function sevIcon(s){return {crit:'▲',warn:'◆',caut:'●',info:'ⓘ',deliv:'✓'}[s];}
+
+/* ---------- link ---------- */
+function setLink(l){ if(S.link===l) return; const prev=S.link; S.link=l; log('Team 3',`Link ${l}`);
+  if(l==='DEGRADED') alert('caut','Comms link degraded','Expect delayed data. Values older than 5 s show OUT OF DATE. Unconfirmed commands fail at 5 s and are <b>not resent</b>.');
+  if(l==='LOST') alert('warn','Comms link lost','Screen shows last known values. Vehicle keeps payload secured and runs its own safety checks. Release only if pre-authorized.');
+  if(l==='CONNECTED' && prev!=='CONNECTED'){ S.alerts.forEach(a=>{ if(!a.acked && (a.title.startsWith('Comms link'))) a.acked=true; });
+    if(S.buffer.length){ log('Vehicle',`Event backlog received: ${S.buffer.length} event(s) recorded while link was down`); S.buffer.forEach(b=>S.log.unshift({t:b.t,src:'Vehicle',text:b.text+' (buffered)',buf:true})); S.buffer=[]; }
+    pushNow(); }
+  render(); }
+
+function pushNow(){ if(S.link!=='CONNECTED') return; for(const g of Object.keys(PER)){S.shown[g]=clone(S.truth[g]);S.last[g]=S.t;} S.last.comms=S.t; }
+
+/* ---------- commands ---------- */
+function sendCmd(name,onDone,opts={}){
+  const c={id:'C-'+pad(S.nextCmd++),name,status:'SENT',t0:performance.now(),why:''};
+  S.cmds.unshift(c); if(S.cmds.length>12)S.cmds.pop(); log('Operator',`${name} sent${opts.prio0?' (priority 0)':''}`);
+  const deliverable = S.link==='CONNECTED' || (opts.prio0 && S.link==='DEGRADED');
+  if(!deliverable){ setTimeout(()=>{ if(c.status==='SENT'){c.status='FAILED';c.why='No confirmation in 5 s. Not resent. Resend manually if still needed.';log('Ground',`${name} FAILED: timeout 5 s, not resent`);render();}},CFG.timeout); }
+  else { const d1=opts.prio0?250:600, d2=opts.prio0?700:1400;
+    setTimeout(()=>{c.status='RECEIVED';render();},d1);
+    setTimeout(()=>{c.status='COMPLETED';c.ms=Math.round(performance.now()-c.t0);onDone&&onDone();log('Vehicle',`${name} completed`);pushNow();render();},d2); }
+  render(); return c; }
+function refuse(name,why){ const c={id:'C-'+pad(S.nextCmd++),name,status:'REFUSED',why}; S.cmds.unshift(c); S.refuse=`Refused: ${why}`; log('Ground',`${name} refused: ${why}`); render(); }
+
+/* ---------- mission lifecycle ---------- */
+const ACTIVE=['ASSIGNED','LOADING','READY','TRAVELING','REROUTING','STOPPED','ARRIVED','RELEASED','RETURNING','HELD'];
+const isActive=()=>ACTIVE.includes(S.phase);
+function newPid(){return `PAY-2026-${pad(S.nextPayload)}`;}
+function startMission(m){
+  S.mission=m; S.nextPayload++; S.phase='ASSIGNED'; S.startedAt=Date.now(); S.releasedAt=null;
+  const T=S.truth; T.payload={state:'EMPTY',secured:false,weight:null,shift:0,energy:CFG.eNom,sensor:T.payload.sensor,dims:null};
+  T.route={d:primaryFor(m.dest),dist:0,moving:false,kind:'primary',baseKm:0,dest:m.dest,blocked:null};
+  S.cap=Infinity; S.fast=false; S.estop=false;
+  log('Operator',`Mission ${m.name} assigned: ${m.origin} → ${m.dest}, ${m.prio}, ${m.pid}${m.pre?', release pre-authorized':''}`);
+  log('Team 1',`Mission ${m.id} registered`); log('Team 4',`Payload mass ${m.weight.toFixed(1)} kg, release energy ${CFG.eNom} Wh received`);
+  pushNow(); resetForm(); render(); }
+
+function readForm(){
+  return {name:$('#f-name').value.trim(),origin:$('#f-origin').value,dest:$('#f-dest').value,prio:S.prio,
+    weight:parseFloat($('#f-w').value),dims:[+$('#f-l').value,+$('#f-wd').value,+$('#f-h').value],pre:$('#f-pre').checked,pid:$('#f-pid').value};}
+function validate(m){
+  const miss=[]; if(!m.name)miss.push('mission name'); if(!m.origin)miss.push('origin'); if(!m.dest)miss.push('destination'); if(!m.prio)miss.push('priority');
+  if(isNaN(m.weight))miss.push('weight'); if(m.dims.some(v=>!v))miss.push('size');
+  if(miss.length) return `Missing ${miss.join(', ')}. (OI-001)`;
+  if(m.weight<CFG.wMin||m.weight>CFG.wMax) return `${m.weight} kg (${lb(m.weight)} lb) is over the ${LIMIT} limit. (AEG-503)`;
+  if(m.dims.some((v,i)=>v>CFG.dimMax[i])) return `Size ${m.dims.join(' × ')} cm exceeds 60 × 40 × 40 cm. (AEG-501)`;
+  return null; }
+function submitForm(e){ e&&e.preventDefault(); const m=readForm(); const err=validate(m); const msg=$('#form-msg');
+  if(err){msg.textContent=err;msg.className='bad';log('Ground',`Mission entry refused: ${err}`);render();return;}
+  m.id='MSN-'+pad(S.nextMission++);
+  if(isActive()){ S.queue.push(m); S.nextPayload++; msg.textContent=`${m.name} added to queue. It will not start on its own.`; msg.className='good'; log('Operator',`Mission ${m.name} queued (${m.pid})`); resetForm(true); render(); return; }
+  if(S.link!=='CONNECTED'){ msg.textContent='Cannot assign: link is not connected.'; msg.className='bad'; return; }
+  msg.textContent=''; startMission(m); }
+function resetForm(keepMsg){ ['#f-name','#f-w','#f-l','#f-wd','#f-h'].forEach(s=>$(s).value=''); $('#f-origin').value=''; $('#f-dest').value=''; $('#f-pre').checked=false; S.prio=null; $('#f-pid').value=newPid(); if(!keepMsg){$('#form-msg').textContent='';} renderPrio(); }
+function fillForm(o){ $('#f-name').value=o.name; $('#f-origin').value=o.origin; $('#f-dest').value=o.dest; S.prio=o.prio; $('#f-w').value=o.w; $('#f-l').value=o.dims[0]; $('#f-wd').value=o.dims[1]; $('#f-h').value=o.dims[2]; $('#f-pre').checked=o.pre; renderPrio(); }
+
+function loadPayload(){
+  if(!S.mission||S.phase!=='ASSIGNED') return;
+  const T=S.truth; S.phase='LOADING'; T.payload.state='LOADED'; T.payload.weight=S.mission.weight+0.2; T.payload.dims=S.mission.dims; T.payload.secured=false;
+  vEvent(`Payload loaded, weight ${T.payload.weight.toFixed(1)} kg`); pushNow(); render();
+  setTimeout(()=>{ if(S.phase!=='LOADING')return; T.payload.secured=T.payload.shift<=CFG.shiftMax; T.payload.state=T.payload.secured?'SECURED':'LOADED'; S.phase='READY';
+    vEvent(T.payload.secured?'Restraint locked. Pre-departure check passed':'Restraint check failed'); pushNow(); render(); },1400); }
+
+function depart(){
+  if(S.phase!=='READY') return false; const P=S.truth.payload; let why=null;
+  if(!P.secured||P.shift>CFG.shiftMax) why=`payload is not secured (shift ${P.shift.toFixed(1)} cm, limit ${CFG.shiftMax} cm)`;
+  else if(P.weight<CFG.wMin||P.weight>CFG.wMax) why=`payload weight ${P.weight.toFixed(1)} kg is over the ${LIMIT} limit`;
+  if(why){ alert('warn','Departure blocked',`Vehicle will not leave: ${why}. <b>Re-secure the payload</b>, then retry. (AEG-511)`); log('Vehicle',`Departure blocked: ${why}`); render(); return false; }
+  S.phase='TRAVELING'; S.truth.route.moving=true; P.state='TRAVELING'; log('Team 2','Route accepted. Vehicle departing'); pushNow(); render(); return true; }
+
+function reroute(){
+  if(!['TRAVELING','STOPPED','REROUTING'].includes(S.phase)||S.truth.route.kind==='detour') return;
+  const R=S.truth.route, L=len('#m-truth',R.d), cur=pt('#m-truth',R.d,R.dist);
+  const ahead=Math.min(R.dist+34,L-30), bp=pt('#m-truth',R.d,ahead);
+  const oldKm=(L-R.dist)*k, nd=curve(cur,PLACES[R.dest],95), newKm=len('#m-truth',nd)*k;
+  R.blocked={d:R.d,from:R.dist,at:bp}; R.baseKm+=R.dist*k; R.d=nd; R.dist=0; R.kind='detour';
+  S.phase='REROUTING'; R.moving=false; S.pause=2;
+  const add=(newKm-oldKm), addMin=add/CFG.kmh*60;
+  S.rerouteInfo={add,addMin};
+  alert('warn','Primary route blocked (Team 2)',`New route is shown on the map: +${add.toFixed(1)} km, about +${Math.max(1,Math.round(addMin))} min. <b>No action needed</b> unless you want to change destination. (OI-012)`);
+  log('Team 2',`Blocked route ahead. New route +${add.toFixed(1)} km`); pushNow(); render(); }
+
+function injectDrive(){ if(S.truth.mobility.s==='FAULT')return; S.truth.mobility.s='FAULT';
+  if(['TRAVELING','REROUTING','RETURNING'].includes(S.phase)){S.resumePhase=S.phase;S.phase='STOPPED';S.truth.route.moving=false;}
+  vEvent('Drivetrain FAULT reported by Team 4. Vehicle stopped, payload held secured');
+  alert('crit','Drivetrain fault (Team 4)','Vehicle has stopped. Payload is <b>held secured</b>, release blocked. Acknowledge, then wait for Team 4 to reset, or Return to Origin.',{kind:'drive'}); pushNow(); render(); }
+function clearDrive(){ if(S.truth.mobility.s!=='FAULT')return; S.truth.mobility.s='OK'; S.faultClearAt=null; log('Team 4','Drivetrain reset. Status OK');
+  S.alerts.forEach(a=>{if(a.kind==='drive')a.acked=true;});
+  if(S.phase==='STOPPED'&&!S.estop){S.phase=S.resumePhase||'TRAVELING';S.truth.route.moving=true;log('Team 2','Vehicle resuming');} pushNow(); render(); }
+function injectShift(){ const P=S.truth.payload; if(P.weight===null||['RELEASED','DELIVERED'].includes(P.state)){ log('Tester','No payload loaded to shift'); render(); return; } P.shift=3.0; P.secured=false; if(P.state==='SECURED')P.state='LOADED';
+  vEvent('Payload shift 3.0 cm detected (limit 2.0 cm)');
+  if(S.phase==='TRAVELING'||S.phase==='REROUTING'||S.phase==='STOPPED') alert('crit','Payload unsecured: shift 3.0 cm (limit 2.0 cm)','Release is blocked. <b>Press Emergency Stop</b> or Return to Origin to re-secure the load. (AEG-502)',{kind:'shift'});
+  else alert('warn','Payload unsecured: shift 3.0 cm (limit 2.0 cm)','The vehicle will not depart until the payload is re-secured. (AEG-502, AEG-511)',{kind:'shift'});
+  pushNow(); render(); }
+function injectSensor(){ S.truth.payload.sensor='FAULT'; vEvent('Payload weight sensor FAULT');
+  alert('warn','Payload weight sensor fault','Weight readings are unavailable. Release stays blocked until the sensor recovers. <b>Notify the Test Lead.</b> (GEN-005)',{kind:'sensor'}); pushNow(); render(); }
+function clearFaults(){ clearDrive(); const P=S.truth.payload; P.sensor='OK'; if(P.shift>CFG.shiftMax){P.shift=0.4;} if(P.weight!==null && P.state!=='RELEASED'&&P.state!=='DELIVERED'&&P.state!=='EMPTY'){P.secured=true; if(P.state==='LOADED'&&S.phase!=='LOADING')P.state='SECURED';}
+  S.alerts.forEach(a=>{if(['shift','sensor'].includes(a.kind))a.acked=true;}); log('Tester','Faults cleared'); pushNow(); render(); }
+
+function doEstop(){ if(S.estop) return; S.estop=true;
+  const prevPhase=S.phase; S.estopPrev=prevPhase;
+  sendCmd('EMERGENCY STOP',()=>{ S.truth.route.moving=false; if(isActive()&&!['RELEASED'].includes(S.phase)){S.phase='HELD'; S.truth.payload.state= S.truth.payload.weight!==null?'HELD':S.truth.payload.state;} log('Team 2','E-Stop received. Vehicle stopped'); log('Team 4','E-Stop received. Drive power cut'); },{prio0:true});
+  alert('crit','Emergency stop activated','Vehicle is stopping. Payload set to <b>HELD</b> (secured, release blocked). Confirm the area is safe before clearing E-Stop.',{kind:'estop'}); render(); }
+function clearEstop(){ S.estop=false; S.alerts.forEach(a=>{if(a.kind==='estop')a.acked=true;}); log('Operator','E-Stop cleared');
+  if(S.phase==='HELD'){ const p=S.estopPrev; S.phase=(['TRAVELING','REROUTING','RETURNING'].includes(p))?(p==='REROUTING'?'TRAVELING':p):p; if(['TRAVELING','RETURNING'].includes(S.phase)){S.truth.route.moving=true;S.truth.payload.state='TRAVELING';} else if(S.phase==='ARRIVED'){S.truth.payload.state='AT DESTINATION';} else if(S.truth.payload.state==='HELD'){S.truth.payload.state='SECURED';} }
+  pushNow(); render(); }
+
+function releaseChecks(){ const R=S.truth.route, P=S.truth.payload;
+  return [
+    ['Vehicle stopped',!R.moving],
+    [`At destination (${R.dest||'—'})`,S.phase==='ARRIVED'],
+    ['Payload secured until release',P.secured&&P.shift<=CFG.shiftMax],
+    ['Payload sensors OK',P.sensor==='OK'],
+    ['No critical fault or E-Stop',S.truth.mobility.s!=='FAULT'&&!S.estop],
+    ['Release authorized by operator (this step)',true]
+  ]; }
+function releaseReason(){
+  if(!S.mission||!isActive()) return 'no active mission.';
+  if(['RELEASED'].includes(S.phase)) return 'payload already released.';
+  if(S.estop) return 'Emergency Stop is active.';
+  if(S.truth.route.moving||['TRAVELING','REROUTING','RETURNING'].includes(S.phase)) return 'vehicle is moving. (AEG-506)';
+  if(S.phase!=='ARRIVED') return 'vehicle is not at the destination. (AEG-507)';
+  if(S.truth.mobility.s==='FAULT') return 'critical vehicle fault is active.';
+  if(!S.truth.payload.secured) return 'payload is not secured. (AEG-502)';
+  if(S.truth.payload.sensor!=='OK') return 'payload sensor fault.';
+  return null; }
+function doRelease(auto){
+  const fin=()=>{ S.phase='RELEASED'; S.truth.payload.state='RELEASED'; S.truth.payload.secured=false; S.releasedAt=performance.now(); vEvent(auto?'Link lost at destination. Release was pre-authorized: payload released by vehicle':'Payload released');
+    const lag=2400; setTimeout(()=>deliver(lag),lag); };
+  if(auto){fin();render();return;}
+  sendCmd('Release payload',fin); }
+function deliver(lag){ if(S.phase!=='RELEASED')return; S.phase='DELIVERED'; S.truth.payload.state='DELIVERED';
+  const m=S.mission, pos=grid(pt('#m-truth',S.truth.route.d,S.truth.route.dist));
+  const totalKm=S.truth.route.baseKm+S.truth.route.dist*k;
+  const fails=S.cmds.filter(c=>c.status==='FAILED').length;
+  const sum={id:S.nextAlert++,sev:'deliv',title:`Delivery confirmed: ${m.pid} at ${m.dest}`,action:`${utc()} · grid ${pos} · confirmed ${(lag/1000).toFixed(1)} s after release · sent to operator and Team 1 (AEG-508).<br>Mission summary: ${totalKm.toFixed(1)} km, ${S.alerts.filter(a=>a.sev!=='info'&&a.sev!=='deliv').length} alerts, ${S.cmds.length} commands (${fails} failed). (OI-016)`,t:utc(),acked:false,deliv:true};
+  if(S.link==='LOST'){ S.buffer.push({t:utc(),text:`Delivery confirmed ${m.pid}`}); S.pendingDelivery=sum; }
+  else { S.alerts.unshift(sum); log('Vehicle',`Delivery confirmed ${m.pid}`); log('Team 1',`Delivery confirmation received for ${m.pid}`); }
+  pushNow(); render(); }
+
+function arrive(){ const R=S.truth.route; R.moving=false;
+  if(S.phase==='RETURNING'){ S.phase='ABORTED'; S.truth.payload.state= S.truth.payload.weight!==null?'SECURED':'EMPTY'; vEvent('Returned to origin. Mission ended'); log('Team 1',`Mission ${S.mission.id} ended at origin`); pushNow(); render(); return; }
+  S.phase='ARRIVED'; S.truth.payload.state='AT DESTINATION'; vEvent(`Arrived at ${R.dest}. Vehicle stopped`);
+  if(S.link==='LOST'){ if(S.mission.pre){ doRelease(true); } else vEvent('Link lost at destination and release not pre-authorized: payload held'); }
+  else alert('info',`Arrived at ${R.dest}`,'Vehicle is stopped at the destination. <b>Release Payload</b> is now available.');
+  pushNow(); render(); if(S.autoRelease){ S.autoRelease=false; setTimeout(()=>{ if(S.phase==='ARRIVED'&&$('#modal').hidden) onCmd('release'); },1200); } }
+
+/* ---------- operator commands ---------- */
+function cmdReason(c){
+  const act=isActive()&&!['RELEASED'].includes(S.phase);
+  if(c==='abort') return act?null:'no active mission to abort.';
+  if(c==='rto') return (act&&['TRAVELING','REROUTING','STOPPED','ARRIVED','HELD'].includes(S.phase))?(S.phase==='HELD'?'clear Emergency Stop first.':null):'vehicle has not departed.';
+  if(c==='dest') return (act&&['TRAVELING','REROUTING','STOPPED'].includes(S.phase))?null:'only available while the vehicle is en route.';
+  if(c==='payload') return (act&&!['ARRIVED'].includes(S.phase)&&S.truth.payload.state!=='EMPTY')?null:(S.truth.payload.state==='EMPTY'&&act?'payload is not loaded yet.':'no payload to update.');
+  if(c==='release') return releaseReason();
+}
+function onCmd(c){ S.refuse=''; const why=cmdReason(c); const names={abort:'Abort mission',rto:'Return to origin',dest:'Change destination',payload:'Update payload',release:'Release payload'};
+  if(why){ refuse(names[c],why.charAt(0).toUpperCase()+why.slice(1)); return; }
+  if(c==='abort') confirmDlg('Abort the mission?',`<p style="margin:0">The vehicle stops and the mission ends. The payload stays <b>secured</b>. Queued missions will wait for your confirmation.</p>`,'Abort mission',true,()=>sendCmd('Abort mission',()=>{S.phase='ABORTED';S.truth.route.moving=false;if(S.truth.payload.weight!==null)S.truth.payload.state='SECURED';log('Team 1',`Mission ${S.mission.id} aborted`);}));
+  if(c==='rto') confirmDlg('Return to origin?',`<p style="margin:0">The vehicle turns back to FOB Talon with the payload secured. The current delivery is cancelled.</p>`,'Return to origin',false,()=>sendCmd('Return to origin',()=>{const R=S.truth.route,cur=pt('#m-truth',R.d,R.dist);R.baseKm+=R.dist*k;R.d=curve(cur,PLACES['FOB Talon'],-40);R.dist=0;R.kind='return';R.dest='FOB Talon';R.blocked=null;S.phase='RETURNING';R.moving=true;S.cap=Infinity;S.fast=false;S.truth.payload.state='TRAVELING';log('Team 2','Returning to origin');}));
+  if(c==='dest'){ const cur=S.truth.route.dest, other=cur==='LZ Kestrel'?'LZ Osprey':'LZ Kestrel';
+    confirmDlg('Change destination?',`<div class="field"><label for="dlg-dest">New destination</label><select id="dlg-dest"><option>${other}</option></select></div><p style="margin:0">Team 2 plans a new route from the current position.</p>`,'Change destination',false,()=>{const nd=$('#dlg-dest').value;sendCmd(`Change destination → ${nd}`,()=>{const R=S.truth.route,cur=pt('#m-truth',R.d,R.dist);R.baseKm+=R.dist*k;R.d=curve(cur,PLACES[nd],-30);R.dist=0;R.kind='redirect';R.dest=nd;R.blocked=null;S.mission.dest=nd;log('Team 2',`New route to ${nd}`);});}); }
+  if(c==='payload') payloadDlg(210.0);
+  if(c==='release'){ const ch=releaseChecks();
+    confirmDlg(`Release ${S.mission.pid}?`,`<ul class="checks">${ch.map(([t,ok])=>`<li><span class="${ok?'y':'n'}">${ok?'✓':'✕'}</span>${t}</li>`).join('')}</ul><p style="margin:0;font-size:12px;color:var(--ink-2)">The vehicle repeats these checks on board before it releases. (AEG-506, AEG-507)</p>`,'Release payload',false,()=>doRelease(false)); }
+  render(); }
+
+/* ---------- dialogs ---------- */
+let dlgOk=null;
+function confirmDlg(title,body,okLabel,danger,onOk,tag){ $('#dlg-tag').textContent=tag||'CONFIRM · STEP 2 OF 2'; $('#dlg-t').textContent=title; $('#dlg-body').innerHTML=body; const ok=$('#dlg-ok'); ok.textContent=okLabel; ok.className='btn '+(danger?'danger':'primary'); dlgOk=onOk; $('#modal').hidden=false; setTimeout(()=>ok.focus(),0); }
+function closeDlg(){ $('#modal').hidden=true; dlgOk=null; }
+function payloadDlg(w){ const P=S.truth.payload, d=P.dims||[60,40,40];
+  confirmDlg('Update payload details',`<div class="fgrid"><div class="field"><label for="u-w">Weight (kg)</label><input id="u-w" type="number" step="0.1" value="${w}"></div><div class="field"><span class="lbl2">Size L × W × H (cm)</span><div class="dims"><input id="u-l" type="number" value="${d[0]}" aria-label="Length"><input id="u-wd" type="number" value="${d[1]}" aria-label="Width"><input id="u-h" type="number" value="${d[2]}" aria-label="Height"></div></div></div><div id="u-msg" style="font-size:12px;color:var(--crit)"></div><p style="margin:0;font-size:12px;color:var(--ink-2)">Allowed: up to 227 kg (500 lb) and 60 × 40 × 40 cm. Accepted changes go to Team 4 for the power budget. (AEG-512)</p>`,'Send update',false,null,'UPDATE PAYLOAD');
+  dlgOk=()=>{ const nw=parseFloat($('#u-w').value), nd=[+$('#u-l').value,+$('#u-wd').value,+$('#u-h').value]; let err=null;
+    if(isNaN(nw)) err='Enter a weight.'; else if(nw<CFG.wMin||nw>CFG.wMax) err=`${nw} kg (${lb(nw)} lb) is over the ${LIMIT} limit.`; else if(nd.some((v,i)=>!v||v>CFG.dimMax[i])) err=`Size ${nd.join(' × ')} cm exceeds 60 × 40 × 40 cm.`;
+    if(err){ $('#u-msg').textContent='Refused: '+err; refuse('Update payload',err); return false; }
+    sendCmd(`Update payload → ${nw.toFixed(1)} kg (${lb(nw)} lb)`,()=>{P.weight=nw;P.dims=nd;if(S.mission)S.mission.weight=nw;log('Team 4',`Payload mass ${nw.toFixed(1)} kg received, power budget updated`);}); }; }
+$('#dlg-cancel').onclick=()=>{ log('Operator',`Cancelled at confirmation: ${$('#dlg-t').textContent}`); closeDlg(); render(); };
+$('#dlg-ok').onclick=()=>{ const f=dlgOk; if(!f){closeDlg();return;} const r=f(); if(r===false) return; closeDlg(); render(); };
+
+/* ---------- queue ---------- */
+function confirmQueued(i){ if(isActive()) return; const m=S.queue.splice(i,1)[0]; if(S.link!=='CONNECTED'){S.queue.splice(i,0,m);return;} log('Operator',`Queued mission ${m.name} confirmed`); startMission(m); }
+
+/* ---------- tick ---------- */
+function tick(){
+  S.t++;
+  const R=S.truth.route;
+  if(S.pause>0){ S.pause--; if(S.pause===0&&S.phase==='REROUTING'&&!S.estop){S.phase='TRAVELING';R.moving=true;} }
+  if((S.phase==='TRAVELING'||S.phase==='RETURNING')&&!S.estop&&R.moving){
+    const L=len('#m-truth',R.d), limit=(S.fast||R.kind==='return')?L:Math.min(L*0.9,S.cap);
+    let step=S.fast?Math.max(26,(L-R.dist)/5):2.4; step=Math.min(step,Math.max(0,limit-R.dist));
+    R.dist+=step; if(R.dist>=L-0.01){R.dist=L;arrive();}
+    S.truth.power.batt=Math.max(5,S.truth.power.batt-(S.fast?0.6:0.08));
+  }
+  if(S.faultClearAt&&S.t>=S.faultClearAt) clearDrive();
+  for(const g of Object.keys(PER)){ if(S.link==='CONNECTED'||(S.link==='DEGRADED'&&S.t%PER[g]===0)){S.shown[g]=clone(S.truth[g]);S.last[g]=S.t;} }
+  if(S.link!=='LOST') S.last.comms=S.t;
+  if(S.pendingDelivery&&S.link!=='LOST'){ S.alerts.unshift(S.pendingDelivery); log('Team 1',`Delivery confirmation received for ${S.mission.pid} (after link recovery)`); S.pendingDelivery=null; }
+  if(S.alerts.some(a=>a.sev==='crit'&&!a.acked)) beep();
+  render();
+}
+function beep(){ if(!S.sound) return; try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended')actx.resume(); const o=actx.createOscillator(),g=actx.createGain(); o.type='square'; o.frequency.value=880; g.gain.value=0.035; o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+0.16);}catch(e){} }
+
+/* ---------- render ---------- */
+function stCls(s){return {OK:'s-ok',CONNECTED:'s-ok',NOMINAL:'s-ok',WARN:'s-warn',DEGRADED:'s-caut',FAULT:'s-crit',LOST:'s-crit'}[s]||'s-off';}
+function stIcon(s){return {OK:'●',CONNECTED:'●',NOMINAL:'●',WARN:'◆',DEGRADED:'◆',FAULT:'▲',LOST:'✕'}[s]||'○';}
+function ageHTML(g){ const a=S.t-S.last[g]; if(!S.booted) return '<span class="age">no data</span>'; if(a>CFG.stale) return `<span class="age stale" title="Older than 5 s">⧗ OUT OF DATE · ${a}s</span>`; return `<span class="age">${a}s ago</span>`; }
+function grid(p){ return `16S EB ${pad(Math.round(4400+p[0]*2.1),4)} ${pad(Math.round(7900-p[1]*2.1),4)}`; }
+function overall(){ const sh=S.shown, arr=[sh.power.s,sh.mobility.s,sh.nav.s,sh.payload.sensor]; if(arr.includes('FAULT'))return 'FAULT'; if(arr.includes('WARN')||S.link!=='CONNECTED')return 'DEGRADED'; return 'NOMINAL'; }
+
+function render(){
+  const sh=S.shown, m=S.mission;
+  // top bar
+  $('#tb-mission').textContent=m?m.name:'No mission';
+  $('#tb-pid').textContent=m?m.pid:'—';
+  $('#tb-link').innerHTML=`<span class="badge ${stCls(S.link)}">${stIcon(S.link)} ${S.booted?S.link:'CONNECTING'}</span>`;
+  const ov=S.booted?overall():'—';
+  $('#tb-vh').innerHTML=`<span class="badge ${stCls(ov)}">${stIcon(ov)} ${ov}</span>`;
+  $('#estop').classList.toggle('active',S.estop); $('#estop-t').textContent=S.estop?'E-STOP ACTIVE':'EMERGENCY STOP'; $('#estop-clear').hidden=!S.estop;
+  // payload card
+  const P=sh.payload, pst=P.state;
+  const pcls={EMPTY:'s-off',LOADED:'s-caut',SECURED:'s-ok',TRAVELING:'s-ok','AT DESTINATION':'s-ok',RELEASED:'s-ok',DELIVERED:'s-ok',HELD:'s-crit'}[pst]||'s-off';
+  const lock=P.weight===null?'<span class="mini s-off">— NONE</span>':(P.secured?'<span class="mini s-ok">🔒 LOCKED</span>':(pst==='RELEASED'||pst==='DELIVERED'?'<span class="mini s-off">OPEN</span>':'<span class="mini s-crit">▲ NOT SECURED</span>'));
+  const shiftBad=P.shift>CFG.shiftMax;
+  $('#pl-age').innerHTML=ageHTML('payload');
+  $('#pl-body').innerHTML=`<div class="bigstate"><span class="st">${pst}</span><span class="mini ${pcls}">${pst==='HELD'?'RELEASE BLOCKED':(pst==='EMPTY'?'AWAITING LOAD':'STATE')}</span></div>
+   <div class="kv">
+    <span class="k">Restraint lock<span class="req">AEG-505</span></span><span class="val">${lock}</span>
+    <span class="k">Weight<span class="req">AEG-504</span></span><span class="val">${P.weight===null?'—':P.sensor!=='OK'?'<span class="mini s-crit">NO READING</span>':P.weight.toFixed(1)+' kg <span style="color:var(--ink-3)">('+lb(P.weight)+' lb)</span>'}</span>
+    <span class="k">Shift (limit 2.0 cm)<span class="req">AEG-502</span></span><span class="val" style="${shiftBad?'color:var(--crit)':''}">${P.weight===null?'—':(shiftBad?'▲ ':'')+P.shift.toFixed(1)+' cm'}</span>
+    <span class="k">Size</span><span class="val">${P.dims?P.dims.join(' × ')+' cm':'—'}</span>
+    <span class="k">Release energy<span class="req">AEG-509</span></span><span class="val">${CFG.eNom.toFixed(1)} Wh <span style="color:var(--ink-3)">/ 5.0 max</span></span>
+    <span class="k">Payload sensors<span class="req">GEN-005</span></span><span class="val"><span class="mini ${stCls(P.sensor)}">${stIcon(P.sensor)} ${P.sensor}</span></span>
+   </div>`;
+  // vehicle health
+  $('#vh-overall').innerHTML=`<span class="badge ${stCls(ov)}">${stIcon(ov)} ${ov}</span>`;
+  const rows=[['Power & battery','Team 4',sh.power.s,'power',`${Math.round(sh.power.batt)}%`],['Mobility & drivetrain','Team 4',sh.mobility.s,'mobility',''],['Navigation sensors','Team 2',sh.nav.s,'nav',''],['Comms link','Team 3',S.link,'comms','']];
+  $('#vh-body').innerHTML=rows.map(([n,src,s,g,x])=>`<div class="hrow"><div><div class="nm">${n}${x?` <span class="mono" style="font-size:12px;color:var(--ink-2)">· ${x}</span>`:''}</div><div class="src">${src}</div></div><span class="mini ${stCls(s)}">${stIcon(s)} ${S.booted?s:'—'}</span><span class="age-cell">${ageHTML(g)}</span></div>`).join('')+
+   `<div style="font-size:11px;color:var(--ink-3);margin-top:6px">Raw diagnostics go to the mission log, not the screen.<span class="req">OI-017</span></div>`;
+  // map
+  renderMap();
+  // nav grid
+  const R=sh.route, L=R.d?len('#m-shown',R.d):0, remKm=R.d?(L-R.dist)*k:0, doneKm=R.baseKm+R.dist*k, totKm=doneKm+remKm;
+  const p=R.d?pt('#m-shown',R.d,R.dist):PLACES['FOB Talon'];
+  const statusTxt=!m?'—':(R.moving?'MOVING':'STOPPED'); const stc=!m?'s-off':(R.moving?'s-ok':(S.phase==='STOPPED'||S.phase==='HELD'?'s-crit':'s-caut'));
+  const eta=m&&R.d&&remKm>0.01?new Date(Date.now()+remKm/CFG.kmh*3600e3):null;
+  const ra=ageHTML('route');
+  $('#navgrid').innerHTML=`
+   <div class="cell"><span class="lbl">Status</span><span><span class="mini ${stc}" style="font-size:13px">${R.moving?'▶':'■'} ${statusTxt}</span></span><span class="sub">${phaseLabel()}</span></div>
+   <div class="cell"><span class="lbl">Speed</span><span class="big">${R.moving?CFG.kmh+' km/h':'0 km/h'}</span><span class="sub">Target 25 mph (40 km/h)</span></div>
+   <div class="cell"><span class="lbl">Data age</span><span>${ra}</span><span class="sub">Position &amp; route (Team 2)</span></div>
+   <div class="cell"><span class="lbl">Position</span><span class="big" style="font-size:13.5px">${m?grid(p):'—'}</span><span class="sub">${R.dest?'To '+R.dest:'No route'}</span></div>
+   <div class="cell"><span class="lbl">Progress</span><span class="big">${m?doneKm.toFixed(1)+' / '+totKm.toFixed(1)+' km':'—'}</span><div class="bar"><i style="width:${m&&totKm?Math.min(100,doneKm/totKm*100):0}%"></i></div></div>
+   <div class="cell"><span class="lbl">ETA</span><span class="big">${eta?utc(eta).slice(0,5)+'Z':(S.phase==='ARRIVED'||S.phase==='RELEASED'||S.phase==='DELIVERED'?'Arrived':'—')}</span><span class="sub">${eta?'in '+Math.max(1,Math.round(remKm/CFG.kmh*60))+' min · '+remKm.toFixed(1)+' km left':''}</span></div>`;
+  // form
+  const act=isActive();
+  $('#form-title').innerHTML=(act?'Queue new mission':'Assign mission')+'<span class="req">OI-001</span>'+(act?'<span class="req">OI-015</span>':'');
+  $('#f-submit').textContent=act?'Add to queue':'Assign mission';
+  $('#form-sub').textContent=act?'Goes to queue, not on screen':'All fields required';
+  $('#queue').innerHTML=S.queue.length?`<div class="lbl" style="margin-bottom:4px">Mission queue · ${S.queue.length}</div>`+S.queue.map((q,i)=>`<div class="qrow"><span class="grow"><b>${q.name}</b> · ${q.dest} · ${q.prio} · <span class="mono">${q.pid}</span></span><button class="btn ${act?'':'primary'}" data-q="${i}" ${act?'aria-disabled="true" title="Available when the current mission ends"':''} style="height:26px;font-size:11.5px">${act?'Waiting':'Confirm &amp; send'}</button></div>`).join(''):'';
+  // commands
+  $$('#cmds [data-c]').forEach(b=>{const why=cmdReason(b.dataset.c); b.setAttribute('aria-disabled',why?'true':'false'); b.title=why?('Unavailable: '+why):'';});
+  $('#refuse').textContent=S.refuse;
+  // tracker
+  const now=performance.now();
+  $('#trk').innerHTML=S.cmds.length?S.cmds.slice(0,3).map(c=>{const cls={SENT:'p-sent',RECEIVED:'p-recv',COMPLETED:'p-done',FAILED:'p-fail',REFUSED:'p-ref'}[c.status];
+    const tm=c.status==='SENT'||c.status==='RECEIVED'?`<span class="mono" style="font-size:11px;color:var(--ink-3)">${((now-c.t0)/1000).toFixed(0)}s</span> `:(c.ms?`<span class="mono" style="font-size:11px;color:var(--ink-3)">${(c.ms/1000).toFixed(1)}s</span> `:'');
+    return `<div class="trow"><span class="id">${c.id}</span><span class="nm">${c.name}</span><span>${tm}<span class="pill ${cls}">${c.status}</span></span>${c.why?`<span class="why">${c.why}</span>`:''}</div>`;}).join(''):'<span class="empty">No commands yet. Status shows SENT → RECEIVED → COMPLETED, or FAILED after 5 s.</span>';
+  // alerts
+  const order={crit:0,warn:1,caut:2,info:3};
+  const live=S.alerts.filter(a=>!a.acked&&!a.deliv).sort((a,b)=>order[a.sev]-order[b.sev]||b.id-a.id);
+  const deliv=S.alerts.filter(a=>a.deliv);
+  const acked=S.alerts.filter(a=>a.acked&&!a.deliv).slice(0,3);
+  const list=[...deliv.slice(0,1),...live,...acked];
+  $('#al-cnt').textContent=live.length?`${live.length} active · sorted by severity`:'No active alerts';
+  $('#alerts').innerHTML=list.length?list.map(a=>`<div class="al ${a.sev} ${a.sev==='crit'&&!a.acked?'live':''} ${a.acked?'acked':''}"><span class="sev">${sevIcon(a.sev)} ${sevName(a.sev)}</span><div><div class="tt">${a.title}<span class="tm">${a.t}</span></div><div class="ac">${a.deliv?'':'<b>Do:</b> '}${a.action}</div></div>${a.deliv?'':(a.acked?'<span class="empty">Acknowledged</span>':`<button class="btn ack" data-ack="${a.id}">Acknowledge</button>`)}</div>`).join(''):'<div class="empty" style="padding:8px 2px">Alerts appear here within 2 seconds, with severity shown by icon and text as well as color.</div>';
+  // log
+  $('#log').innerHTML=S.log.slice(0,40).map(l=>`<div class="${l.buf?'buf':''}"><span class="lt">${l.t}</span> <span class="ls">${l.src}</span> ${l.text}</div>`).join('');
+  renderTester();
+}
+function phaseLabel(){ return {STANDBY:'Standby',ASSIGNED:'Mission assigned, awaiting load',LOADING:'Loading and checking payload',READY:'Ready to depart',TRAVELING:'En route',REROUTING:'Team 2 re-planning route',STOPPED:'Stopped: vehicle fault',ARRIVED:'At destination',RELEASED:'Payload released',DELIVERED:'Delivered',ABORTED:'Mission ended',RETURNING:'Returning to origin',HELD:'Emergency stop'}[S.phase]; }
+
+function renderMap(){
+  const R=S.shown.route, T=S.truth.route, m=S.mission;
+  const routes=$('#routes'); let h='';
+  if(R.blocked){ const b=R.blocked; h+=`<path d="${b.d}" fill="none" stroke="var(--ink-3)" stroke-width="3" stroke-dasharray="2 5" opacity=".7"/>`; }
+  if(R.d){ h+=`<path d="${R.d}" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity=".9"/>`; }
+  routes.innerHTML=h;
+  const bm=$('#blockmark'); if(R.blocked){ const [x,y]=R.blocked.at; bm.removeAttribute('hidden'); bm.innerHTML=`<g transform="translate(${x} ${y})"><circle r="11" fill="var(--crit-bg)" stroke="var(--crit)" stroke-width="2"/><path d="M-5 -5L5 5M5 -5L-5 5" stroke="var(--crit)" stroke-width="2.5"/></g><text x="${x+14}" y="${y-8}" style="fill:var(--crit)">BLOCKED</text>`; } else bm.setAttribute('hidden','');
+  // places
+  const dest=R.dest||(m&&m.dest);
+  $('#places').innerHTML=Object.entries(PLACES).map(([n,[x,y]])=>{const isO=n==='FOB Talon', isD=n===dest; const op=isO||isD?1:.45;
+    return `<g opacity="${op}" transform="translate(${x} ${y})">${isO?`<rect x="-7" y="-7" width="14" height="14" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>`:`<path d="M0 -9L9 0L0 9L-9 0Z" fill="${isD?'var(--ok)':'var(--panel)'}" stroke="var(--ink)" stroke-width="1.6"/>`}<text x="${isO?12:(x>400?-12:12)}" y="${isO?4:-12}" text-anchor="${isO||x<=400?'start':'end'}">${n.toUpperCase()}</text></g>`;}).join('');
+  // vehicle
+  const veh=$('#vehicle'), gh=$('#ghost');
+  if(m&&R.d){ const p=pt('#m-shown',R.d,R.dist); veh.style.transform=`translate(${p[0]}px,${p[1]}px)`; veh.style.display='';
+    const stale=(S.t-S.last.route)>CFG.stale; veh.style.opacity=stale?.55:1; $('#lastknown').hidden=!stale;
+    $('#lastknown').textContent=`LAST KNOWN POSITION · ${S.t-S.last.route}s OLD`;
+  } else { const p=PLACES['FOB Talon']; veh.style.transform=`translate(${p[0]}px,${p[1]}px)`; veh.style.display=m?'':'none'; $('#lastknown').hidden=true; }
+  $('#map-chip').textContent=R.kind==='detour'?'ALTERNATE ROUTE (TEAM 2)':R.kind==='return'?'RETURN TO ORIGIN':R.kind==='redirect'?'NEW DESTINATION':m?'PRIMARY ROUTE':'NO ACTIVE ROUTE';
+  const rr=$('#reroute'); if(R.kind==='detour'&&S.rerouteInfo&&['TRAVELING','REROUTING','STOPPED','HELD'].includes(S.phase)){ rr.hidden=false; rr.innerHTML=`<b>◆ REROUTED</b> <span>Primary route blocked. New route +${S.rerouteInfo.add.toFixed(1)} km, about +${Math.max(1,Math.round(S.rerouteInfo.addMin))} min.</span>`; } else rr.hidden=true;
+}
+
+function nextStepIndex(){ return Math.min(S.step+1,11); }
+function renderTester(){
+  const n=nextStepIndex();
+  $('#steps').innerHTML=STEPS.map((s,i)=>`<button class="stepbtn ${i+1<=S.step?'done':''} ${i+1===n&&S.step<11?'next':''}" data-step="${i+1}" title="${s[0]}">${i+1} · ${s[0]}</button>`).join('');
+  $('#t-next').textContent=S.step>=11?'Scenario complete · Reset to run again':`Run step ${n}: ${STEPS[n-1][0]} ▸`;
+  const shownStep=S.step>=1?S.step:1; const st=STEPS[shownStep-1];
+  $('#note').innerHTML=S.step===0?`<b>How to use:</b> press <b>Run step 1</b> and walk through the mission. Each step does the tester's part (link changes, Team 2 and Team 4 reports, faults). Operator actions such as Release, Abort or Emergency Stop are clicked on the screen itself.`:`<b>Step ${shownStep} · ${st[0]}.</b> ${st[1]} <span class="pt">Point at: ${st[2]}.</span>`;
+  $$('#t-link button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===S.link&&S.booted?'true':'false'));
+}
+
+/* ---------- scenario steps ---------- */
+function boot(){ if(!S.booted){ S.booted=true; S.link='CONNECTED'; S.last.comms=S.t; log('Ground','Operator screen connected to ground station'); log('Team 3','Link CONNECTED'); pushNow(); } else setLink('CONNECTED'); }
+function ensureMission(){ boot(); if(!S.mission||!isActive()){ fillForm({name:'IRON HAWK',origin:'FOB Talon',dest:'LZ Kestrel',prio:'Priority',w:217.7,dims:[58,38,36],pre:true}); submitForm(); } }
+function ensureLoaded(){ ensureMission(); if(S.phase==='ASSIGNED'){ loadPayload(); } if(S.phase==='LOADING'){ S.phase='READY'; S.truth.payload.secured=S.truth.payload.shift<=CFG.shiftMax; S.truth.payload.state=S.truth.payload.secured?'SECURED':'LOADED'; pushNow(); } }
+function ensureTraveling(){ ensureLoaded(); if(S.phase==='READY'){ if(!S.truth.payload.secured){ clearFaults(); } depart(); } if(S.link!=='CONNECTED') setLink('CONNECTED'); if(S.estop) clearEstop(); }
+function runStep(n){
+  if(n===1){ boot(); }
+  if(n===2){ boot(); if(!S.mission||!isActive()){ fillForm({name:'IRON HAWK',origin:'FOB Talon',dest:'LZ Kestrel',prio:'Priority',w:217.7,dims:[58,38,36],pre:true}); setTimeout(()=>{ if(!S.mission||!isActive()){submitForm();} render();},700); } }
+  if(n===3){ ensureMission(); if(S.phase==='ASSIGNED') loadPayload(); }
+  if(n===4){ ensureLoaded(); if(S.phase==='READY'){ const ok=depart(); if(!ok){ S.step=3; render(); return; } } }
+  if(n===5){ ensureTraveling(); setLink('DEGRADED'); }
+  if(n===6){ ensureTraveling(); reroute(); }
+  if(n===7){ ensureTraveling(); payloadDlg(210.0); }
+  if(n===8){ ensureTraveling(); fillForm({name:'IRON HAWK II',origin:'FOB Talon',dest:'LZ Osprey',prio:'Routine',w:181.4,dims:[50,40,30],pre:false}); setTimeout(()=>{submitForm();render();},700); }
+  if(n===9){ ensureTraveling(); injectDrive(); }
+  if(n===10){ ensureTraveling(); clearFaults(); S.fast=true; S.cap=Infinity; if(S.phase==='STOPPED'){S.phase='TRAVELING';S.truth.route.moving=true;} }
+  if(n===11){ if(S.phase!=='ARRIVED'){ runStep(10); S.autoRelease=true; S.step=11; render(); return; } onCmd('release'); }
+  S.step=Math.max(S.step,n); render();
+}
+
+/* ---------- wiring ---------- */
+function renderPrio(){ $$('#f-prio button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===S.prio?'true':'false')); }
+$('#f-prio').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.prio=b.dataset.p;renderPrio();});
+$('#mform').addEventListener('submit',submitForm);
+$('#cmds').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b)onCmd(b.dataset.c);});
+$('#queue').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(b&&b.getAttribute('aria-disabled')!=='true')confirmQueued(+b.dataset.q);});
+$('#alerts').addEventListener('click',e=>{const b=e.target.closest('[data-ack]');if(!b)return;const a=S.alerts.find(x=>x.id===+b.dataset.ack);if(a){a.acked=true;log('Operator',`Acknowledged: ${a.title}`);if(a.kind==='drive'&&!S.faultClearAt)S.faultClearAt=S.t+4;}render();});
+$('#estop').addEventListener('click',doEstop);
+$('#estop-clear').addEventListener('click',()=>confirmDlg('Clear Emergency Stop?','<p style="margin:0">Confirm the area around the vehicle is safe. The vehicle resumes its previous activity.</p>','Clear E-Stop',false,clearEstop));
+$('#steps').addEventListener('click',e=>{const b=e.target.closest('[data-step]');if(b)runStep(+b.dataset.step);});
+$('#t-next').addEventListener('click',()=>{ if(S.step>=11){reset();return;} runStep(nextStepIndex()); });
+$('#t-link').addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b)return; if(!S.booted){boot();} setLink(b.dataset.l);});
+$('#tester').addEventListener('click',e=>{const b=e.target.closest('[data-inj]');if(!b)return;({shift:injectShift,sensor:injectSensor,drive:injectDrive,clear:clearFaults})[b.dataset.inj]();});
+$('#t-req').addEventListener('click',e=>{S.showReq=!S.showReq;$('#stage').classList.toggle('show-req',S.showReq);e.currentTarget.setAttribute('aria-pressed',S.showReq);});
+$('#t-sound').addEventListener('click',e=>{S.sound=!S.sound;e.currentTarget.setAttribute('aria-pressed',S.sound);e.currentTarget.textContent=S.sound?'Sound on':'Sound off';});
+$('#t-full').addEventListener('click',()=>{ const w=$('#stage-wrap'); try{ const p=document.fullscreenElement?document.exitFullscreen():w.requestFullscreen&&w.requestFullscreen(); p&&p.catch&&p.catch(()=>{});}catch(e){} });
+$('#t-reset').addEventListener('click',reset);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#modal').hidden){ $('#dlg-cancel').click(); } });
+
+function fit(){ const wrap=$('#stage-wrap'), st=$('#stage'); let s;
+  if(document.fullscreenElement){ s=Math.min(innerWidth/1366,innerHeight/768); wrap.style.width=''; wrap.style.height=''; }
+  else { const availW=document.body.clientWidth-parseFloat(getComputedStyle(document.body).paddingLeft)-parseFloat(getComputedStyle(document.body).paddingRight);
+    const availH=innerHeight-$('#tester').offsetHeight-40; s=availW/1366; const sh=availH/768; if(sh<s&&sh>0.62)s=sh; s=Math.min(s,1.5);
+    wrap.style.width=(1366*s)+'px'; wrap.style.height=(768*s)+'px'; }
+  st.style.transformOrigin=document.fullscreenElement?'center':'0 0'; st.style.transform=`scale(${s})`; }
+addEventListener('resize',fit); document.addEventListener('fullscreenchange',()=>{fit();});
+
+let timer=null;
+function reset(){ const keep=S?{sound:S.sound,showReq:S.showReq}:{}; S=fresh(); Object.assign(S,keep); S.booted=false;
+  k=CFG.routeKm/len('#m-primary',KESTREL_PRIMARY);
+  const twoKm=2/k; $('#scale-line').setAttribute('x2',twoKm.toFixed(1)); $('#scale-t').setAttribute('x',(twoKm/2-12).toFixed(1));
+  $('#vehicle').classList.add('instant'); closeDlg(); resetForm(); $('#form-msg').textContent=''; render(); requestAnimationFrame(()=>$('#vehicle').classList.remove('instant'));
+  clearInterval(timer); timer=setInterval(tick,1000); }
+setInterval(()=>{$('#tb-utc').textContent=utc();},250);
+reset(); fit(); requestAnimationFrame(fit);
+})();
+</script>
+
+</body>
+</html>
