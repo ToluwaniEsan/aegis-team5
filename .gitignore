@@ -1,7 +1,31 @@
+# Python generated files
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg-info/
+
+# Virtual environment and local secrets
 .venv/
 .env
+
+# Testing and lint caches
 .pytest_cache/
-.DS_Store
+.hypothesis/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Generated backend reports and runtime logs
+/backend/reports/
+/logs/
+/backend/logs/
 *.log
+
+# Frontend dependencies and build output
+/frontend/node_modules/
+/frontend/dist/
+/frontend/coverage/
+/frontend/playwright-report/
+/frontend/test-results/
+
+# macOS
+.DS_Store
