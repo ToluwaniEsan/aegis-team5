@@ -19,8 +19,8 @@ This repo starts with documentation only. Code gets added in Sprint 4.
 
 ## Sources
 
-- Team 5 design document (Senior Problems FA25)
-- Project AEGIS Student Project Handbook
+- **Team 5 design document:** [Senior Problems FA25 (Google Doc)](https://docs.google.com/document/d/1AkvFVlgxawBSdeIX2vr46VWBIyyHWSFhRqhPwL4LBxo/edit). Access is limited to people the doc is shared with; ask Olasubomi if you can't open it.
+- Project AEGIS Student Project Handbook (provided by the instructor)
 
 ## Getting started
 

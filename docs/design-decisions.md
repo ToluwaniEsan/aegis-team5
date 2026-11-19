@@ -1,6 +1,6 @@
 # Design decisions (Sprint 3)
 
-Source: Team 5 design document, Sprint 3 section (trade studies pp. 42–46, readiness checklist p. 53).
+Source: [Team 5 design document (Senior Problems FA25)](https://docs.google.com/document/d/1AkvFVlgxawBSdeIX2vr46VWBIyyHWSFhRqhPwL4LBxo/edit), Sprint 3 section (trade studies pp. 42–46, readiness checklist p. 53).
 
 ## Trade studies
 
