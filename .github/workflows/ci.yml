@@ -38,11 +38,15 @@ jobs:
         run: python -m ruff format --check .
 
       - name: Run backend tests
+        shell: bash
         run: |
-          if [ -d tests ]; then
-            python -m pytest --junitxml=reports/pytest.xml
+          shopt -s globstar nullglob
+          test_files=(tests/**/test_*.py tests/**/*_test.py)
+
+          if [ "${#test_files[@]}" -gt 0 ]; then
+            python -m pytest tests --junitxml=reports/pytest.xml
           else
-            echo "No backend tests directory yet; tests skipped during B0."
+            echo "No backend test files yet; tests skipped during initial setup."
           fi
 
   frontend:
