@@ -47,4 +47,4 @@ Questions found during work go at the bottom, under "Added during the build".
 
 | ID | Asked by | Question | Answer | Date |
 |---|---|---|---|---|
-| | | | | |
+| D-18 | Toluwani (Scrum Master) | Payload minimum mass: `config.yaml` had 500 kg, the requirements doc said "up to 500 lb". Which is right? | Minimum 500 lb (226.8 kg). `mass_min_kg` changed from 500 to 226.8; `mass_max_kg` stays 1000 (D-17 still open). | 2026-11-20 |

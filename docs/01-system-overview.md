@@ -27,7 +27,7 @@ Where a later tab in the team doc changed an earlier one, the later tab wins.
 | New missions are queued and start only when the operator confirms | Design Decisions, OI-015 |
 | Vehicle Event Buffer replays events after an outage | Design Decisions |
 | All limits in `config.yaml` | Design Decisions |
-| 500 to 1000 kg, 60 × 40 × 40 cm, 2.0 cm shift, ±0.5 kg, 3.2 Wh nominal / 5.0 Wh max, 1 Hz, 5 s, 5 s | Finalized TBR Settings |
+| 226.8 (500 lb) to 1000 kg, 60 × 40 × 40 cm, 2.0 cm shift, ±0.5 kg, 3.2 Wh nominal / 5.0 Wh max, 1 Hz, 5 s, 5 s | Finalized TBR Settings |
 | Interfaces I1 to I9 and the screen grid (64 / 544 / 160 px rows, 420 / 526 / 420 px columns) | PRD tab |
 | Link limits: degraded above 1 s or 10 % loss, lost after 5 s | Assumption A-15 (Team 3 has not answered) |
 
@@ -217,5 +217,5 @@ Never cut:
 | How Team 1 wants teams to exchange messages | Team 1, asked by B | Only `adapters/` and `bus/tcp.py` change. Offer them our envelope as the program format (doc 06). |
 | Team 2 message formats, the interlock, emergency stop ownership | Team 2, asked by B | Only `adapters/team2.py` |
 | Team 3 link limits and priority support | Team 3, asked by B | `config.yaml` only |
-| Team 4 accepting 500 to 1000 kg and 3.2 / 5.0 Wh | Team 4, asked by B | `config.yaml` only |
+| Team 4 accepting 226.8 (500 lb) to 1000 kg and 3.2 / 5.0 Wh | Team 4, asked by B | `config.yaml` only |
 | Payload mass versus box size | Team 5 | `config.yaml` only |

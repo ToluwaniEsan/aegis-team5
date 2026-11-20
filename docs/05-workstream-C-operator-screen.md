@@ -246,7 +246,7 @@ frontend/src/
 - **Fields in order:**
   - Origin and Destination: dropdowns from `places`, which must differ.
   - Priority: three buttons (ROUTINE, PRIORITY, URGENT).
-  - Declared weight in kg: number input, with a live check against `limits` ("Must be 500 to 1000 kg").
+  - Declared weight in kg: number input, with a live check against `limits` ("Must be 226.8 to 1000 kg").
   - Dimensions in cm: three inputs, with a live check.
   - "Pre-authorize release if the link is lost at the destination": a checkbox, off by default.
 - **Payload ID:** read-only, from `mission.next_ids`.

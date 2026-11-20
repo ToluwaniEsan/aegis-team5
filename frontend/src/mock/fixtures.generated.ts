@@ -196,7 +196,7 @@ export const idle: Snapshot = {
     }
   ],
   "limits": {
-    "mass_min_kg": 500,
+    "mass_min_kg": 226.8,
     "mass_max_kg": 1000,
     "dims_max_cm": {
       "length": 60,
@@ -451,7 +451,7 @@ export const travelling: Snapshot = {
     }
   ],
   "limits": {
-    "mass_min_kg": 500,
+    "mass_min_kg": 226.8,
     "mass_max_kg": 1000,
     "dims_max_cm": {
       "length": 60,
@@ -718,7 +718,7 @@ export const fault_shift: Snapshot = {
     }
   ],
   "limits": {
-    "mass_min_kg": 500,
+    "mass_min_kg": 226.8,
     "mass_max_kg": 1000,
     "dims_max_cm": {
       "length": 60,

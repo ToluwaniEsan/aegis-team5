@@ -27,7 +27,7 @@ def test_real_config_loads():
     settings = load_settings(REAL_CONFIG)
     assert isinstance(settings, Settings)
     assert settings.version == 1
-    assert settings.payload.mass_min_kg == 500
+    assert settings.payload.mass_min_kg == 226.8
     assert settings.payload.mass_max_kg == 1000
     assert settings.timing.command_timeout_s == 5.0
     assert [p.id for p in settings.places] == [
