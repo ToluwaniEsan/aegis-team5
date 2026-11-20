@@ -508,3 +508,83 @@ async def test_OI_012_replayed_older_route_event_does_not_replace_new_navigation
         make("backlog.batch", "vehicle.event_buffer", {"events": [old_block]}, clock)
     )
     assert [p.model_dump() for p in monitor.route()] == NAV["route"]
+
+
+def blocked_message(clock, reason, route):
+    return make(
+        "nav.route_blocked",
+        "team2.nav",
+        {
+            "reason": reason,
+            "blocked_at": {"lat": 34, "lon": -86},
+            "new_route": route,
+            "new_eta_s": 150,
+        },
+        clock,
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("replayed", [False, True])
+@pytest.mark.parametrize("expired", [False, True])
+@pytest.mark.parametrize("later_nav", [False, True])
+async def test_OI_012_older_blocked_event_cannot_replace_newer_notice_or_route(
+    harness, replayed, expired, later_nav
+):
+    monitor, bus, clock, cfg, log, _ = harness
+    await bus.inject(make("nav.state", "team2.nav", NAV, clock))
+    clock.advance(1)
+    older = blocked_message(clock, "Older obstruction", [{"lat": 34.1, "lon": -86}])
+    clock.advance(1)
+    newer_route = [{"lat": 34.8, "lon": -85.5}]
+    newer = blocked_message(clock, "Newer obstruction", newer_route)
+    await bus.inject(newer)
+    if expired:
+        clock.advance(cfg.timing.route_blocked_clear_s)
+        assert monitor.blocked() is None
+        # A later navigation status also removes the route override; the event
+        # ordering watermark must survive both changes.
+        if later_nav:
+            newer_route = [{"lat": 34.9, "lon": -85.4}]
+            await bus.inject(
+                make("nav.state", "team2.nav", {**NAV, "route": newer_route}, clock)
+            )
+    else:
+        assert monitor.blocked().reason == "Newer obstruction"
+    before = len([r for r in log.of("state.change") if r.get("group") == "nav.blocked"])
+    if replayed:
+        await bus.inject(
+            make("backlog.batch", "vehicle.event_buffer", {"events": [older]}, clock)
+        )
+    else:
+        await bus.inject(older)
+    assert [p.model_dump() for p in monitor.route()] == newer_route
+    if expired:
+        assert monitor.blocked() is None
+    else:
+        assert monitor.blocked().reason == "Newer obstruction"
+    assert (
+        len([r for r in log.of("state.change") if r.get("group") == "nav.blocked"])
+        == before
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("expire_first", [False, True])
+async def test_OI_012_consecutive_detours_capture_displayed_route(
+    harness, expire_first
+):
+    monitor, bus, clock, cfg, _, _ = harness
+    await bus.inject(make("nav.state", "team2.nav", NAV, clock))
+    clock.advance(1)
+    first_route = [{"lat": 34.5, "lon": -85.5}]
+    await bus.inject(blocked_message(clock, "First", first_route))
+    if expire_first:
+        clock.advance(cfg.timing.route_blocked_clear_s)
+        assert monitor.blocked() is None
+    else:
+        clock.advance(1)
+    second_route = [{"lat": 34.8, "lon": -85.2}]
+    await bus.inject(blocked_message(clock, "Second", second_route))
+    assert [p.model_dump() for p in monitor.blocked().old_route] == first_route
+    assert [p.model_dump() for p in monitor.route()] == second_route

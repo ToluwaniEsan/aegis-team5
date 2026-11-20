@@ -67,6 +67,7 @@ class StatusMonitor:
         self._last_link_received: datetime | None = None
         self._blocked: BlockedRoute | None = None
         self._blocked_at: datetime | None = None
+        self._last_blocked_event_at: datetime | None = None
         self._route_override: list[LatLon] | None = None
         self._route_override_at: datetime | None = None
         self.delivery: DeliverySummary | None = None
@@ -124,28 +125,30 @@ class StatusMonitor:
                     self._route_override = None
                     self._route_override_at = None
         elif env.type == "nav.route_blocked":
+            if (
+                self._last_blocked_event_at is not None
+                and env.sent_at <= self._last_blocked_event_at
+            ):
+                return
             previous = self.latest.get("nav.state")
-            old_route = (
-                []
-                if previous is None
-                else [LatLon(**p.model_dump()) for p in previous.body.route]
-            )
-            self._blocked = BlockedRoute(
+            blocked = BlockedRoute(
                 reason=env.body.reason,
                 at=LatLon(**env.body.blocked_at.model_dump()),
-                old_route=old_route,
+                old_route=self.route(),
                 new_eta_s=env.body.new_eta_s,
                 since=format_timestamp(env.sent_at),
             )
+            self.log.record(
+                "state.change", group="nav.blocked", env=env.model_dump(mode="json")
+            )
+            self._blocked = blocked
             self._blocked_at = env.sent_at
+            self._last_blocked_event_at = env.sent_at
             if previous is None or env.sent_at >= previous.sent_at:
                 self._route_override = [
                     LatLon(**p.model_dump()) for p in env.body.new_route
                 ]
                 self._route_override_at = env.sent_at
-            self.log.record(
-                "state.change", group="nav.blocked", env=env.model_dump(mode="json")
-            )
         elif env.type == "payload.delivered":
             if env.msg_id not in self._delivery_order:
                 received = self.clock.now()
