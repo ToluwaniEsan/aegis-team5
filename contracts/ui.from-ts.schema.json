@@ -1,0 +1,921 @@
+{
+  "$ref": "#/definitions/Snapshot",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "AlertView": {
+      "additionalProperties": false,
+      "properties": {
+        "acknowledged": {
+          "type": "boolean"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "alert_id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "raised_at": {
+          "type": "string"
+        },
+        "recommended_action": {
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/definitions/Severity"
+        },
+        "source": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "alert_id",
+        "code",
+        "severity",
+        "title",
+        "source",
+        "recommended_action",
+        "raised_at",
+        "acknowledged",
+        "active"
+      ],
+      "type": "object"
+    },
+    "CommandName": {
+      "enum": [
+        "assign_mission",
+        "start_queued_mission",
+        "remove_queued_mission",
+        "abort",
+        "return_to_origin",
+        "change_destination",
+        "update_payload",
+        "release",
+        "ack_fault",
+        "estop"
+      ],
+      "type": "string"
+    },
+    "CommandState": {
+      "enum": [
+        "SENT",
+        "RECEIVED",
+        "COMPLETED",
+        "FAILED"
+      ],
+      "type": "string"
+    },
+    "CommandView": {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "$ref": "#/definitions/CommandName"
+        },
+        "command_id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sent_at": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/definitions/CommandState"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command_id",
+        "command",
+        "label",
+        "state",
+        "reason",
+        "sent_at",
+        "updated_at"
+      ],
+      "type": "object"
+    },
+    "DeliverySummary": {
+      "additionalProperties": false,
+      "properties": {
+        "confirm_latency_s": {
+          "type": "number"
+        },
+        "confirmed_at": {
+          "type": "string"
+        },
+        "destination": {
+          "$ref": "#/definitions/Place"
+        },
+        "energy_used_wh": {
+          "type": "number"
+        },
+        "mass_kg": {
+          "type": "number"
+        },
+        "mission_id": {
+          "type": "string"
+        },
+        "payload_id": {
+          "type": "string"
+        },
+        "released_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mission_id",
+        "payload_id",
+        "destination",
+        "released_at",
+        "confirmed_at",
+        "confirm_latency_s",
+        "mass_kg",
+        "energy_used_wh"
+      ],
+      "type": "object"
+    },
+    "Dims": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "type": "number"
+        },
+        "length": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "length",
+        "width",
+        "height"
+      ],
+      "type": "object"
+    },
+    "Health": {
+      "enum": [
+        "OK",
+        "WARN",
+        "FAULT",
+        "UNKNOWN"
+      ],
+      "type": "string"
+    },
+    "LatLon": {
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "lon": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "type": "object"
+    },
+    "LinkState": {
+      "enum": [
+        "CONNECTED",
+        "DEGRADED",
+        "LOST"
+      ],
+      "type": "string"
+    },
+    "LinkView": {
+      "additionalProperties": false,
+      "properties": {
+        "age_s": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "latency_ms": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "loss_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "stale": {
+          "type": "boolean"
+        },
+        "state": {
+          "$ref": "#/definitions/LinkState"
+        },
+        "updated_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "age_s",
+        "latency_ms",
+        "loss_pct",
+        "stale",
+        "state",
+        "updated_at"
+      ],
+      "type": "object"
+    },
+    "Mission": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "declared_mass_kg": {
+          "type": "number"
+        },
+        "destination": {
+          "$ref": "#/definitions/Place"
+        },
+        "dims_cm": {
+          "$ref": "#/definitions/Dims"
+        },
+        "mission_id": {
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/definitions/Place"
+        },
+        "payload_id": {
+          "type": "string"
+        },
+        "prerelease_authorized": {
+          "type": "boolean"
+        },
+        "priority": {
+          "$ref": "#/definitions/Priority"
+        },
+        "status": {
+          "$ref": "#/definitions/MissionStatus"
+        }
+      },
+      "required": [
+        "mission_id",
+        "payload_id",
+        "status",
+        "origin",
+        "destination",
+        "priority",
+        "declared_mass_kg",
+        "dims_cm",
+        "prerelease_authorized",
+        "created_at"
+      ],
+      "type": "object"
+    },
+    "MissionStatus": {
+      "enum": [
+        "QUEUED",
+        "ASSIGNED",
+        "ACTIVE",
+        "COMPLETE",
+        "ABORTED"
+      ],
+      "type": "string"
+    },
+    "NavView": {
+      "additionalProperties": false,
+      "properties": {
+        "age_s": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "blocked": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "at": {
+                  "$ref": "#/definitions/LatLon"
+                },
+                "new_eta_s": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "old_route": {
+                  "items": {
+                    "$ref": "#/definitions/LatLon"
+                  },
+                  "type": "array"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "since": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "reason",
+                "at",
+                "old_route",
+                "new_eta_s",
+                "since"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Place"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eta_s": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "moving": {
+          "type": "boolean"
+        },
+        "origin": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Place"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/LatLon"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "progress_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "route": {
+          "items": {
+            "$ref": "#/definitions/LatLon"
+          },
+          "type": "array"
+        },
+        "speed_mps": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "stale": {
+          "type": "boolean"
+        },
+        "updated_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "age_s",
+        "blocked",
+        "destination",
+        "eta_s",
+        "moving",
+        "origin",
+        "position",
+        "progress_pct",
+        "route",
+        "speed_mps",
+        "stale",
+        "updated_at"
+      ],
+      "type": "object"
+    },
+    "OverallHealth": {
+      "enum": [
+        "NOMINAL",
+        "DEGRADED",
+        "FAULT"
+      ],
+      "type": "string"
+    },
+    "PayloadState": {
+      "enum": [
+        "EMPTY",
+        "LOADED",
+        "SECURED",
+        "TRAVELLING",
+        "AT_DESTINATION",
+        "RELEASED",
+        "DELIVERED",
+        "RETURNING",
+        "HELD"
+      ],
+      "type": "string"
+    },
+    "PayloadView": {
+      "additionalProperties": false,
+      "properties": {
+        "age_s": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "departure_permitted": {
+          "type": "boolean"
+        },
+        "departure_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "held_from": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/PayloadState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "mass_kg": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "payload_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prerelease_authorized": {
+          "type": "boolean"
+        },
+        "release_energy_wh": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "secured": {
+          "type": "boolean"
+        },
+        "sensor_health": {
+          "$ref": "#/definitions/Health"
+        },
+        "sensors": {
+          "additionalProperties": false,
+          "properties": {
+            "load_cell": {
+              "$ref": "#/definitions/Health"
+            },
+            "lock": {
+              "$ref": "#/definitions/Health"
+            },
+            "shift": {
+              "$ref": "#/definitions/Health"
+            }
+          },
+          "required": [
+            "load_cell",
+            "lock",
+            "shift"
+          ],
+          "type": "object"
+        },
+        "shift_cm": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "stale": {
+          "type": "boolean"
+        },
+        "state": {
+          "$ref": "#/definitions/PayloadState"
+        },
+        "updated_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "age_s",
+        "departure_permitted",
+        "departure_reason",
+        "held_from",
+        "locked",
+        "mass_kg",
+        "payload_id",
+        "prerelease_authorized",
+        "release_energy_wh",
+        "secured",
+        "sensor_health",
+        "sensors",
+        "shift_cm",
+        "stale",
+        "state",
+        "updated_at"
+      ],
+      "type": "object"
+    },
+    "Permission": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "needs_confirmation": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "allowed",
+        "reason",
+        "needs_confirmation"
+      ],
+      "type": "object"
+    },
+    "Place": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lon": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "lat",
+        "lon",
+        "name"
+      ],
+      "type": "object"
+    },
+    "Priority": {
+      "enum": [
+        "ROUTINE",
+        "PRIORITY",
+        "URGENT"
+      ],
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "CRITICAL",
+        "WARNING",
+        "CAUTION"
+      ],
+      "type": "string"
+    },
+    "Snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "alerts": {
+          "items": {
+            "$ref": "#/definitions/AlertView"
+          },
+          "type": "array"
+        },
+        "allowed": {
+          "additionalProperties": false,
+          "properties": {
+            "abort": {
+              "$ref": "#/definitions/Permission"
+            },
+            "ack_fault": {
+              "$ref": "#/definitions/Permission"
+            },
+            "assign_mission": {
+              "$ref": "#/definitions/Permission"
+            },
+            "change_destination": {
+              "$ref": "#/definitions/Permission"
+            },
+            "estop": {
+              "$ref": "#/definitions/Permission"
+            },
+            "release": {
+              "$ref": "#/definitions/Permission"
+            },
+            "remove_queued_mission": {
+              "$ref": "#/definitions/Permission"
+            },
+            "return_to_origin": {
+              "$ref": "#/definitions/Permission"
+            },
+            "start_queued_mission": {
+              "$ref": "#/definitions/Permission"
+            },
+            "update_payload": {
+              "$ref": "#/definitions/Permission"
+            }
+          },
+          "required": [
+            "assign_mission",
+            "start_queued_mission",
+            "remove_queued_mission",
+            "abort",
+            "return_to_origin",
+            "change_destination",
+            "update_payload",
+            "release",
+            "ack_fault",
+            "estop"
+          ],
+          "type": "object"
+        },
+        "commands": {
+          "items": {
+            "$ref": "#/definitions/CommandView"
+          },
+          "type": "array"
+        },
+        "delivery": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/DeliverySummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "estop_active": {
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "snapshot",
+          "type": "string"
+        },
+        "limits": {
+          "additionalProperties": false,
+          "properties": {
+            "dims_max_cm": {
+              "$ref": "#/definitions/Dims"
+            },
+            "mass_max_kg": {
+              "type": "number"
+            },
+            "mass_min_kg": {
+              "type": "number"
+            },
+            "release_energy_wh_max": {
+              "type": "number"
+            },
+            "stale_after_s": {
+              "type": "number"
+            },
+            "unsecured_shift_cm": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "mass_min_kg",
+            "mass_max_kg",
+            "dims_max_cm",
+            "stale_after_s",
+            "unsecured_shift_cm",
+            "release_energy_wh_max"
+          ],
+          "type": "object"
+        },
+        "link": {
+          "$ref": "#/definitions/LinkView"
+        },
+        "mission": {
+          "additionalProperties": false,
+          "properties": {
+            "active": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Mission"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "next_ids": {
+              "additionalProperties": false,
+              "properties": {
+                "mission_id": {
+                  "type": "string"
+                },
+                "payload_id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "mission_id",
+                "payload_id"
+              ],
+              "type": "object"
+            },
+            "queue": {
+              "items": {
+                "$ref": "#/definitions/Mission"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "active",
+            "queue",
+            "next_ids"
+          ],
+          "type": "object"
+        },
+        "nav": {
+          "$ref": "#/definitions/NavView"
+        },
+        "payload": {
+          "$ref": "#/definitions/PayloadView"
+        },
+        "places": {
+          "items": {
+            "$ref": "#/definitions/Place"
+          },
+          "type": "array"
+        },
+        "seq": {
+          "type": "number"
+        },
+        "server_time": {
+          "type": "string"
+        },
+        "test_mode": {
+          "type": "boolean"
+        },
+        "vehicle_health": {
+          "additionalProperties": false,
+          "properties": {
+            "overall": {
+              "$ref": "#/definitions/OverallHealth"
+            },
+            "subsystems": {
+              "items": {
+                "$ref": "#/definitions/Subsystem"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "overall",
+            "subsystems"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "kind",
+        "seq",
+        "server_time",
+        "test_mode",
+        "link",
+        "vehicle_health",
+        "payload",
+        "nav",
+        "mission",
+        "commands",
+        "allowed",
+        "alerts",
+        "estop_active",
+        "delivery",
+        "places",
+        "limits"
+      ],
+      "type": "object"
+    },
+    "Subsystem": {
+      "additionalProperties": false,
+      "properties": {
+        "age_s": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        },
+        "key": {
+          "enum": [
+            "power",
+            "mobility",
+            "navigation",
+            "comms",
+            "payload_sensors"
+          ],
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "stale": {
+          "type": "boolean"
+        },
+        "status": {
+          "$ref": "#/definitions/Health"
+        },
+        "team": {
+          "enum": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "type": "number"
+        },
+        "updated_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "age_s",
+        "detail",
+        "key",
+        "label",
+        "stale",
+        "status",
+        "team",
+        "updated_at"
+      ],
+      "type": "object"
+    }
+  }
+}

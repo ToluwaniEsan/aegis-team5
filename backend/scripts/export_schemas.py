@@ -16,6 +16,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from aegis.common.models import ENVELOPE_ADAPTER
+from aegis.common.ui_models import Snapshot
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTRACTS_DIR = REPO_ROOT / "contracts"
@@ -29,9 +30,22 @@ def messages_schema() -> dict:
     return schema
 
 
-# File name -> schema builder. Emmanuel adds "ui.schema.json" here (B13).
+def ui_schema() -> dict:
+    return Snapshot.model_json_schema()
+
+
+def export_ui_schema() -> Path:
+    """Write contracts/ui.schema.json (kept for Emmanuel's existing test)."""
+    destination = Path(__file__).resolve().parents[2] / "contracts" / "ui.schema.json"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(render(ui_schema()), encoding="utf-8")
+    return destination
+
+
+# File name -> schema builder.
 SCHEMAS: dict[str, Callable[[], dict]] = {
     "messages.schema.json": messages_schema,
+    "ui.schema.json": ui_schema,
 }
 
 
