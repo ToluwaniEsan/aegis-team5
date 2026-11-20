@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+import pytest_asyncio
 
 from aegis.common.clock import ManualClock
 from aegis.common.config import load_settings
@@ -11,8 +12,8 @@ from aegis.ground.status_monitor import StatusMonitor
 from tests.fakes import FAKE_START, FakeBus, FakeLog
 
 
-@pytest.fixture
-def harness(tmp_path):
+@pytest_asyncio.fixture
+async def harness(tmp_path):
     clock = ManualClock(FAKE_START)
     cfg = load_settings()
     cfg = cfg.model_copy(
@@ -21,7 +22,38 @@ def harness(tmp_path):
     log = FakeLog(clock=clock)
     bus = FakeBus("ground", clock, log)
     status = StatusMonitor(bus, clock, cfg, log, lambda _: None)
-    manager = CommandManager(bus, clock, cfg, log, status)
+    manager = CommandManager(bus, clock, cfg, log, status, alerts_for=lambda: [])
+    await set_status(bus, clock, "EMPTY")
+    await bus.inject(
+        make(
+            "nav.state",
+            "team2.nav",
+            {
+                "moving": False,
+                "speed_mps": 0,
+                "position": {"lat": 34, "lon": -86},
+                "at_destination": True,
+                "at_origin": False,
+                "eta_s": 0,
+                "progress_pct": 100,
+                "route": [],
+                "health": "OK",
+            },
+            clock,
+        )
+    )
+    await bus.inject(
+        make(
+            "link.health",
+            "team3.link",
+            {
+                "state": "CONNECTED",
+                "latency_ms": 80,
+                "loss_pct": 0,
+            },
+            clock,
+        )
+    )
     yield manager, status, bus, clock, cfg, log
     manager.close()
 
@@ -51,9 +83,35 @@ async def settle():
     await asyncio.sleep(0)
 
 
+async def set_status(bus, clock, state, mission_id=None):
+    clock.advance(0.001)
+    await bus.inject(
+        make(
+            "payload.status",
+            "vehicle.payload_controller",
+            {
+                "state": state,
+                "held_from": "TRAVELLING" if state == "HELD" else None,
+                "secured": state not in {"EMPTY", "HELD"},
+                "locked": state != "EMPTY",
+                "mass_kg": None if state == "EMPTY" else 742,
+                "shift_cm": 0,
+                "release_energy_wh": None,
+                "sensors": {"load_cell": "OK", "lock": "OK", "shift": "OK"},
+                "prerelease_authorized": False,
+                "departure_permitted": False,
+                "departure_reason": "Not ready",
+                "mission_id": mission_id,
+            },
+            clock,
+        )
+    )
+
+
 @pytest.mark.asyncio
 async def test_OI_009_command_fails_after_timeout_and_is_not_resent(harness):
     manager, _, bus, clock, cfg, log = harness
+    await set_status(bus, clock, "AT_DESTINATION")
     res = await manager.handle(command("release", confirmed=True))
     await settle()
     clock.advance(cfg.timing.command_timeout_s)
@@ -68,6 +126,7 @@ async def test_OI_009_command_fails_after_timeout_and_is_not_resent(harness):
 @pytest.mark.asyncio
 async def test_OI_006_status_change_visible_within_2s(harness):
     manager, _, bus, clock, _, _ = harness
+    await set_status(bus, clock, "TRAVELLING")
     res = await manager.handle(command("abort", confirmed=True))
     env = bus.last("cmd.abort")
     await bus.inject(make_ack(env, "vehicle.payload_controller", "RECEIVED", clock))
@@ -80,7 +139,8 @@ async def test_OI_006_status_change_visible_within_2s(harness):
 
 @pytest.mark.asyncio
 async def test_OI_003_risky_command_refused_without_confirmation(harness):
-    manager, _, bus, _, _, _ = harness
+    manager, _, bus, clock, _, _ = harness
+    await set_status(bus, clock, "AT_DESTINATION")
     result = await manager.handle(command("release"))
     assert not result.accepted and result.reason == "Confirmation required"
     assert not bus.sent("cmd.release")
@@ -107,6 +167,7 @@ async def test_OI_015_queued_mission_never_starts_on_its_own(harness):
     )
     assert manager.active is None and manager.queue[0] == queued
     assert len(bus.sent("cmd.assign_mission")) == 1
+    await set_status(bus, clock, "DELIVERED", manager.queue[0].mission_id)
     started = await manager.handle(
         command("start_queued_mission", {"mission_id": queued.mission_id}, True)
     )
@@ -146,6 +207,7 @@ async def test_OI_019_estop_sent_with_priority_0_to_all_three(harness):
 @pytest.mark.asyncio
 async def test_OI_006_replayed_and_direct_ack_deduplicate(harness):
     manager, _, bus, clock, _, log = harness
+    await set_status(bus, clock, "AT_DESTINATION")
     result = await manager.handle(command("release", confirmed=True))
     env = bus.last("cmd.release")
     ack = make_ack(env, "vehicle.payload_controller", "COMPLETED", clock)
@@ -159,7 +221,9 @@ async def test_OI_006_replayed_and_direct_ack_deduplicate(harness):
 
 @pytest.mark.asyncio
 async def test_AEG_512_payload_limits_rejected_without_send(harness):
-    manager, _, bus, _, cfg, _ = harness
+    manager, _, bus, clock, cfg, _ = harness
+    await manager.handle(command("assign_mission", mission_args()))
+    await set_status(bus, clock, "SECURED", manager.active.mission_id)
     args = {
         "declared_mass_kg": cfg.payload.mass_max_kg + 1,
         "dims_cm": {"length": 1, "width": 1, "height": 1},
@@ -184,6 +248,7 @@ async def test_OI_006_multiple_envelopes_require_each_recipient(harness):
 @pytest.mark.asyncio
 async def test_OI_009_received_command_fails_after_completion_timeout(harness):
     manager, _, bus, clock, cfg, _ = harness
+    await set_status(bus, clock, "AT_DESTINATION")
     result = await manager.handle(command("release", confirmed=True))
     await settle()
     await bus.inject(
@@ -231,6 +296,7 @@ async def test_OI_015_replayed_delivery_completes_mission_and_retains_destinatio
 async def test_AEG_512_update_changes_mission_only_after_completion(harness):
     manager, _, bus, clock, _, _ = harness
     await manager.handle(command("assign_mission", mission_args()))
+    await set_status(bus, clock, "SECURED", manager.active.mission_id)
     result = await manager.handle(
         command(
             "update_payload",
@@ -251,6 +317,7 @@ async def test_AEG_512_update_changes_mission_only_after_completion(harness):
 @pytest.mark.asyncio
 async def test_OI_009_rejection_calls_failure_alert_hook(harness):
     manager, _, bus, clock, _, _ = harness
+    await set_status(bus, clock, "AT_DESTINATION")
     failures = []
 
     async def on_failure(view):
@@ -270,3 +337,100 @@ async def test_OI_009_rejection_calls_failure_alert_hook(harness):
     )
     assert manager.commands[result.command_id].state == "FAILED"
     assert failures[0].reason == "Vehicle is moving"
+
+
+@pytest.mark.asyncio
+async def test_OI_004_real_permissions_refuse_moving_release_without_publish(harness):
+    manager, _, bus, clock, _, _ = harness
+    await set_status(bus, clock, "AT_DESTINATION")
+    clock.advance(0.001)
+    await bus.inject(
+        make(
+            "nav.state",
+            "team2.nav",
+            {
+                "moving": True,
+                "speed_mps": 2,
+                "position": {"lat": 34, "lon": -86},
+                "at_destination": False,
+                "at_origin": False,
+                "eta_s": 5,
+                "progress_pct": 50,
+                "route": [],
+                "health": "OK",
+            },
+            clock,
+        )
+    )
+    before = list(bus.published)
+    result = await manager.handle(command("release", confirmed=True))
+    assert not result.accepted and result.reason == "Vehicle is moving"
+    assert bus.published == before
+
+
+@pytest.mark.asyncio
+async def test_OI_004_real_permissions_refuse_held_payload_commands(harness):
+    manager, _, bus, clock, _, _ = harness
+    await set_status(bus, clock, "HELD")
+    before = list(bus.published)
+    result = await manager.handle(command("abort", confirmed=True))
+    assert not result.accepted and "held" in result.reason.lower()
+    assert bus.published == before
+
+
+@pytest.mark.asyncio
+async def test_OI_003_real_permissions_allow_confirmed_release(harness):
+    manager, _, bus, clock, _, _ = harness
+    await set_status(bus, clock, "AT_DESTINATION")
+    before = list(bus.published)
+    refused = await manager.handle(command("release"))
+    assert not refused.accepted and refused.reason == "Confirmation required"
+    assert bus.published == before
+    accepted = await manager.handle(command("release", confirmed=True))
+    assert accepted.accepted and bus.last("cmd.release").msg_id
+
+
+@pytest.mark.asyncio
+async def test_OI_019_estop_survives_missing_status_and_alert_source(harness):
+    manager, status, bus, _, _, _ = harness
+    status.latest.clear()
+    manager.alerts_for = None
+    before = list(bus.published)
+    assert not (await manager.handle(command("release", confirmed=True))).accepted
+    assert bus.published == before
+    accepted = await manager.handle(command("estop"))
+    assert accepted.accepted
+    assert bus.last("cmd.estop").priority == 0
+    assert set(bus.last("cmd.estop").dst) == {
+        "vehicle.payload_controller",
+        "team2.nav",
+        "team4.power",
+    }
+
+
+@pytest.mark.asyncio
+async def test_OI_004_missing_alert_source_and_critical_alert_block_release(harness):
+    from aegis.common.ui_models import AlertView
+
+    manager, _, bus, clock, _, _ = harness
+    await set_status(bus, clock, "AT_DESTINATION")
+    manager.alerts_for = None
+    before = list(bus.published)
+    result = await manager.handle(command("release", confirmed=True))
+    assert not result.accepted and result.reason == "Alert status unavailable"
+    assert bus.published == before
+    alert = AlertView(
+        alert_id="alert",
+        code="ESTOP_ACTIVE",
+        severity="CRITICAL",
+        title="Stop",
+        source="Payload",
+        recommended_action="Check",
+        raised_at="2026-11-19T12:00:00.000Z",
+        acknowledged=False,
+        active=True,
+    )
+    manager.alerts_for = lambda: [alert]
+    result = await manager.handle(command("release", confirmed=True))
+    assert not result.accepted and result.reason == "A critical fault is active"
+    assert bus.published == before

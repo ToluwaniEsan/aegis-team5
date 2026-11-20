@@ -12,7 +12,15 @@ from pydantic import ValidationError
 
 from aegis.common.envelope import make, parse
 from aegis.common.models import AssignMission, Dims, Envelope, format_timestamp
-from aegis.common.ui_models import CommandResult, CommandView, Mission, NextIds, Place
+from aegis.common.ui_models import (
+    AlertView,
+    CommandResult,
+    CommandView,
+    Mission,
+    NextIds,
+    Place,
+)
+from aegis.ground.permissions import permissions
 
 if TYPE_CHECKING:
     from aegis.bus.local_bus import LocalBus
@@ -22,22 +30,11 @@ if TYPE_CHECKING:
     from aegis.ground.status_monitor import StatusMonitor
 
 
-CONFIRM = frozenset(
-    {
-        "start_queued_mission",
-        "abort",
-        "return_to_origin",
-        "change_destination",
-        "release",
-    }
-)
-
-
 class CommandManager:
     """Own commands and missions; injected hooks connect later ground components.
 
-    With no permission hook, the handoff's temporary allow-all stub is used.
     Failure alerts are retained until an Alert Manager hook is installed.
+    Release and fault acknowledgement require an alert source from B11.
     """
 
     def __init__(
@@ -48,7 +45,7 @@ class CommandManager:
         log: MissionLog,
         status: StatusMonitor,
         *,
-        permission_for: Callable | None = None,
+        alerts_for: Callable[[], list[AlertView]] | None = None,
         on_failure: Callable[[CommandView], Awaitable[None]] | None = None,
         ack_ground_alert: Callable[[str], Awaitable[bool]] | None = None,
     ) -> None:
@@ -59,7 +56,7 @@ class CommandManager:
             log,
             status,
         )
-        self.permission_for = permission_for
+        self.alerts_for = alerts_for
         self.on_failure = on_failure
         self.ack_ground_alert = ack_ground_alert
         self.active: Mission | None = None
@@ -148,16 +145,32 @@ class CommandManager:
             )
 
         name, args = request.command, request.args
-        if self.permission_for is not None and name != "estop":
-            permission = self.permission_for(name)
+        if name != "estop":
+            payload = self.status.payload_view()
+            if payload is None:
+                return result(False, reason="Payload status unavailable")
+            if (
+                name in {"release", "update_payload"}
+                and self.status.freshness("nav.state").updated_at is None
+            ):
+                return result(False, reason="Navigation status unavailable")
+            if name in {"release", "ack_fault"} and self.alerts_for is None:
+                return result(False, reason="Alert status unavailable")
+            permission = permissions(
+                payload,
+                self.status.nav_view(),
+                self.status.link_view(),
+                self.alerts_for() if self.alerts_for is not None else [],
+                self.active,
+                self.queue,
+                self.cfg,
+            )[name]
             if not permission.allowed:
                 return result(
                     False, reason=permission.reason or "Command not permitted"
                 )
             if permission.needs_confirmation and not request.confirmed:
                 return result(False, reason="Confirmation required")
-        if name in CONFIRM and not request.confirmed:
-            return result(False, reason="Confirmation required")
         try:
             if name == "assign_mission":
                 mass, dims = self._validate_load(args)
