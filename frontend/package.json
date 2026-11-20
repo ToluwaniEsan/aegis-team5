@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/generate-fixtures.mjs && tsc --noEmit && vite build",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:layout": "playwright test"
+    "test:layout": "playwright test",
+    "schema": "ts-json-schema-generator --path src/contracts/ui.ts --type Snapshot --out ../contracts/ui.from-ts.schema.json"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.6",
@@ -29,6 +30,7 @@
     "eslint": "^9.39.1",
     "jsdom": "^26.1.0",
     "prettier": "^3.8.1",
+    "ts-json-schema-generator": "^2.10.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.3",
     "vite": "^7.2.2",
