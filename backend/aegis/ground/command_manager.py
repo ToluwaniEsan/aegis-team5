@@ -49,6 +49,7 @@ class CommandManager:
         alerts_for: Callable[[], list[AlertView]] | None = None,
         on_failure: Callable[[CommandView], Awaitable[None]] | None = None,
         ack_ground_alert: Callable[[str], Awaitable[bool]] | None = None,
+        on_fault_ack: Callable[[str], Awaitable[None]] | None = None,
     ) -> None:
         self.bus, self.clock, self.cfg, self.log, self.status = (
             bus,
@@ -61,6 +62,8 @@ class CommandManager:
         self.on_failure = on_failure
         self.on_change: Callable[[], None] | None = None
         self.ack_ground_alert = ack_ground_alert
+        self.on_fault_ack = on_fault_ack
+        self._ack_fault_commands: dict[str, str] = {}
         self.active: Mission | None = None
         self.queue: list[Mission] = []
         self.missions: dict[str, Mission] = {}
@@ -72,6 +75,7 @@ class CommandManager:
         self._seen_acks: set[UUID] = set()
         self._timers: dict[str, asyncio.Task] = {}
         self.failed_alerts: list[CommandView] = []
+        self._failure_notified: set[str] = set()
         self._ids_path = cfg.resolve(cfg.logging.dir) / "ids.json"
         self._ids_path.parent.mkdir(parents=True, exist_ok=True)
         self._counters = (
@@ -268,6 +272,11 @@ class CommandManager:
             if name == "ack_fault" and self.ack_ground_alert is not None:
                 if await self.ack_ground_alert(str(args.get("alert_id", ""))):
                     return result(True)
+                if self.alerts_for is not None and not any(
+                    a.alert_id == args.get("alert_id") and not a.acknowledged
+                    for a in self.alerts_for()
+                ):
+                    return result(False, reason="Alert is not unacknowledged")
             if name == "update_payload":
                 mass, dims = self._validate_load(args)
                 body = {"declared_mass_kg": mass, "dims_cm": dims.model_dump()}
@@ -292,7 +301,15 @@ class CommandManager:
             effect = None
             if self.active and name in {"change_destination", "update_payload"}:
                 effect = (self.active.mission_id, body)
-            return result(True, await self._send(name, [env], effect))
+            return result(
+                True,
+                await self._send(
+                    name,
+                    [env],
+                    effect,
+                    str(args.get("alert_id")) if name == "ack_fault" else None,
+                ),
+            )
         except (ValueError, ValidationError, TypeError) as exc:
             return result(False, reason=str(exc))
 
@@ -335,8 +352,11 @@ class CommandManager:
         name: str,
         envelopes: list[Envelope],
         effect: tuple[str, dict] | None = None,
+        ack_fault_id: str | None = None,
     ) -> str:
         command_id = str(envelopes[0].msg_id)
+        if ack_fault_id is not None:
+            self._ack_fault_commands[command_id] = ack_fault_id
         timestamp = format_timestamp(self.clock.now())
         view = CommandView(
             command_id=command_id,
@@ -374,6 +394,9 @@ class CommandManager:
         self, command_id: str, state: str, reason: str | None = None
     ) -> None:
         old = self.commands[command_id]
+        if old.state == "FAILED" and state == "FAILED":
+            await self._notify_failure(old)
+            return
         if old.state in {"FAILED", "COMPLETED"} or (
             old.state == state and old.reason == reason
         ):
@@ -389,8 +412,6 @@ class CommandManager:
         self._log_command(view)
         if state == "FAILED":
             self.failed_alerts.append(view)
-            if self.on_failure is not None:
-                await self.on_failure(view)
         if state in {"FAILED", "COMPLETED"}:
             task = self._timers.pop(command_id, None)
             if task is not None and task is not asyncio.current_task():
@@ -419,6 +440,16 @@ class CommandManager:
                         "mission.change", mission=mission.model_dump(mode="json")
                     )
                     self._notify_change()
+        if state == "FAILED":
+            await self._notify_failure(view)
+
+    async def _notify_failure(self, view: CommandView) -> None:
+        if (
+            self.on_failure is not None
+            and view.command_id not in self._failure_notified
+        ):
+            await self.on_failure(view)
+            self._failure_notified.add(view.command_id)
 
     async def _timeout(self, command_id: str) -> None:
         sent_at = self.commands[command_id].sent_at
@@ -457,10 +488,11 @@ class CommandManager:
             or (env.corr_id, env.src) not in self._recipients[command_id]
         ):
             return
-        self._seen_acks.add(env.msg_id)
         if env.body.result == "REJECTED":
             await self._transition(command_id, "FAILED", env.body.reason)
         elif env.body.result == "COMPLETED":
+            if command_id in self._ack_fault_commands and self.on_fault_ack is not None:
+                await self.on_fault_ack(self._ack_fault_commands[command_id])
             self._completed[command_id].add((env.corr_id, env.src))
             if self._completed[command_id] == self._recipients[command_id]:
                 await self._transition(command_id, "COMPLETED")
@@ -468,6 +500,7 @@ class CommandManager:
                 await self._transition(command_id, "RECEIVED")
         else:
             await self._transition(command_id, "RECEIVED")
+        self._seen_acks.add(env.msg_id)
 
     async def _report_mission(self, mission: Mission) -> None:
         self.log.record("mission.change", mission=mission.model_dump(mode="json"))

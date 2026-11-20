@@ -124,6 +124,38 @@ async def test_OI_009_command_fails_after_timeout_and_is_not_resent(harness):
 
 
 @pytest.mark.asyncio
+async def test_OI_013_failed_alert_callback_retries_without_duplicate_transition(
+    harness,
+):
+    manager, _, bus, clock, _, _ = harness
+    attempts = []
+
+    async def notify(view):
+        attempts.append(view.command_id)
+        if len(attempts) == 1:
+            raise RuntimeError("temporary notification failure")
+
+    manager.on_failure = notify
+    await set_status(bus, clock, "TRAVELLING")
+    result = await manager.handle(command("abort", confirmed=True))
+    env = bus.last("cmd.abort")
+    ack = make_ack(
+        env,
+        "vehicle.payload_controller",
+        "REJECTED",
+        clock,
+        reason_code="REJECTED",
+        reason="Refused",
+    )
+    with pytest.raises(RuntimeError, match="temporary"):
+        await manager.handle_ack(ack)
+    await manager.handle_ack(ack)
+    await manager.handle_ack(ack)
+    assert attempts == [result.command_id, result.command_id]
+    assert len(manager.failed_alerts) == 1
+
+
+@pytest.mark.asyncio
 async def test_OI_006_status_change_visible_within_2s(harness):
     manager, _, bus, clock, _, _ = harness
     await set_status(bus, clock, "TRAVELLING")
