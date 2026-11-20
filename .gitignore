@@ -29,3 +29,5 @@ htmlcov/
 
 # macOS
 .DS_Store
+# Generated accessibility evidence (retained as a CI artifact)
+/reports/grayscale/
