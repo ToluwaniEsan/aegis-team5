@@ -137,6 +137,84 @@ body {
 .panel-right {
   border-right: 0;
 }
+.panel-left {
+  overflow-y: auto;
+}
+.health-card {
+  margin-top: var(--s2);
+  padding: 10px var(--s3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-raised);
+}
+.health-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s1);
+  padding-bottom: 6px;
+}
+.health-header h2 {
+  margin: 0;
+  color: var(--text-label);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+}
+.health-overall,
+.health-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s1);
+  font-size: 11px;
+  font-weight: 600;
+}
+.health-overall {
+  justify-content: flex-end;
+  text-align: right;
+}
+.health-warn,
+.health-degraded {
+  color: var(--warning);
+}
+.health-fault {
+  color: var(--critical);
+}
+.health-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 66px minmax(0, 90px) 35px;
+  align-items: center;
+  gap: var(--s1);
+  min-height: 24px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.health-name,
+.health-detail {
+  overflow-wrap: anywhere;
+}
+.health-team {
+  color: var(--text-label);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.health-detail,
+.health-age {
+  text-align: right;
+  font: 11px var(--font-num);
+}
+.health-stale {
+  background: var(--stale-pattern);
+  color: var(--stale-text);
+}
+.health-stale .health-status,
+.health-stale .health-team {
+  color: var(--stale-text);
+}
+.health-stale-note {
+  margin: var(--s1) 0 0;
+  color: var(--stale-text);
+  font-size: 10px;
+}
 .payload-card {
   background: var(--panel-raised);
   border: 1px solid var(--line);
