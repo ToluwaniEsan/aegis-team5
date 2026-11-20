@@ -29,7 +29,7 @@ Source: [Team 5 design document (Senior Problems FA25)](https://docs.google.com/
 
 | ID | Setting | Value |
 |---|---|---|
-| AEG-501 / AEG-503 | Payload weight and size | Up to 227 kg (500 lb) ¹; 60 × 40 × 40 cm |
+| AEG-501 / AEG-503 | Payload weight and size | At least 227 kg (500 lb), up to 1,000 kg ¹; 60 × 40 × 40 cm |
 | AEG-502 | Unsecured shift threshold | 2.0 cm |
 | AEG-504 | Weight sensor accuracy | ±0.5 kg |
 | AEG-509 | Release energy | 3.2 Wh nominal, 5.0 Wh max |
@@ -40,7 +40,7 @@ Source: [Team 5 design document (Senior Problems FA25)](https://docs.google.com/
 | AEG-508 | Delivery confirmation | within 10 s |
 | ENV-002 | Screen size | 1366 × 768, no scrolling |
 
-¹ Corrected from 15–25 kg to 500 lb to match Operation IRON HAWK. **Open:** confirm the size limit and release energy with Team 4 for this weight.
+¹ Corrected from 15–25 kg to a 500 lb minimum (D-18) to match Operation IRON HAWK. **Open:** confirm the size limit and release energy with Team 4 for this weight.
 
 ## Open issues
 

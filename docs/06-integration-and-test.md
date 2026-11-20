@@ -47,7 +47,7 @@ Team 1 owns cross-team interfaces but has only answered "Python". Offer them our
 
 **Team 4 (Power & Mobility).** Simplest, so swap second.
 - **Questions:**
-  - Do you accept 500 to 1000 kg and 3.2 Wh nominal / 5.0 Wh max per release?
+  - Do you accept 226.8 kg (500 lb) to 1000 kg and 3.2 Wh nominal / 5.0 Wh max per release?
   - Is `power.status` with `battery_pct`, `est_range_km` and `drivetrain_health` at 1 Hz right?
   - Do you carry out the emergency stop when Team 2 commands it (A-07)?
   - Do you have a terrain or vibration profile?

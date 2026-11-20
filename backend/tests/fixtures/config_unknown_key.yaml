@@ -11,7 +11,7 @@ version: 1
 test_mode: true
 
 payload:
-  mass_min_kg: 500            # AEG-503 (Sprint 3 Design Decisions)
+  mass_min_kg: 226.8          # AEG-503: minimum 500 lb (226.8 kg)
   mass_max_kg: 1000           # AEG-501 (Sprint 3 Design Decisions)
   dims_max_cm:                # AEG-501
     length: 60

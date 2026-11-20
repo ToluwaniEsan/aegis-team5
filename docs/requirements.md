@@ -13,7 +13,7 @@ Check methods: **Test** = we measure it. **Demo** = we show it working. **Analys
 |---|---|---|---|---|---|---|---|
 | AEG-501 | Payload size and weight limit (60 × 40 × 40 cm) | Payload Controller | Team 4 | Test | | | Not started |
 | AEG-502 | Report payload shift (> 2.0 cm = unsecured) | Payload Simulator | Team 4 | Analysis, Test | | | Not started |
-| AEG-503 | Accept payloads up to 227 kg (500 lb) ¹ | Payload Controller | | Test | | | Not started |
+| AEG-503 | Accept payloads of at least 227 kg (500 lb), up to 1,000 kg ¹ | Payload Controller | | Test | | | Not started |
 | AEG-504 | Weight accurate to ±0.5 kg | Payload Simulator | | Test | | | Not started |
 | AEG-505 | Show secured status | Payload Simulator, Operator Screen | | Test | | | Prototyped (Sprint 3) |
 | AEG-506 | No release while moving | Payload Controller | Team 2 | Test | | | Not started |
@@ -26,7 +26,7 @@ Check methods: **Test** = we measure it. **Demo** = we show it working. **Analys
 | AEG-513 | Report payload faults | Alert Manager, Payload Controller | Team 1 | Test | | | Not started |
 | AEG-514 | Hold payload if link lost at destination | Payload Controller | Team 3 | Test | | | Not started |
 
-¹ Changed from 15–25 kg to 500 lb (227 kg) to match Operation IRON HAWK. Size limit and release energy still need confirming with Team 4 for this weight.
+¹ Changed from 15–25 kg to a 500 lb (227 kg) minimum to match Operation IRON HAWK (D-18). Size limit and release energy still need confirming with Team 4 for this weight.
 
 ## Operator Interface (OI)
 
