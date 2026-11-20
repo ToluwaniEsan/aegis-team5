@@ -1,0 +1,62 @@
+# Ownership follows HANDOFF-EMMANUEL.md and HANDOFF-ZIZWE.md.
+# The last matching pattern takes precedence.
+# Shared or otherwise unassigned files default to both builders.
+* @Aina316 @Zizwe27
+
+# Emmanuel: repository setup
+/backend/pyproject.toml @Aina316
+/.github/workflows/ci.yml @Aina316
+/CODEOWNERS @Aina316
+
+# Zizwe: shared message plumbing
+/backend/aegis/common/models.py @Zizwe27
+/backend/aegis/common/envelope.py @Zizwe27
+/backend/aegis/common/clock.py @Zizwe27
+/backend/aegis/common/config.py @Zizwe27
+
+# Emmanuel: screen protocol
+/backend/aegis/common/ui_models.py @Aina316
+
+# Zizwe: bus, vehicle and process launcher
+/backend/aegis/bus/ @Zizwe27
+/backend/aegis/vehicle/ @Zizwe27
+/backend/aegis/run_all.py @Zizwe27
+
+# Emmanuel: ground application, with Zizwe's exceptions below
+/backend/aegis/ground/ @Aina316
+/backend/aegis/ground/permissions.py @Zizwe27
+/backend/aegis/ground/heartbeat.py @Zizwe27
+/backend/aegis/ground/main.py @Aina316 @Zizwe27
+
+# Team stand-ins
+/backend/aegis/standins/team1.py @Aina316
+/backend/aegis/standins/link.py @Zizwe27
+/backend/aegis/standins/nav.py @Zizwe27
+/backend/aegis/standins/power.py @Zizwe27
+
+# Team adapters
+/backend/aegis/adapters/team1.py @Aina316
+/backend/aegis/adapters/team2.py @Zizwe27
+/backend/aegis/adapters/team3.py @Zizwe27
+/backend/aegis/adapters/team4.py @Zizwe27
+
+# Scenario runner and fault injection
+/backend/aegis/testing/scenario_runner.py @Aina316
+/backend/aegis/testing/fault_injector.py @Zizwe27
+/backend/scenarios/ @Aina316
+
+# Shared schema exporter
+/backend/scripts/export_schemas.py @Aina316 @Zizwe27
+
+# Tests: shared unless explicitly assigned
+/backend/tests/ @Aina316 @Zizwe27
+/backend/tests/fakes.py @Zizwe27
+/backend/tests/test_safety_properties.py @Zizwe27
+
+# Emmanuel: frontend and evidence tools
+/frontend/ @Aina316
+/tools/ @Aina316
+
+# Builder handoffs
+/HANDOFF-EMMANUEL.md @Aina316
+/HANDOFF-ZIZWE.md @Zizwe27
