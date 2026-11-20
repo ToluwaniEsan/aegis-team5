@@ -28,13 +28,13 @@ Questions found during work go at the bottom, under "Added during the build".
 
 | ID | Blocks | Question | Options | Recommended | Answer | Date |
 |---|---|---|---|---|---|---|
-| D-09 | start | GitHub usernames for both builders, for `CODEOWNERS` and branch protection? | (type them) | n/a | | |
-| D-10 | start | Assumption A-16: the payload can change only before departure. IRON HAWK makes the change before departure; a change mid-route is refused with a reason. Keep it? | Keep / Allow mid-route changes (contract change) | **Keep**, and be ready to defend it at the demo | | |
-| D-11 | start | Mission priorities `ROUTINE`, `PRIORITY`, `URGENT`. OK? | Accept / Change | **Accept** | | |
-| D-12 | start | Screen look: match `design/operator-screen-reference.png` exactly, one light theme, the ISA-101 palette in doc 05, no dark theme. OK? | Accept / Change before C0 | **Accept** | | |
-| D-13 | no | The four named places in `config.yaml` (FOB Alpha, Outpost Bravo, Outpost Charlie, Landing Zone Delta). Use them until Team 2 sends real waypoints? | Accept / Edit | **Accept** | | |
-| D-14 | no | The recommended-action texts in the fault catalog (contracts section 7). Review them now or at CDR? | Now / At CDR | **At CDR.** The texts are data and easy to change. | | |
-| D-15 | no | Who sends the interface sheet to Team 1, and by when? Team 1's answer shapes everything else. | Emmanuel / someone else | **Emmanuel, by day 1** | | |
+| D-09 | start | GitHub usernames for both builders, for `CODEOWNERS` and branch protection? | (type them) | n/a | Emmanuel: Aina316; Zizwe: Zizwe27 | 2026-11-19 |
+| D-10 | start | Assumption A-16: the payload can change only before departure. IRON HAWK makes the change before departure; a change mid-route is refused with a reason. Keep it? | Keep / Allow mid-route changes (contract change) | **Keep**, and be ready to defend it at the demo | Keep | 2026-11-19 |
+| D-11 | start | Mission priorities `ROUTINE`, `PRIORITY`, `URGENT`. OK? | Accept / Change | **Accept** | Accept | 2026-11-19 |
+| D-12 | start | Screen look: match `design/operator-screen-reference.png` exactly, one light theme, the ISA-101 palette in doc 05, no dark theme. OK? | Accept / Change before C0 | **Accept** | Accept | 2026-11-19 |
+| D-13 | no | The four named places in `config.yaml` (FOB Alpha, Outpost Bravo, Outpost Charlie, Landing Zone Delta). Use them until Team 2 sends real waypoints? | Accept / Edit | **Accept** | Accept | 2026-11-19 |
+| D-14 | no | The recommended-action texts in the fault catalog (contracts section 7). Review them now or at CDR? | Now / At CDR | **At CDR.** The texts are data and easy to change. | At CDR | 2026-11-19 |
+| D-15 | no | Who sends the interface sheet to Team 1, and by when? Team 1's answer shapes everything else. | Emmanuel / someone else | **Emmanuel, by day 1** | Emmanuel, by day 1 | 2026-11-19 |
 
 ## Both builders
 

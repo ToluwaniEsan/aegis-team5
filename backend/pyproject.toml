@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aegis-team5"
+version = "0.1.0"
+description = "Project AEGIS Team 5: Payload and Operator Interface"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2,<3",
+    "pyyaml",
+    "fastapi",
+    "uvicorn[standard]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "hypothesis",
+    "ruff",
+    "httpx",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aegis", "aegis.*"]
+namespaces = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "--junitxml=reports/pytest.xml"
+junit_family = "xunit2"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
