@@ -19,9 +19,9 @@ Questions found during work go at the bottom, under "Added during the build".
 | D-02 | start | Keep the proposed `payload.interlock` message to Team 2 (`departure_permitted`, 1 Hz)? Without it, AEG-511 can only detect a bad departure after it happens. | Keep and ask Team 2 to honor it / Drop | **Keep.** Our Team 2 stand-in honors it. | Keep | 2026-11-19 |
 | D-03 | start | Accept assumption A-17: all nodes share UTC within 0.5 s? The stale-command and future-timestamp checks depend on it. | Accept / Change the tolerance | **Accept.** The demo runs on one laptop; Team 1's environment uses NTP. | Accept | 2026-11-19 |
 | D-04 | start | With pre-authorized release and the link LOST at the destination, how long does the vehicle wait before releasing on its own? | 10 s / another value | **10 s** (`link.prerelease_wait_s`) | 10 s | 2026-11-19 |
-| D-05 | no | Simulated mechanism times: load 2 s, lock 3 s, release 4 s, re-weigh 1 s. OK? | Accept / Change in config | **Accept** | | |
-| D-06 | no | After an emergency stop is acknowledged, the Team 2 stand-in stays stopped until it gets a new command. OK until Team 2 defines restart? | Accept / Other | **Accept**, and ask Team 2 | | |
-| D-07 | no | For GEN-004 we show that a crashed Payload Controller leaves the payload locked. Restarting the controller is out of scope. OK? | Accept / Add restart | **Accept**, and say so at review | | |
+| D-05 | no | Simulated mechanism times: load 2 s, lock 3 s, release 4 s, re-weigh 1 s. OK? | Accept / Change in config | **Accept** | Accept | 2026-11-20 |
+| D-06 | no | After an emergency stop is acknowledged, the Team 2 stand-in stays stopped until it gets a new command. OK until Team 2 defines restart? | Accept / Other | **Accept**, and ask Team 2 | Accept | 2026-11-20 |
+| D-07 | no | For GEN-004 we show that a crashed Payload Controller leaves the payload locked. Restarting the controller is out of scope. OK? | Accept / Add restart | **Accept**, and say so at review | Accept | 2026-11-20 |
 | D-08 | no | Who sends the interface sheets (doc 06 section 1) to Teams 2, 3 and 4, and by when? | Zizwe / someone else | **Zizwe, by day 2.** He owns those adapters. | | |
 
 ## Emmanuel (ground application and Operator Screen)
@@ -40,7 +40,7 @@ Questions found during work go at the bottom, under "Added during the build".
 
 | ID | Blocks | Question | Options | Recommended | Answer | Date |
 |---|---|---|---|---|---|---|
-| D-16 | Phase 1 | Have Zizwe and Emmanuel read `docs/02-contracts.md` together and agreed to freeze it, along with `models.py`, `ui_models.py`, `ui.ts` and `config.yaml`? | Yes, frozen on (date) / Not yet | Do it by the end of day 2 (about 45 minutes) | | |
+| D-16 | Phase 1 | Have Zizwe and Emmanuel read `docs/02-contracts.md` together and agreed to freeze it, along with `models.py`, `ui_models.py`, `ui.ts` and `config.yaml`? | Yes, frozen on (date) / Not yet | Do it by the end of day 2 (about 45 minutes) | Not yet, build anyway | 2026-11-20 |
 | D-17 | no | Payload mass versus box size: 1,000 kg in a 60 × 40 × 40 cm box is about 10,400 kg/m³, which is denser than steel. Reviewers will ask about it. | Keep and explain / Bigger box / Lower max mass | **Keep the config values for now.** The team (Solomon) decides before CDR; it is a config change only. | | |
 
 ## Added during the build

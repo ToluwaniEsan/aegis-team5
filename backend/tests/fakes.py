@@ -129,3 +129,18 @@ class FakeBus:
 
     def clear(self) -> None:
         self.published.clear()
+
+
+async def settle(n: int = 20) -> None:
+    """Let ready tasks run. Yields to the event loop; never sleeps."""
+    import asyncio
+
+    for _ in range(n):
+        await asyncio.sleep(0)
+
+
+async def advance(clock: ManualClock, seconds: float, step: float = 0.1) -> None:
+    """Move a ManualClock forward in steps, letting woken tasks run after each."""
+    for _ in range(round(seconds / step)):
+        clock.advance(step)
+        await settle(5)
