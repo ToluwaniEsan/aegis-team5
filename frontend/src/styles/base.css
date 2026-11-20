@@ -136,6 +136,106 @@ body {
 }
 .panel-right {
   border-right: 0;
+  overflow-y: auto;
+}
+.commands-panel h2 {
+  margin: var(--s3) 0 var(--s2);
+  color: var(--text-label);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+}
+.commands-panel button,
+.commands-panel select {
+  min-height: 32px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel-raised);
+  color: var(--text);
+  font: 600 12px var(--font-ui);
+}
+.commands-panel button {
+  cursor: pointer;
+}
+.commands-panel button:disabled {
+  background: var(--canvas);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+.commands-panel > .command-control > button {
+  width: 100%;
+  background: var(--action);
+  color: var(--action-text);
+}
+.commands-panel > .command-control > button:disabled {
+  background: var(--canvas);
+  color: var(--text-muted);
+}
+.command-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s2);
+}
+.command-grid .command-control:last-child {
+  grid-column: 1 / -1;
+}
+.command-control button {
+  width: 100%;
+}
+.command-reason {
+  margin-top: var(--s1);
+  color: var(--text-muted);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.destination-picker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  padding: var(--s2);
+  margin-top: var(--s2);
+  border: 1px solid var(--line);
+  background: var(--panel-raised);
+}
+.destination-picker select {
+  min-width: 0;
+  max-width: 100%;
+}
+.command-feedback {
+  display: flex;
+  gap: var(--s1);
+  margin-top: var(--s2);
+  color: var(--warning);
+  font-size: 12px;
+}
+.command-feedback svg,
+.command-failed svg {
+  flex: none;
+  vertical-align: middle;
+}
+.command-tracker-row,
+.queued-mission {
+  padding: var(--s1) 0;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.command-track-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--s2);
+  align-items: baseline;
+}
+.command-track-line time {
+  color: var(--text-muted);
+  font: 10px var(--font-num);
+}
+.command-failed {
+  color: var(--critical);
+}
+.queue-buttons {
+  display: flex;
+  gap: var(--s2);
+  margin-top: var(--s1);
 }
 .panel-left,
 .panel-route {

@@ -3,6 +3,7 @@ import { TopBar } from "./TopBar";
 import { PayloadStatus } from "./PayloadStatus";
 import { VehicleHealth } from "./VehicleHealth";
 import { RouteNavigation } from "./RouteNavigation";
+import { CommandPanel } from "./CommandPanel";
 
 export function OperatorScreen() {
   const disconnected = useScreenStore((state) => state.screenDisconnected);
@@ -39,7 +40,9 @@ export function OperatorScreen() {
         >
           <RouteNavigation />
         </section>
-        <section className="panel panel-right" aria-label="Mission controls" />
+        <section className="panel panel-right" aria-label="Mission controls">
+          <CommandPanel />
+        </section>
         <footer className="bottom" aria-label="Alerts and delivery" />
       </main>
       <p className="window-warning">
