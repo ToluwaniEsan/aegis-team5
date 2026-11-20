@@ -35,10 +35,7 @@ it("test_OI_004_disabled_reasons_and_permission_updates", () => {
   expect(
     (screen.getByRole("button", { name: "Abort" }) as HTMLButtonElement)
       .disabled,
-  ).toBe(true);
-  expect(
-    screen.getAllByText("Confirmation dialog unavailable").length,
-  ).toBeGreaterThan(0);
+  ).toBe(false);
   const next = {
     ...travelling,
     allowed: {
@@ -99,7 +96,6 @@ it("test_OI_004_no_snapshot_or_connection_never_enables_commands", () => {
 
 it("test_OI_003_forms_and_confirmations_do_not_send_without_integrations", () => {
   show(travelling);
-  fireEvent.click(screen.getByRole("button", { name: "Abort" }));
   fireEvent.click(screen.getByRole("button", { name: "Queue mission" }));
   expect(screen.getByRole("dialog", { name: "Mission form" })).toBeTruthy();
   expect(sendCommand).not.toHaveBeenCalled();
@@ -113,13 +109,8 @@ it("test_OI_003_destination_picker_excludes_current_and_requires_confirmation", 
     within(select).queryByRole("option", { name: "Outpost Bravo" }),
   ).toBeNull();
   fireEvent.change(select, { target: { value: "OP_CHARLIE" } });
-  expect(
-    (
-      screen.getByRole("button", {
-        name: "Apply destination",
-      }) as HTMLButtonElement
-    ).disabled,
-  ).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "Apply destination" }));
+  expect(screen.getByRole("dialog", { name: "Confirm command" })).toBeTruthy();
   expect(sendCommand).not.toHaveBeenCalled();
 });
 

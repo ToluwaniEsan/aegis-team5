@@ -301,10 +301,14 @@ it("test_OI_003_confirmation_boundary_and_escape_focus", () => {
   opener.focus();
   fireEvent.click(opener);
   fill();
-  expect(screen.getByText("Confirmation dialog unavailable")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Assign mission" }));
   expect(sendCommand).not.toHaveBeenCalled();
-  fireEvent.keyDown(document, { key: "Escape" });
+  fireEvent.keyDown(screen.getByRole("dialog", { name: "Confirm command" }), {
+    key: "Escape",
+  });
+  fireEvent.keyDown(screen.getByRole("dialog", { name: "Mission form" }), {
+    key: "Escape",
+  });
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(document.activeElement).toBe(opener);
 });
