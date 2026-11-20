@@ -23,6 +23,7 @@ describe("E-STOP", () => {
     const button = screen.getByRole("button", {
       name: /E-STOP ACTIVE.*acknowledge in alerts/i,
     });
+    expect(button.textContent).toContain("Stops vehicle · holds payload");
     fireEvent.click(button);
     fireEvent.click(button);
     expect(sendCommand).toHaveBeenCalledTimes(2);
@@ -39,8 +40,9 @@ describe("E-STOP", () => {
     });
     render(<EStopButton active={false} />);
     const button = screen.getByRole("button", {
-      name: /E-STOP status unavailable/i,
+      name: /E-STOP.*status unavailable/i,
     });
+    expect(button.textContent).toContain("Stops vehicle · holds payload");
     fireEvent.click(button);
     expect(sendCommand).toHaveBeenCalledWith("estop", {}, false);
     expect(screen.queryByText(/inactive/i)).toBeNull();

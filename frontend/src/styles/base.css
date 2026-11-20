@@ -99,6 +99,7 @@ body {
   color: var(--estop-text);
   cursor: pointer;
   font-family: var(--font-ui);
+  line-height: 1.1;
 }
 .estop strong {
   font-size: var(--fs-title);

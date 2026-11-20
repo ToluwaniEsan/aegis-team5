@@ -50,6 +50,15 @@ test("OI-019: E-STOP sends while a dialog is open", async ({ page }) => {
   });
   const estop = page.getByRole("button", { name: /E-STOP/ });
   expect(await estop.boundingBox()).toMatchObject({ width: 152, height: 44 });
+  const consequence = estop.getByText("Stops vehicle · holds payload");
+  const status = estop.getByText("E-STOP status unavailable");
+  await expect(consequence).toBeVisible();
+  await expect(status).toBeVisible();
+  const buttonBox = await estop.boundingBox();
+  const statusBox = await status.boundingBox();
+  expect(statusBox!.y + statusBox!.height).toBeLessThanOrEqual(
+    buttonBox!.y + buttonBox!.height,
+  );
   await estop.click();
   await expect
     .poll(() => page.evaluate(() => window.sentCommands))

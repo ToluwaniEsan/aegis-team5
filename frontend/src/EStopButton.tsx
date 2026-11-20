@@ -25,6 +25,7 @@ export function EStopButton({ active }: { active: boolean }) {
     <div className="estop-control">
       <button type="button" className="estop" onClick={stop}>
         <strong>{active ? "E-STOP ACTIVE" : "E-STOP"}</strong>
+        <span>Stops vehicle · holds payload</span>
         <span>
           {active ? "acknowledge in alerts" : "E-STOP status unavailable"}
         </span>
