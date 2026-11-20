@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from aegis.common.ui_models import CommandResult, Snapshot, UiCommand
+from aegis.common.ui_models import CommandResult, LatLon, Snapshot, UiCommand
 from scripts import export_schemas
 
 
@@ -208,6 +208,23 @@ def test_OI_017_invalid_snapshot_inputs_rejected(snapshot, change):
     change(value)
     with pytest.raises(ValidationError):
         Snapshot.model_validate(value)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_GEN_002_nonfinite_numeric_values_rejected(snapshot, value):
+    with pytest.raises(ValidationError):
+        LatLon.model_validate({"lat": value, "lon": 0})
+    snapshot["nav"]["blocked"]["new_eta_s"] = value
+    with pytest.raises(ValidationError):
+        Snapshot.model_validate(snapshot)
+
+
+def test_OI_017_nullable_numeric_values_accept_none(snapshot):
+    snapshot["nav"]["blocked"]["new_eta_s"] = None
+    snapshot["payload"]["mass_kg"] = None
+    validated = Snapshot.model_validate(snapshot)
+    assert validated.nav.blocked.new_eta_s is None
+    assert validated.payload.mass_kg is None
 
 
 def test_OI_003_command_result_required_nulls_and_invalid_command():

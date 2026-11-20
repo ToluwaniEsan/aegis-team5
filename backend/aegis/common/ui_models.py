@@ -37,7 +37,7 @@ CommandState = Literal["SENT", "RECEIVED", "COMPLETED", "FAILED"]
 
 
 class UiModel(BaseModel):
-    model_config = ConfigDict(strict=True)
+    model_config = ConfigDict(strict=True, allow_inf_nan=False)
 
 
 class LatLon(UiModel):
