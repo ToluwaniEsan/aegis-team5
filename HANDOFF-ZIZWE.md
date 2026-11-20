@@ -63,16 +63,16 @@ Tick each box when its pull request is merged. Days are working days from day 1.
 
 ### Phase 0: foundations (days 1 to 2)
 
-- [ ] **A0. Settings loader** (doc 03). Emmanuel's B0 creates `pyproject.toml` in the first hour of day 1. Until it merges, use a local venv with `pip install pydantic pyyaml pytest`. Don't write your own `pyproject.toml`.
-- [ ] **A1. Clock** (doc 03).
-- [ ] **A2. Models and envelope** (doc 03). This covers the messages in contracts sections 2 to 4, 7 and 10 only.
+- [x] **A0. Settings loader** (doc 03). Emmanuel's B0 creates `pyproject.toml` in the first hour of day 1. Until it merges, use a local venv with `pip install pydantic pyyaml pytest`. Don't write your own `pyproject.toml`.
+- [x] **A1. Clock** (doc 03).
+- [x] **A2. Models and envelope** (doc 03). This covers the messages in contracts sections 2 to 4, 7 and 10 only.
   - The screen protocol (section 9) is Emmanuel's `ui_models.py`.
   - The `make()` registry takes `dst`, `iface` and `priority` from the routing table in contracts section 2.
   - `hb.ground` now goes to `vehicle.link_watch`. That was a contract bug, now fixed.
   - Push a draft on day 1 so Emmanuel can build against it.
-- [ ] **B1. Bus and link port** (doc 04), **plus `tests/fakes.py`** with `FakeBus` and `FakeLog` matching the B1 and B2 interfaces exactly.
+- [x] **B1. Bus and link port** (doc 04), **plus `tests/fakes.py`** with `FakeBus` and `FakeLog` matching the B1 and B2 interfaces exactly.
   - Emmanuel's B2 Mission Log lands on day 1. Until then, use `FakeLog`.
-- [ ] **B3. Link stand-in, Team 3** (doc 04).
+- [x] **B3. Link stand-in, Team 3** (doc 04).
 - [ ] **B4. Run everything** (doc 04). Also create:
   - **`aegis/ground/heartbeat.py`:** publishes `hb.ground` with `seq` at `timing.heartbeat_rate_hz`, `src = ground.command_manager`, `dst = [vehicle.link_watch]`.
   - **`aegis/ground/main.py`:** loads settings, starts the Mission Log, the bus, the LinkPort and the heartbeat. Leave clearly marked places where Emmanuel adds the Command Manager, Status Monitor, Alert Manager, Team 1 stand-in and UI server.
