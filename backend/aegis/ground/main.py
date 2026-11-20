@@ -24,6 +24,7 @@ from aegis.ground.heartbeat import Heartbeat
 from aegis.ground.snapshot import SnapshotBuilder
 from aegis.ground.status_monitor import StatusMonitor
 from aegis.ground.ui_server import UiServer
+from aegis.standins.team1 import Team1Standin
 from aegis.testing.fault_injector import FaultInjector
 
 if TYPE_CHECKING:
@@ -59,6 +60,7 @@ class Ground:
         self.command_manager = CommandManager(
             self.bus, clock, cfg, log, self.status_monitor
         )
+        self.team1 = Team1Standin(self.bus, clock, cfg, log)
         self.snapshot_builder = SnapshotBuilder(
             cfg, clock, self.status_monitor, self.command_manager
         )
@@ -68,12 +70,12 @@ class Ground:
         self._ui_server: uvicorn.Server | None = None
         self._ui_task: asyncio.Task | None = None
         # EMMANUEL: Alert Manager (B10/B11). Subscribe it to "ground.alert_manager".
-        # EMMANUEL: Team 1 stand-in (standins/team1.py). Subscribe it to "team1.integration".
 
     async def start(self) -> None:
         self.log.record("process.start")
         if self.link_port is not None:
             await self.link_port.start()
+        await self.team1.start()
         config = uvicorn.Config(
             self.ui.app,
             host=self.cfg.network.link_host,
@@ -95,6 +97,7 @@ class Ground:
     async def stop(self) -> None:
         await self.heartbeat.stop()
         self.command_manager.close()
+        await self.team1.stop()
         if self._ui_server is not None:
             self._ui_server.should_exit = True
         if self._ui_task is not None:
