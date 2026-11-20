@@ -2,6 +2,7 @@ import { useScreenStore } from "./state/store";
 import { TopBar } from "./TopBar";
 import { PayloadStatus } from "./PayloadStatus";
 import { VehicleHealth } from "./VehicleHealth";
+import { RouteNavigation } from "./RouteNavigation";
 
 export function OperatorScreen() {
   const disconnected = useScreenStore((state) => state.screenDisconnected);
@@ -32,7 +33,12 @@ export function OperatorScreen() {
           <PayloadStatus />
           <VehicleHealth />
         </section>
-        <section className="panel" aria-label="Route and navigation" />
+        <section
+          className="panel panel-route"
+          aria-label="Route and navigation"
+        >
+          <RouteNavigation />
+        </section>
         <section className="panel panel-right" aria-label="Mission controls" />
         <footer className="bottom" aria-label="Alerts and delivery" />
       </main>

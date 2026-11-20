@@ -18,7 +18,7 @@ describe("C0 scaffold", () => {
     ]);
     expect(
       Array.from(app.children)
-        .slice(2)
+        .slice(3)
         .every((node) => node.textContent === ""),
     ).toBe(true);
   });
