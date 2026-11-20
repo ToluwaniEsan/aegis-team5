@@ -1,0 +1,5957 @@
+{
+  "$defs": {
+    "Ack": {
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason Code"
+        },
+        "responder": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Responder",
+          "type": "string"
+        },
+        "result": {
+          "enum": [
+            "RECEIVED",
+            "COMPLETED",
+            "REJECTED"
+          ],
+          "title": "Result",
+          "type": "string"
+        }
+      },
+      "required": [
+        "result",
+        "reason_code",
+        "reason",
+        "responder"
+      ],
+      "title": "Ack",
+      "type": "object"
+    },
+    "AckEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/Ack"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "ack",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "AckEnvelope",
+      "type": "object"
+    },
+    "AckFault": {
+      "additionalProperties": false,
+      "properties": {
+        "fault_id": {
+          "format": "uuid4",
+          "title": "Fault Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fault_id"
+      ],
+      "title": "AckFault",
+      "type": "object"
+    },
+    "AssignMission": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_mass_kg": {
+          "title": "Declared Mass Kg",
+          "type": "number"
+        },
+        "destination": {
+          "$ref": "#/$defs/Place"
+        },
+        "dims_cm": {
+          "$ref": "#/$defs/Dims"
+        },
+        "mission_id": {
+          "minLength": 1,
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/$defs/Place"
+        },
+        "payload_id": {
+          "minLength": 1,
+          "title": "Payload Id",
+          "type": "string"
+        },
+        "prerelease_authorized": {
+          "title": "Prerelease Authorized",
+          "type": "boolean"
+        },
+        "priority": {
+          "enum": [
+            "ROUTINE",
+            "PRIORITY",
+            "URGENT"
+          ],
+          "title": "Priority",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mission_id",
+        "payload_id",
+        "origin",
+        "destination",
+        "priority",
+        "declared_mass_kg",
+        "dims_cm",
+        "prerelease_authorized"
+      ],
+      "title": "AssignMission",
+      "type": "object"
+    },
+    "BacklogBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "events": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "ack": "#/$defs/AckEnvelope",
+                "backlog.batch": "#/$defs/BacklogBatchEnvelope",
+                "cmd.abort": "#/$defs/CmdAbortEnvelope",
+                "cmd.ack_fault": "#/$defs/CmdAckFaultEnvelope",
+                "cmd.assign_mission": "#/$defs/CmdAssignMissionEnvelope",
+                "cmd.change_destination": "#/$defs/CmdChangeDestinationEnvelope",
+                "cmd.estop": "#/$defs/CmdEstopEnvelope",
+                "cmd.release": "#/$defs/CmdReleaseEnvelope",
+                "cmd.return_to_origin": "#/$defs/CmdReturnToOriginEnvelope",
+                "cmd.update_payload": "#/$defs/CmdUpdatePayloadEnvelope",
+                "fault.cleared": "#/$defs/FaultClearedEnvelope",
+                "fault.raised": "#/$defs/FaultRaisedEnvelope",
+                "hb.ground": "#/$defs/HbGroundEnvelope",
+                "int.link_state": "#/$defs/IntLinkStateEnvelope",
+                "link.health": "#/$defs/LinkHealthEnvelope",
+                "nav.assign": "#/$defs/NavAssignEnvelope",
+                "nav.route_blocked": "#/$defs/NavRouteBlockedEnvelope",
+                "nav.state": "#/$defs/NavStateEnvelope",
+                "payload.delivered": "#/$defs/PayloadDeliveredEnvelope",
+                "payload.interlock": "#/$defs/PayloadInterlockEnvelope",
+                "payload.mass_report": "#/$defs/PayloadMassReportEnvelope",
+                "payload.status": "#/$defs/PayloadStatusEnvelope",
+                "power.status": "#/$defs/PowerStatusEnvelope",
+                "sim.command": "#/$defs/SimCommandEnvelope",
+                "sim.reading": "#/$defs/SimReadingEnvelope",
+                "t1.delivery_confirmation": "#/$defs/T1DeliveryConfirmationEnvelope",
+                "t1.fault_report": "#/$defs/T1FaultReportEnvelope",
+                "t1.mission_report": "#/$defs/T1MissionReportEnvelope",
+                "t1.system_mode": "#/$defs/T1SystemModeEnvelope",
+                "test.inject": "#/$defs/TestInjectEnvelope"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/CmdAssignMissionEnvelope"
+              },
+              {
+                "$ref": "#/$defs/CmdUpdatePayloadEnvelope"
+              },
+              {
+                "$ref": "#/$defs/CmdReleaseEnvelope"
+              },
+              {
+                "$ref": "#/$defs/CmdAckFaultEnvelope"
+              },
+              {
+                "$ref": "#/$defs/CmdAbortEnvelope"
+              },
+              {
+                "$ref": "#/$defs/CmdReturnToOriginEnvelope"
+              },
+              {
+                "$ref": "#/$defs/CmdChangeDestinationEnvelope"
+              },
+              {
+                "$ref": "#/$defs/CmdEstopEnvelope"
+              },
+              {
+                "$ref": "#/$defs/HbGroundEnvelope"
+              },
+              {
+                "$ref": "#/$defs/NavAssignEnvelope"
+              },
+              {
+                "$ref": "#/$defs/AckEnvelope"
+              },
+              {
+                "$ref": "#/$defs/PayloadStatusEnvelope"
+              },
+              {
+                "$ref": "#/$defs/PayloadDeliveredEnvelope"
+              },
+              {
+                "$ref": "#/$defs/FaultRaisedEnvelope"
+              },
+              {
+                "$ref": "#/$defs/FaultClearedEnvelope"
+              },
+              {
+                "$ref": "#/$defs/BacklogBatchEnvelope"
+              },
+              {
+                "$ref": "#/$defs/PayloadInterlockEnvelope"
+              },
+              {
+                "$ref": "#/$defs/PayloadMassReportEnvelope"
+              },
+              {
+                "$ref": "#/$defs/NavStateEnvelope"
+              },
+              {
+                "$ref": "#/$defs/NavRouteBlockedEnvelope"
+              },
+              {
+                "$ref": "#/$defs/PowerStatusEnvelope"
+              },
+              {
+                "$ref": "#/$defs/LinkHealthEnvelope"
+              },
+              {
+                "$ref": "#/$defs/T1MissionReportEnvelope"
+              },
+              {
+                "$ref": "#/$defs/T1FaultReportEnvelope"
+              },
+              {
+                "$ref": "#/$defs/T1DeliveryConfirmationEnvelope"
+              },
+              {
+                "$ref": "#/$defs/T1SystemModeEnvelope"
+              },
+              {
+                "$ref": "#/$defs/IntLinkStateEnvelope"
+              },
+              {
+                "$ref": "#/$defs/SimCommandEnvelope"
+              },
+              {
+                "$ref": "#/$defs/SimReadingEnvelope"
+              },
+              {
+                "$ref": "#/$defs/TestInjectEnvelope"
+              }
+            ]
+          },
+          "title": "Events",
+          "type": "array"
+        }
+      },
+      "required": [
+        "events"
+      ],
+      "title": "BacklogBatch",
+      "type": "object"
+    },
+    "BacklogBatchEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/BacklogBatch"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "backlog.batch",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "BacklogBatchEnvelope",
+      "type": "object"
+    },
+    "ChangeDestination": {
+      "additionalProperties": false,
+      "properties": {
+        "destination": {
+          "$ref": "#/$defs/Place"
+        }
+      },
+      "required": [
+        "destination"
+      ],
+      "title": "ChangeDestination",
+      "type": "object"
+    },
+    "CmdAbortEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/Empty"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "cmd.abort",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "CmdAbortEnvelope",
+      "type": "object"
+    },
+    "CmdAckFaultEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/AckFault"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "cmd.ack_fault",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "CmdAckFaultEnvelope",
+      "type": "object"
+    },
+    "CmdAssignMissionEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/AssignMission"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "cmd.assign_mission",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "CmdAssignMissionEnvelope",
+      "type": "object"
+    },
+    "CmdChangeDestinationEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/ChangeDestination"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "cmd.change_destination",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "CmdChangeDestinationEnvelope",
+      "type": "object"
+    },
+    "CmdEstopEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/EStop"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "cmd.estop",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "CmdEstopEnvelope",
+      "type": "object"
+    },
+    "CmdReleaseEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/Empty"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "cmd.release",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "CmdReleaseEnvelope",
+      "type": "object"
+    },
+    "CmdReturnToOriginEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/Empty"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "cmd.return_to_origin",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "CmdReturnToOriginEnvelope",
+      "type": "object"
+    },
+    "CmdUpdatePayloadEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/UpdatePayload"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "cmd.update_payload",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "CmdUpdatePayloadEnvelope",
+      "type": "object"
+    },
+    "Dims": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "exclusiveMinimum": 0,
+          "title": "Height",
+          "type": "number"
+        },
+        "length": {
+          "exclusiveMinimum": 0,
+          "title": "Length",
+          "type": "number"
+        },
+        "width": {
+          "exclusiveMinimum": 0,
+          "title": "Width",
+          "type": "number"
+        }
+      },
+      "required": [
+        "length",
+        "width",
+        "height"
+      ],
+      "title": "Dims",
+      "type": "object"
+    },
+    "EStop": {
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "source": {
+          "const": "OPERATOR",
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason",
+        "source"
+      ],
+      "title": "EStop",
+      "type": "object"
+    },
+    "Empty": {
+      "additionalProperties": false,
+      "description": "`{}`: cmd.release, cmd.abort, cmd.return_to_origin.",
+      "properties": {},
+      "title": "Empty",
+      "type": "object"
+    },
+    "FaultCleared": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "ESTOP_ACTIVE",
+            "PAYLOAD_UNSECURED",
+            "DEPARTED_UNSECURED",
+            "RELEASE_FAILED",
+            "LOCK_SENSOR_FAULT",
+            "DRIVETRAIN_FAULT",
+            "PAYLOAD_SHIFT",
+            "WEIGHT_OUT_OF_RANGE",
+            "LOAD_CELL_FAULT",
+            "LINK_LOST",
+            "POWER_LOW",
+            "NAV_SENSOR_FAULT",
+            "LINK_DEGRADED",
+            "COMMAND_FAILED",
+            "ROUTE_BLOCKED",
+            "STALE_DATA",
+            "CLOCK_SKEW"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "fault_id": {
+          "format": "uuid4",
+          "title": "Fault Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fault_id",
+        "code"
+      ],
+      "title": "FaultCleared",
+      "type": "object"
+    },
+    "FaultClearedEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/FaultCleared"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "fault.cleared",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "FaultClearedEnvelope",
+      "type": "object"
+    },
+    "FaultRaised": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "ESTOP_ACTIVE",
+            "PAYLOAD_UNSECURED",
+            "DEPARTED_UNSECURED",
+            "RELEASE_FAILED",
+            "LOCK_SENSOR_FAULT",
+            "DRIVETRAIN_FAULT",
+            "PAYLOAD_SHIFT",
+            "WEIGHT_OUT_OF_RANGE",
+            "LOAD_CELL_FAULT",
+            "LINK_LOST",
+            "POWER_LOW",
+            "NAV_SENSOR_FAULT",
+            "LINK_DEGRADED",
+            "COMMAND_FAILED",
+            "ROUTE_BLOCKED",
+            "STALE_DATA",
+            "CLOCK_SKEW"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "fault_id": {
+          "format": "uuid4",
+          "title": "Fault Id",
+          "type": "string"
+        },
+        "holds_payload": {
+          "title": "Holds Payload",
+          "type": "boolean"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "recommended_action": {
+          "minLength": 1,
+          "title": "Recommended Action",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "CRITICAL",
+            "WARNING",
+            "CAUTION"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fault_id",
+        "code",
+        "severity",
+        "source",
+        "message",
+        "recommended_action",
+        "holds_payload"
+      ],
+      "title": "FaultRaised",
+      "type": "object"
+    },
+    "FaultRaisedEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/FaultRaised"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "fault.raised",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "FaultRaisedEnvelope",
+      "type": "object"
+    },
+    "HbGroundEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/HeartbeatGround"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "hb.ground",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "HbGroundEnvelope",
+      "type": "object"
+    },
+    "HeartbeatGround": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq"
+      ],
+      "title": "HeartbeatGround",
+      "type": "object"
+    },
+    "IntLinkStateEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/LinkState"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "int.link_state",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "IntLinkStateEnvelope",
+      "type": "object"
+    },
+    "LatLon": {
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "LatLon",
+      "type": "object"
+    },
+    "LinkHealth": {
+      "additionalProperties": false,
+      "properties": {
+        "latency_ms": {
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "number"
+        },
+        "loss_pct": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Loss Pct",
+          "type": "number"
+        },
+        "state": {
+          "enum": [
+            "CONNECTED",
+            "DEGRADED",
+            "LOST"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state",
+        "latency_ms",
+        "loss_pct"
+      ],
+      "title": "LinkHealth",
+      "type": "object"
+    },
+    "LinkHealthEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/LinkHealth"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "link.health",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "LinkHealthEnvelope",
+      "type": "object"
+    },
+    "LinkState": {
+      "additionalProperties": false,
+      "properties": {
+        "since": {
+          "format": "date-time",
+          "title": "Since",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "LOST",
+            "RESTORED"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state",
+        "since"
+      ],
+      "title": "LinkState",
+      "type": "object"
+    },
+    "MassReport": {
+      "additionalProperties": false,
+      "properties": {
+        "mass_kg": {
+          "minimum": 0,
+          "title": "Mass Kg",
+          "type": "number"
+        },
+        "release_energy_wh_max": {
+          "minimum": 0,
+          "title": "Release Energy Wh Max",
+          "type": "number"
+        },
+        "release_energy_wh_nominal": {
+          "minimum": 0,
+          "title": "Release Energy Wh Nominal",
+          "type": "number"
+        }
+      },
+      "required": [
+        "mass_kg",
+        "release_energy_wh_nominal",
+        "release_energy_wh_max"
+      ],
+      "title": "MassReport",
+      "type": "object"
+    },
+    "NavAssign": {
+      "additionalProperties": false,
+      "properties": {
+        "destination": {
+          "$ref": "#/$defs/Place"
+        },
+        "mission_id": {
+          "minLength": 1,
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/$defs/Place"
+        },
+        "priority": {
+          "enum": [
+            "ROUTINE",
+            "PRIORITY",
+            "URGENT"
+          ],
+          "title": "Priority",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mission_id",
+        "origin",
+        "destination",
+        "priority"
+      ],
+      "title": "NavAssign",
+      "type": "object"
+    },
+    "NavAssignEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/NavAssign"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "nav.assign",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "NavAssignEnvelope",
+      "type": "object"
+    },
+    "NavRouteBlockedEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/RouteBlocked"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "nav.route_blocked",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "NavRouteBlockedEnvelope",
+      "type": "object"
+    },
+    "NavState": {
+      "additionalProperties": false,
+      "properties": {
+        "at_destination": {
+          "title": "At Destination",
+          "type": "boolean"
+        },
+        "at_origin": {
+          "title": "At Origin",
+          "type": "boolean"
+        },
+        "eta_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Eta S"
+        },
+        "health": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT"
+          ],
+          "title": "Health",
+          "type": "string"
+        },
+        "moving": {
+          "title": "Moving",
+          "type": "boolean"
+        },
+        "position": {
+          "$ref": "#/$defs/LatLon"
+        },
+        "progress_pct": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Progress Pct",
+          "type": "number"
+        },
+        "route": {
+          "items": {
+            "$ref": "#/$defs/LatLon"
+          },
+          "title": "Route",
+          "type": "array"
+        },
+        "speed_mps": {
+          "minimum": 0,
+          "title": "Speed Mps",
+          "type": "number"
+        }
+      },
+      "required": [
+        "moving",
+        "speed_mps",
+        "position",
+        "at_destination",
+        "at_origin",
+        "eta_s",
+        "progress_pct",
+        "route",
+        "health"
+      ],
+      "title": "NavState",
+      "type": "object"
+    },
+    "NavStateEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/NavState"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "nav.state",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "NavStateEnvelope",
+      "type": "object"
+    },
+    "PayloadDelivered": {
+      "additionalProperties": false,
+      "properties": {
+        "energy_used_wh": {
+          "minimum": 0,
+          "title": "Energy Used Wh",
+          "type": "number"
+        },
+        "mass_kg": {
+          "title": "Mass Kg",
+          "type": "number"
+        },
+        "mission_id": {
+          "minLength": 1,
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "minLength": 1,
+          "title": "Payload Id",
+          "type": "string"
+        },
+        "position": {
+          "$ref": "#/$defs/LatLon"
+        },
+        "released_at": {
+          "format": "date-time",
+          "title": "Released At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mission_id",
+        "payload_id",
+        "released_at",
+        "position",
+        "mass_kg",
+        "energy_used_wh"
+      ],
+      "title": "PayloadDelivered",
+      "type": "object"
+    },
+    "PayloadDeliveredEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/PayloadDelivered"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "payload.delivered",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "PayloadDeliveredEnvelope",
+      "type": "object"
+    },
+    "PayloadInterlock": {
+      "additionalProperties": false,
+      "description": "PROPOSED, needs Team 2 (decision D-02: keep).",
+      "properties": {
+        "departure_permitted": {
+          "title": "Departure Permitted",
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "departure_permitted",
+        "reason"
+      ],
+      "title": "PayloadInterlock",
+      "type": "object"
+    },
+    "PayloadInterlockEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/PayloadInterlock"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "payload.interlock",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "PayloadInterlockEnvelope",
+      "type": "object"
+    },
+    "PayloadMassReportEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/MassReport"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "payload.mass_report",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "PayloadMassReportEnvelope",
+      "type": "object"
+    },
+    "PayloadStatus": {
+      "additionalProperties": false,
+      "properties": {
+        "departure_permitted": {
+          "title": "Departure Permitted",
+          "type": "boolean"
+        },
+        "departure_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Departure Reason"
+        },
+        "held_from": {
+          "anyOf": [
+            {
+              "enum": [
+                "EMPTY",
+                "LOADED",
+                "SECURED",
+                "TRAVELLING",
+                "AT_DESTINATION",
+                "RELEASED",
+                "DELIVERED",
+                "RETURNING",
+                "HELD"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Held From"
+        },
+        "locked": {
+          "title": "Locked",
+          "type": "boolean"
+        },
+        "mass_kg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mass Kg"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "prerelease_authorized": {
+          "title": "Prerelease Authorized",
+          "type": "boolean"
+        },
+        "release_energy_wh": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Release Energy Wh"
+        },
+        "secured": {
+          "title": "Secured",
+          "type": "boolean"
+        },
+        "sensors": {
+          "$ref": "#/$defs/Sensors"
+        },
+        "shift_cm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Shift Cm"
+        },
+        "state": {
+          "enum": [
+            "EMPTY",
+            "LOADED",
+            "SECURED",
+            "TRAVELLING",
+            "AT_DESTINATION",
+            "RELEASED",
+            "DELIVERED",
+            "RETURNING",
+            "HELD"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state",
+        "held_from",
+        "secured",
+        "locked",
+        "mass_kg",
+        "shift_cm",
+        "release_energy_wh",
+        "sensors",
+        "prerelease_authorized",
+        "departure_permitted",
+        "departure_reason",
+        "mission_id"
+      ],
+      "title": "PayloadStatus",
+      "type": "object"
+    },
+    "PayloadStatusEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/PayloadStatus"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "payload.status",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "PayloadStatusEnvelope",
+      "type": "object"
+    },
+    "Place": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "lat": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Lon",
+          "type": "number"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lat",
+        "lon",
+        "id",
+        "name"
+      ],
+      "title": "Place",
+      "type": "object"
+    },
+    "PowerStatus": {
+      "additionalProperties": false,
+      "properties": {
+        "battery_pct": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Battery Pct",
+          "type": "number"
+        },
+        "drivetrain_health": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT"
+          ],
+          "title": "Drivetrain Health",
+          "type": "string"
+        },
+        "est_range_km": {
+          "minimum": 0,
+          "title": "Est Range Km",
+          "type": "number"
+        }
+      },
+      "required": [
+        "battery_pct",
+        "est_range_km",
+        "drivetrain_health"
+      ],
+      "title": "PowerStatus",
+      "type": "object"
+    },
+    "PowerStatusEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/PowerStatus"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "power.status",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "PowerStatusEnvelope",
+      "type": "object"
+    },
+    "RouteBlocked": {
+      "additionalProperties": false,
+      "properties": {
+        "blocked_at": {
+          "$ref": "#/$defs/LatLon"
+        },
+        "new_eta_s": {
+          "minimum": 0,
+          "title": "New Eta S",
+          "type": "number"
+        },
+        "new_route": {
+          "items": {
+            "$ref": "#/$defs/LatLon"
+          },
+          "title": "New Route",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason",
+        "blocked_at",
+        "new_route",
+        "new_eta_s"
+      ],
+      "title": "RouteBlocked",
+      "type": "object"
+    },
+    "Sensors": {
+      "additionalProperties": false,
+      "properties": {
+        "load_cell": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT"
+          ],
+          "title": "Load Cell",
+          "type": "string"
+        },
+        "lock": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT"
+          ],
+          "title": "Lock",
+          "type": "string"
+        },
+        "shift": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT"
+          ],
+          "title": "Shift",
+          "type": "string"
+        }
+      },
+      "required": [
+        "load_cell",
+        "lock",
+        "shift"
+      ],
+      "title": "Sensors",
+      "type": "object"
+    },
+    "SimCommand": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "LOAD",
+            "LOCK",
+            "UNLOCK",
+            "RELEASE",
+            "UNLOAD"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "mass_kg": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mass Kg"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "title": "SimCommand",
+      "type": "object"
+    },
+    "SimCommandEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/SimCommand"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "sim.command",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "SimCommandEnvelope",
+      "type": "object"
+    },
+    "SimReading": {
+      "additionalProperties": false,
+      "properties": {
+        "locked": {
+          "title": "Locked",
+          "type": "boolean"
+        },
+        "mass_kg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mass Kg"
+        },
+        "release_done": {
+          "title": "Release Done",
+          "type": "boolean"
+        },
+        "sensors": {
+          "$ref": "#/$defs/Sensors"
+        },
+        "settled": {
+          "title": "Settled",
+          "type": "boolean"
+        },
+        "shift_cm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Shift Cm"
+        }
+      },
+      "required": [
+        "mass_kg",
+        "settled",
+        "shift_cm",
+        "locked",
+        "release_done",
+        "sensors"
+      ],
+      "title": "SimReading",
+      "type": "object"
+    },
+    "SimReadingEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/SimReading"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "sim.reading",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "SimReadingEnvelope",
+      "type": "object"
+    },
+    "T1DeliveryConfirmationEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/PayloadDelivered"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "t1.delivery_confirmation",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "T1DeliveryConfirmationEnvelope",
+      "type": "object"
+    },
+    "T1FaultReportEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/FaultRaised"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "t1.fault_report",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "T1FaultReportEnvelope",
+      "type": "object"
+    },
+    "T1MissionReport": {
+      "additionalProperties": false,
+      "properties": {
+        "mission_id": {
+          "minLength": 1,
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "minLength": 1,
+          "title": "Payload Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ASSIGNED",
+            "ACTIVE",
+            "COMPLETE",
+            "ABORTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mission_id",
+        "payload_id",
+        "status"
+      ],
+      "title": "T1MissionReport",
+      "type": "object"
+    },
+    "T1MissionReportEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/T1MissionReport"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "t1.mission_report",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "T1MissionReportEnvelope",
+      "type": "object"
+    },
+    "T1SystemMode": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "title": "T1SystemMode",
+      "type": "object"
+    },
+    "T1SystemModeEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/T1SystemMode"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "t1.system_mode",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "T1SystemModeEnvelope",
+      "type": "object"
+    },
+    "TestInject": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "title": "Action",
+          "type": "string"
+        },
+        "params": {
+          "additionalProperties": true,
+          "title": "Params",
+          "type": "object"
+        },
+        "target": {
+          "enum": [
+            "payload",
+            "link",
+            "nav",
+            "power",
+            "team1"
+          ],
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "action"
+      ],
+      "title": "TestInject",
+      "type": "object"
+    },
+    "TestInjectEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/TestInject"
+        },
+        "buffered": {
+          "default": false,
+          "title": "Buffered",
+          "type": "boolean"
+        },
+        "corr_id": {
+          "anyOf": [
+            {
+              "format": "uuid4",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corr Id"
+        },
+        "dst": {
+          "items": {
+            "enum": [
+              "ground.command_manager",
+              "ground.status_monitor",
+              "ground.alert_manager",
+              "ground.mission_log",
+              "ground.ui_server",
+              "ground.fault_injector",
+              "team1.integration",
+              "team3.link",
+              "vehicle.payload_controller",
+              "vehicle.payload_simulator",
+              "vehicle.event_buffer",
+              "vehicle.link_watch",
+              "vehicle.test_agent",
+              "team2.nav",
+              "team4.power"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Dst",
+          "type": "array"
+        },
+        "iface": {
+          "enum": [
+            "I1",
+            "I2",
+            "I3",
+            "I4",
+            "I5",
+            "I6",
+            "I7",
+            "I8",
+            "I9",
+            "INT"
+          ],
+          "title": "Iface",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "msg_id": {
+          "format": "uuid4",
+          "title": "Msg Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payload Id"
+        },
+        "priority": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Priority",
+          "type": "integer"
+        },
+        "sent_at": {
+          "format": "date-time",
+          "title": "Sent At",
+          "type": "string"
+        },
+        "src": {
+          "enum": [
+            "ground.command_manager",
+            "ground.status_monitor",
+            "ground.alert_manager",
+            "ground.mission_log",
+            "ground.ui_server",
+            "ground.fault_injector",
+            "team1.integration",
+            "team3.link",
+            "vehicle.payload_controller",
+            "vehicle.payload_simulator",
+            "vehicle.event_buffer",
+            "vehicle.link_watch",
+            "vehicle.test_agent",
+            "team2.nav",
+            "team4.power"
+          ],
+          "title": "Src",
+          "type": "string"
+        },
+        "type": {
+          "const": "test.inject",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "msg_id",
+        "type",
+        "iface",
+        "src",
+        "dst",
+        "sent_at",
+        "priority",
+        "body"
+      ],
+      "title": "TestInjectEnvelope",
+      "type": "object"
+    },
+    "UpdatePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_mass_kg": {
+          "title": "Declared Mass Kg",
+          "type": "number"
+        },
+        "dims_cm": {
+          "$ref": "#/$defs/Dims"
+        }
+      },
+      "required": [
+        "declared_mass_kg",
+        "dims_cm"
+      ],
+      "title": "UpdatePayload",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "ack": "#/$defs/AckEnvelope",
+      "backlog.batch": "#/$defs/BacklogBatchEnvelope",
+      "cmd.abort": "#/$defs/CmdAbortEnvelope",
+      "cmd.ack_fault": "#/$defs/CmdAckFaultEnvelope",
+      "cmd.assign_mission": "#/$defs/CmdAssignMissionEnvelope",
+      "cmd.change_destination": "#/$defs/CmdChangeDestinationEnvelope",
+      "cmd.estop": "#/$defs/CmdEstopEnvelope",
+      "cmd.release": "#/$defs/CmdReleaseEnvelope",
+      "cmd.return_to_origin": "#/$defs/CmdReturnToOriginEnvelope",
+      "cmd.update_payload": "#/$defs/CmdUpdatePayloadEnvelope",
+      "fault.cleared": "#/$defs/FaultClearedEnvelope",
+      "fault.raised": "#/$defs/FaultRaisedEnvelope",
+      "hb.ground": "#/$defs/HbGroundEnvelope",
+      "int.link_state": "#/$defs/IntLinkStateEnvelope",
+      "link.health": "#/$defs/LinkHealthEnvelope",
+      "nav.assign": "#/$defs/NavAssignEnvelope",
+      "nav.route_blocked": "#/$defs/NavRouteBlockedEnvelope",
+      "nav.state": "#/$defs/NavStateEnvelope",
+      "payload.delivered": "#/$defs/PayloadDeliveredEnvelope",
+      "payload.interlock": "#/$defs/PayloadInterlockEnvelope",
+      "payload.mass_report": "#/$defs/PayloadMassReportEnvelope",
+      "payload.status": "#/$defs/PayloadStatusEnvelope",
+      "power.status": "#/$defs/PowerStatusEnvelope",
+      "sim.command": "#/$defs/SimCommandEnvelope",
+      "sim.reading": "#/$defs/SimReadingEnvelope",
+      "t1.delivery_confirmation": "#/$defs/T1DeliveryConfirmationEnvelope",
+      "t1.fault_report": "#/$defs/T1FaultReportEnvelope",
+      "t1.mission_report": "#/$defs/T1MissionReportEnvelope",
+      "t1.system_mode": "#/$defs/T1SystemModeEnvelope",
+      "test.inject": "#/$defs/TestInjectEnvelope"
+    },
+    "propertyName": "type"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/CmdAssignMissionEnvelope"
+    },
+    {
+      "$ref": "#/$defs/CmdUpdatePayloadEnvelope"
+    },
+    {
+      "$ref": "#/$defs/CmdReleaseEnvelope"
+    },
+    {
+      "$ref": "#/$defs/CmdAckFaultEnvelope"
+    },
+    {
+      "$ref": "#/$defs/CmdAbortEnvelope"
+    },
+    {
+      "$ref": "#/$defs/CmdReturnToOriginEnvelope"
+    },
+    {
+      "$ref": "#/$defs/CmdChangeDestinationEnvelope"
+    },
+    {
+      "$ref": "#/$defs/CmdEstopEnvelope"
+    },
+    {
+      "$ref": "#/$defs/HbGroundEnvelope"
+    },
+    {
+      "$ref": "#/$defs/NavAssignEnvelope"
+    },
+    {
+      "$ref": "#/$defs/AckEnvelope"
+    },
+    {
+      "$ref": "#/$defs/PayloadStatusEnvelope"
+    },
+    {
+      "$ref": "#/$defs/PayloadDeliveredEnvelope"
+    },
+    {
+      "$ref": "#/$defs/FaultRaisedEnvelope"
+    },
+    {
+      "$ref": "#/$defs/FaultClearedEnvelope"
+    },
+    {
+      "$ref": "#/$defs/BacklogBatchEnvelope"
+    },
+    {
+      "$ref": "#/$defs/PayloadInterlockEnvelope"
+    },
+    {
+      "$ref": "#/$defs/PayloadMassReportEnvelope"
+    },
+    {
+      "$ref": "#/$defs/NavStateEnvelope"
+    },
+    {
+      "$ref": "#/$defs/NavRouteBlockedEnvelope"
+    },
+    {
+      "$ref": "#/$defs/PowerStatusEnvelope"
+    },
+    {
+      "$ref": "#/$defs/LinkHealthEnvelope"
+    },
+    {
+      "$ref": "#/$defs/T1MissionReportEnvelope"
+    },
+    {
+      "$ref": "#/$defs/T1FaultReportEnvelope"
+    },
+    {
+      "$ref": "#/$defs/T1DeliveryConfirmationEnvelope"
+    },
+    {
+      "$ref": "#/$defs/T1SystemModeEnvelope"
+    },
+    {
+      "$ref": "#/$defs/IntLinkStateEnvelope"
+    },
+    {
+      "$ref": "#/$defs/SimCommandEnvelope"
+    },
+    {
+      "$ref": "#/$defs/SimReadingEnvelope"
+    },
+    {
+      "$ref": "#/$defs/TestInjectEnvelope"
+    }
+  ],
+  "title": "Team 5 message envelope (docs/02-contracts.md sections 2 to 4, 7, 10)"
+}

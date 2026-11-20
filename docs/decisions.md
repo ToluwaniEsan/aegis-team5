@@ -15,10 +15,10 @@ Questions found during work go at the bottom, under "Added during the build".
 
 | ID | Blocks | Question | Options | Recommended | Answer | Date |
 |---|---|---|---|---|---|---|
-| D-01 | start | Keep the `RETURNING` payload state? It is in Figure 2 but not the PRD state list. It stops a payload heading home from ever being released. | Keep / Drop | **Keep**, as in contracts section 4 | | |
-| D-02 | start | Keep the proposed `payload.interlock` message to Team 2 (`departure_permitted`, 1 Hz)? Without it, AEG-511 can only detect a bad departure after it happens. | Keep and ask Team 2 to honor it / Drop | **Keep.** Our Team 2 stand-in honors it. | | |
-| D-03 | start | Accept assumption A-17: all nodes share UTC within 0.5 s? The stale-command and future-timestamp checks depend on it. | Accept / Change the tolerance | **Accept.** The demo runs on one laptop; Team 1's environment uses NTP. | | |
-| D-04 | start | With pre-authorized release and the link LOST at the destination, how long does the vehicle wait before releasing on its own? | 10 s / another value | **10 s** (`link.prerelease_wait_s`) | | |
+| D-01 | start | Keep the `RETURNING` payload state? It is in Figure 2 but not the PRD state list. It stops a payload heading home from ever being released. | Keep / Drop | **Keep**, as in contracts section 4 | Keep | 2026-11-19 |
+| D-02 | start | Keep the proposed `payload.interlock` message to Team 2 (`departure_permitted`, 1 Hz)? Without it, AEG-511 can only detect a bad departure after it happens. | Keep and ask Team 2 to honor it / Drop | **Keep.** Our Team 2 stand-in honors it. | Keep | 2026-11-19 |
+| D-03 | start | Accept assumption A-17: all nodes share UTC within 0.5 s? The stale-command and future-timestamp checks depend on it. | Accept / Change the tolerance | **Accept.** The demo runs on one laptop; Team 1's environment uses NTP. | Accept | 2026-11-19 |
+| D-04 | start | With pre-authorized release and the link LOST at the destination, how long does the vehicle wait before releasing on its own? | 10 s / another value | **10 s** (`link.prerelease_wait_s`) | 10 s | 2026-11-19 |
 | D-05 | no | Simulated mechanism times: load 2 s, lock 3 s, release 4 s, re-weigh 1 s. OK? | Accept / Change in config | **Accept** | | |
 | D-06 | no | After an emergency stop is acknowledged, the Team 2 stand-in stays stopped until it gets a new command. OK until Team 2 defines restart? | Accept / Other | **Accept**, and ask Team 2 | | |
 | D-07 | no | For GEN-004 we show that a crashed Payload Controller leaves the payload locked. Restarting the controller is out of scope. OK? | Accept / Add restart | **Accept**, and say so at review | | |
