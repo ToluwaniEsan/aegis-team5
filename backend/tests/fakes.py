@@ -43,6 +43,9 @@ class FakeLog:
         self.records: list[dict[str, Any]] = []
 
     def record(self, kind: str, **fields: Any) -> None:
+        reserved = {"t", "run", "process", "kind"} & fields.keys()
+        if reserved:  # the real MissionLog refuses these too
+            raise ValueError(f"Reserved record fields: {', '.join(sorted(reserved))}")
         line = {
             "t": format_timestamp(self.clock.now()),
             "run": self.run_id,
@@ -51,7 +54,7 @@ class FakeLog:
             **fields,
         }
         # Round-trip through JSON exactly as the real log's file would.
-        self.records.append(json.loads(json.dumps(line)))
+        self.records.append(json.loads(json.dumps(line, allow_nan=False)))
 
     # Helpers for assertions
 
