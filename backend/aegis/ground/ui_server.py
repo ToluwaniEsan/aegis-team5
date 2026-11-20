@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+from collections import deque
 from contextlib import asynccontextmanager
 from dataclasses import asdict
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -22,6 +22,46 @@ if TYPE_CHECKING:
     from aegis.testing.fault_injector import FaultInjector
 
 
+class _Client:
+    """One ordered writer; pending adjacent full snapshots may be coalesced."""
+
+    def __init__(self, ws: WebSocket):
+        self.ws = ws
+        self.pending: deque[tuple[str, dict]] = deque()
+        self.ready = asyncio.Event()
+        self.sender: asyncio.Task | None = None
+        self.reader: asyncio.Task | None = None
+        self.handling = False
+        self.deferred_snapshot: dict | None = None
+
+    def snapshot(self, data: dict) -> None:
+        if self.handling:
+            self.deferred_snapshot = data
+            return
+        if self.pending and self.pending[-1][0] == "snapshot":
+            self.pending[-1] = ("snapshot", data)
+        else:
+            self.pending.append(("snapshot", data))
+        self.ready.set()
+
+    def result(self, data: dict) -> None:
+        self.pending.append(("result", data))
+        self.ready.set()
+
+    def flush_deferred(self) -> None:
+        if self.deferred_snapshot is not None:
+            snapshot, self.deferred_snapshot = self.deferred_snapshot, None
+            self.snapshot(snapshot)
+
+    async def send(self) -> None:
+        while True:
+            await self.ready.wait()
+            self.ready.clear()
+            while self.pending:
+                _, data = self.pending.popleft()
+                await self.ws.send_json(data)
+
+
 class UiServer:
     def __init__(
         self,
@@ -33,7 +73,7 @@ class UiServer:
     ):
         self.cfg, self.clock, self.builder = cfg, clock, builder
         self.commands, self.injector = commands, injector
-        self.clients: dict[WebSocket, asyncio.Lock] = {}
+        self.clients: dict[WebSocket, _Client] = {}
         self._broadcast_lock = asyncio.Lock()
         self._periodic: asyncio.Task | None = None
         self._debounced: asyncio.Task | None = None
@@ -49,9 +89,14 @@ class UiServer:
                 yield
             finally:
                 tasks = [task for task in (self._periodic, self._debounced) if task]
+                for client in self.clients.values():
+                    tasks.extend(
+                        task for task in (client.sender, client.reader) if task
+                    )
                 for task in tasks:
                     task.cancel()
                 await asyncio.gather(*tasks, return_exceptions=True)
+                self.clients.clear()
                 self._periodic = self._debounced = None
 
         self.app = FastAPI(lifespan=lifespan)
@@ -62,7 +107,7 @@ class UiServer:
             # Prevent the frontend static mount from turning this into a 405.
             self.app.add_api_route("/api/test/inject", self.not_found, methods=["POST"])
         self.app.add_api_websocket_route("/ws", self.websocket)
-        dist = Path(__file__).resolve().parents[3] / "frontend" / "dist"
+        dist = cfg.root / "frontend" / "dist"
         if dist.is_dir():
             self.app.mount("/", StaticFiles(directory=dist, html=True), name="frontend")
         else:
@@ -96,11 +141,24 @@ class UiServer:
 
     async def websocket(self, ws: WebSocket):
         await ws.accept()
-        lock = asyncio.Lock()
-        self.clients[ws] = lock
+        client = _Client(ws)
+        self.clients[ws] = client
+        client.snapshot(self.builder.build().model_dump(mode="json"))
+        client.sender = asyncio.create_task(client.send())
+        client.reader = asyncio.create_task(self._read_commands(client))
         try:
-            async with lock:
-                await ws.send_json(self.builder.build().model_dump(mode="json"))
+            await asyncio.wait(
+                (client.sender, client.reader), return_when=asyncio.FIRST_COMPLETED
+            )
+        finally:
+            self.clients.pop(ws, None)
+            for task in (client.sender, client.reader):
+                task.cancel()
+            await asyncio.gather(client.sender, client.reader, return_exceptions=True)
+
+    async def _read_commands(self, client: _Client):
+        ws = client.ws
+        try:
             while True:
                 data = await ws.receive_json()
                 try:
@@ -108,27 +166,25 @@ class UiServer:
                 except ValidationError:
                     await ws.close(code=1008)
                     return
-                # Keep this client's immediate response ahead of its broadcast.
-                async with lock:
+                # Queue this client's result before changes made while handling it.
+                client.handling = True
+                try:
                     result = await self.commands.handle(request)
-                    await ws.send_json(result.model_dump(mode="json"))
+                    client.result(result.model_dump(mode="json"))
+                finally:
+                    client.handling = False
+                    client.flush_deferred()
                 self.changed()
         except WebSocketDisconnect:
             pass
-        finally:
-            self.clients.pop(ws, None)
 
     async def _broadcast(self):
         async with self._broadcast_lock:
             if not self.clients:
                 return
             snapshot = self.builder.build().model_dump(mode="json")
-            for ws, lock in list(self.clients.items()):
-                try:
-                    async with lock:
-                        await ws.send_json(snapshot)
-                except (WebSocketDisconnect, RuntimeError):
-                    self.clients.pop(ws, None)
+            for client in list(self.clients.values()):
+                client.snapshot(snapshot)
 
     async def _on_bus_event(self, _env):
         self.changed()

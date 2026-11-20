@@ -262,3 +262,131 @@ async def test_OI_019_estop_snapshot_uses_alert_source_not_held(tmp_path):
     commands.alerts_for = lambda: [warning, alert]
     assert [item.alert_id for item in builder.build().alerts] == ["id", "warning"]
     commands.close()
+
+
+@pytest.mark.asyncio
+async def test_ENV_001_static_files_use_repository_frontend_dist(tmp_path, monkeypatch):
+    cfg, clock, _, _, _, commands, injector = components(tmp_path)
+    repo = tmp_path / "repo"
+    (repo / "frontend/dist/assets").mkdir(parents=True)
+    (repo / "backend/frontend/dist/assets").mkdir(parents=True)
+    (repo / "frontend/dist/index.html").write_text("<title>correct root</title>")
+    (repo / "frontend/dist/assets/app.js").write_text("correct asset")
+    (repo / "backend/frontend/dist/index.html").write_text("wrong root")
+    (repo / "backend/frontend/dist/assets/app.js").write_text("wrong asset")
+    cfg._root = repo
+    monkeypatch.chdir(repo / "backend")
+    server = UiServer(cfg, clock, None, commands, injector)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=server.app), base_url="http://test"
+    ) as client:
+        index = await client.get("/")
+        asset = await client.get("/assets/app.js")
+        assert index.status_code == 200 and index.text == "<title>correct root</title>"
+        assert asset.status_code == 200 and asset.text == "correct asset"
+    commands.close()
+
+
+@pytest.mark.asyncio
+async def test_OI_005_slow_client_does_not_stall_healthy_client_and_cleans_up(tmp_path):
+    import asyncio
+    import json
+
+    from aegis.ground.snapshot import SnapshotBuilder
+
+    cfg, clock, _, _, status, commands, injector = components(tmp_path)
+    server = UiServer(
+        cfg, clock, SnapshotBuilder(cfg, clock, status, commands), commands, injector
+    )
+    scope = {
+        "type": "websocket",
+        "asgi": {"version": "3.0", "spec_version": "2.3"},
+        "scheme": "ws",
+        "path": "/ws",
+        "raw_path": b"/ws",
+        "query_string": b"",
+        "headers": [],
+        "client": ("test", 1),
+        "server": ("test", 80),
+        "subprotocols": [],
+        "root_path": "",
+    }
+    slow_input, fast_input, slow_output, fast_output = (
+        asyncio.Queue() for _ in range(4)
+    )
+    blocked = asyncio.Event()
+    never_unblock = asyncio.Event()
+
+    async def slow_send(message):
+        if message["type"] == "websocket.send":
+            blocked.set()
+            await never_unblock.wait()
+        await slow_output.put(message)
+
+    await slow_input.put({"type": "websocket.connect"})
+    await fast_input.put({"type": "websocket.connect"})
+    async with server.app.router.lifespan_context(server.app):
+        slow_task = asyncio.create_task(server.app(scope, slow_input.get, slow_send))
+        assert (await slow_output.get())["type"] == "websocket.accept"
+        await blocked.wait()
+        slow_client = next(iter(server.clients.values()))
+        slow_sender = slow_client.sender
+        fast_task = asyncio.create_task(
+            server.app(scope, fast_input.get, fast_output.put)
+        )
+        assert (await fast_output.get())["type"] == "websocket.accept"
+        initial = json.loads((await fast_output.get())["text"])
+        for _ in range(3):
+            await server._broadcast()
+            await asyncio.sleep(0)
+        latest = json.loads((await fast_output.get())["text"])
+        assert latest["kind"] == "snapshot" and latest["seq"] > initial["seq"]
+        while not fast_output.empty():
+            fast_output.get_nowait()
+        await fast_input.put(
+            {
+                "type": "websocket.receive",
+                "text": json.dumps(
+                    {
+                        "kind": "command",
+                        "client_req_id": "fast",
+                        "command": "estop",
+                        "args": {},
+                        "confirmed": False,
+                    }
+                ),
+            }
+        )
+        result = json.loads((await fast_output.get())["text"])
+        while result["kind"] == "snapshot":
+            result = json.loads((await fast_output.get())["text"])
+        assert result["kind"] == "command_result" and result["client_req_id"] == "fast"
+        assert result["accepted"]
+        # The blocked writer retains at most the latest unsent full snapshot.
+        assert len(slow_client.pending) == 1
+        await slow_input.put({"type": "websocket.disconnect", "code": 1000})
+        await slow_task
+        assert slow_sender.done() and len(server.clients) == 1
+        await fast_input.put({"type": "websocket.disconnect", "code": 1000})
+        await fast_task
+        assert not server.clients
+        shutdown_input = asyncio.Queue()
+        shutdown_output = asyncio.Queue()
+        shutdown_blocked = asyncio.Event()
+
+        async def shutdown_send(message):
+            if message["type"] == "websocket.send":
+                shutdown_blocked.set()
+                await never_unblock.wait()
+            await shutdown_output.put(message)
+
+        await shutdown_input.put({"type": "websocket.connect"})
+        shutdown_task = asyncio.create_task(
+            server.app(scope, shutdown_input.get, shutdown_send)
+        )
+        assert (await shutdown_output.get())["type"] == "websocket.accept"
+        await shutdown_blocked.wait()
+        shutdown_sender = next(iter(server.clients.values())).sender
+    await shutdown_task
+    assert shutdown_sender.done() and not server.clients
+    commands.close()
