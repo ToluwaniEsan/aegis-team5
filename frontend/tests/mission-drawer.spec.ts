@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import idle from "../src/mock/fixtures/idle.json" with { type: "json" };
+import idle from "../src/test-fixtures/idle.json" with { type: "json" };
 
 test("OI-019: E-STOP sends while the mission drawer is open", async ({
   page,

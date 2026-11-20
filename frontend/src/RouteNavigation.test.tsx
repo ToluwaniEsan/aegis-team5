@@ -1,6 +1,6 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
-import { fault_shift, idle, travelling } from "./mock/fixtures.generated";
+import { fault_shift, idle, travelling } from "./test-fixtures/fixtures";
 import { RouteNavigation } from "./RouteNavigation";
 import {
   projectPoints,

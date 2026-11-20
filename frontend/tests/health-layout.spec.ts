@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import fault from "../src/mock/fixtures/fault_shift.json" with { type: "json" };
+import fault from "../src/test-fixtures/fault_shift.json" with { type: "json" };
 
 test("OI-008: payload and stale fault health cards fit the screen", async ({
   page,

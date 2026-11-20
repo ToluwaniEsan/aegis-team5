@@ -1,0 +1,304 @@
+{
+  "kind": "snapshot",
+  "seq": 61.0,
+  "server_time": "2026-11-19T15:04:10.400Z",
+  "test_mode": true,
+  "link": {
+    "updated_at": "2026-11-19T15:04:10.000Z",
+    "age_s": 0.4,
+    "stale": false,
+    "state": "CONNECTED",
+    "latency_ms": 80.0,
+    "loss_pct": 0.0
+  },
+  "vehicle_health": {
+    "overall": "NOMINAL",
+    "subsystems": [
+      {
+        "updated_at": "2026-11-19T15:04:10.000Z",
+        "age_s": 0.4,
+        "stale": false,
+        "key": "power",
+        "label": "Power & Battery",
+        "team": 4,
+        "status": "OK",
+        "detail": "92 % \u00b7 55.2 km"
+      },
+      {
+        "updated_at": "2026-11-19T15:04:10.000Z",
+        "age_s": 0.4,
+        "stale": false,
+        "key": "mobility",
+        "label": "Mobility & Drivetrain",
+        "team": 4,
+        "status": "OK",
+        "detail": "OK"
+      },
+      {
+        "updated_at": "2026-11-19T15:04:10.000Z",
+        "age_s": 0.4,
+        "stale": false,
+        "key": "navigation",
+        "label": "Navigation Sensors",
+        "team": 2,
+        "status": "OK",
+        "detail": "0 m/s"
+      },
+      {
+        "updated_at": "2026-11-19T15:04:10.000Z",
+        "age_s": 0.4,
+        "stale": false,
+        "key": "comms",
+        "label": "Comms Link",
+        "team": 3,
+        "status": "OK",
+        "detail": "80 ms \u00b7 0 %"
+      },
+      {
+        "updated_at": "2026-11-19T15:04:10.300Z",
+        "age_s": 0.1,
+        "stale": false,
+        "key": "payload_sensors",
+        "label": "Payload Bay Sensors",
+        "team": 5,
+        "status": "OK",
+        "detail": "OK"
+      }
+    ]
+  },
+  "payload": {
+    "updated_at": "2026-11-19T15:04:10.300Z",
+    "age_s": 0.1,
+    "stale": false,
+    "state": "SECURED",
+    "held_from": null,
+    "payload_id": "PAY-2026-001",
+    "secured": true,
+    "locked": true,
+    "mass_kg": 741.9535385765766,
+    "shift_cm": 0.0,
+    "release_energy_wh": null,
+    "sensor_health": "OK",
+    "sensors": {
+      "load_cell": "OK",
+      "lock": "OK",
+      "shift": "OK"
+    },
+    "prerelease_authorized": false,
+    "departure_permitted": true,
+    "departure_reason": null
+  },
+  "nav": {
+    "updated_at": "2026-11-19T15:04:10.000Z",
+    "age_s": 0.4,
+    "stale": false,
+    "origin": {
+      "lat": 34.7201,
+      "lon": -86.6402,
+      "id": "FOB_ALPHA",
+      "name": "FOB Alpha"
+    },
+    "destination": {
+      "lat": 34.7612,
+      "lon": -86.581,
+      "id": "OP_BRAVO",
+      "name": "Outpost Bravo"
+    },
+    "position": {
+      "lat": 34.7201,
+      "lon": -86.6402
+    },
+    "route": [
+      {
+        "lat": 34.7201,
+        "lon": -86.6402
+      },
+      {
+        "lat": 34.723836363636366,
+        "lon": -86.63481818181818
+      },
+      {
+        "lat": 34.72757272727273,
+        "lon": -86.62943636363636
+      },
+      {
+        "lat": 34.73130909090909,
+        "lon": -86.62405454545454
+      },
+      {
+        "lat": 34.73504545454546,
+        "lon": -86.61867272727272
+      },
+      {
+        "lat": 34.73878181818182,
+        "lon": -86.6132909090909
+      },
+      {
+        "lat": 34.742518181818184,
+        "lon": -86.60790909090909
+      },
+      {
+        "lat": 34.74625454545455,
+        "lon": -86.60252727272727
+      },
+      {
+        "lat": 34.74999090909091,
+        "lon": -86.59714545454545
+      },
+      {
+        "lat": 34.753727272727275,
+        "lon": -86.59176363636364
+      },
+      {
+        "lat": 34.75746363636364,
+        "lon": -86.58638181818182
+      },
+      {
+        "lat": 34.7612,
+        "lon": -86.581
+      }
+    ],
+    "progress_pct": 0.0,
+    "moving": false,
+    "speed_mps": 0.0,
+    "eta_s": 88.51769394477881,
+    "blocked": null
+  },
+  "mission": {
+    "active": {
+      "mission_id": "MSN-2026-001",
+      "payload_id": "PAY-2026-001",
+      "status": "ASSIGNED",
+      "origin": {
+        "lat": 34.7201,
+        "lon": -86.6402,
+        "id": "FOB_ALPHA",
+        "name": "FOB Alpha"
+      },
+      "destination": {
+        "lat": 34.7612,
+        "lon": -86.581,
+        "id": "OP_BRAVO",
+        "name": "Outpost Bravo"
+      },
+      "priority": "PRIORITY",
+      "declared_mass_kg": 742.0,
+      "dims_cm": {
+        "length": 58.0,
+        "width": 38.0,
+        "height": 36.0
+      },
+      "prerelease_authorized": false,
+      "created_at": "2026-11-19T15:04:05.100Z"
+    },
+    "queue": [],
+    "next_ids": {
+      "mission_id": "MSN-2026-002",
+      "payload_id": "PAY-2026-002"
+    }
+  },
+  "commands": [
+    {
+      "command_id": "744df2da-63d3-40fb-8367-adadcf902bae",
+      "command": "assign_mission",
+      "label": "Assign mission",
+      "state": "COMPLETED",
+      "reason": null,
+      "sent_at": "2026-11-19T15:04:05.100Z",
+      "updated_at": "2026-11-19T15:04:10.400Z"
+    }
+  ],
+  "allowed": {
+    "assign_mission": {
+      "allowed": true,
+      "reason": null,
+      "needs_confirmation": false
+    },
+    "start_queued_mission": {
+      "allowed": false,
+      "reason": "Finish or abort the active mission first",
+      "needs_confirmation": true
+    },
+    "remove_queued_mission": {
+      "allowed": false,
+      "reason": "No mission in the queue",
+      "needs_confirmation": false
+    },
+    "abort": {
+      "allowed": true,
+      "reason": null,
+      "needs_confirmation": true
+    },
+    "return_to_origin": {
+      "allowed": false,
+      "reason": "Not possible while the payload is SECURED",
+      "needs_confirmation": true
+    },
+    "change_destination": {
+      "allowed": true,
+      "reason": null,
+      "needs_confirmation": true
+    },
+    "update_payload": {
+      "allowed": true,
+      "reason": null,
+      "needs_confirmation": false
+    },
+    "release": {
+      "allowed": false,
+      "reason": "Not at the destination",
+      "needs_confirmation": true
+    },
+    "ack_fault": {
+      "allowed": false,
+      "reason": "No alert to acknowledge",
+      "needs_confirmation": false
+    },
+    "estop": {
+      "allowed": true,
+      "reason": null,
+      "needs_confirmation": false
+    }
+  },
+  "alerts": [],
+  "estop_active": false,
+  "delivery": null,
+  "places": [
+    {
+      "lat": 34.7201,
+      "lon": -86.6402,
+      "id": "FOB_ALPHA",
+      "name": "FOB Alpha"
+    },
+    {
+      "lat": 34.7612,
+      "lon": -86.581,
+      "id": "OP_BRAVO",
+      "name": "Outpost Bravo"
+    },
+    {
+      "lat": 34.6905,
+      "lon": -86.5521,
+      "id": "OP_CHARLIE",
+      "name": "Outpost Charlie"
+    },
+    {
+      "lat": 34.742,
+      "lon": -86.695,
+      "id": "LZ_DELTA",
+      "name": "Landing Zone Delta"
+    }
+  ],
+  "limits": {
+    "mass_min_kg": 226.8,
+    "mass_max_kg": 1000.0,
+    "dims_max_cm": {
+      "length": 60.0,
+      "width": 40.0,
+      "height": 40.0
+    },
+    "stale_after_s": 5.0,
+    "unsecured_shift_cm": 2.0,
+    "release_energy_wh_max": 5.0
+  }
+}

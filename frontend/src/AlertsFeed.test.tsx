@@ -9,7 +9,7 @@ import {
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { AlertView } from "./contracts/ui";
 import { AlertsFeed } from "./AlertsFeed";
-import { travelling } from "./mock/fixtures.generated";
+import { travelling } from "./test-fixtures/fixtures";
 import { sendCommand } from "./net/socket";
 import { useScreenStore } from "./state/store";
 

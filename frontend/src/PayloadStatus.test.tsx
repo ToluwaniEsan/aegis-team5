@@ -1,7 +1,7 @@
 import { act, cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
 import type { PayloadState, Snapshot } from "./contracts/ui";
-import { fault_shift, travelling } from "./mock/fixtures.generated";
+import { fault_shift, travelling } from "./test-fixtures/fixtures";
 import { PayloadStatus } from "./PayloadStatus";
 import { useScreenStore } from "./state/store";
 

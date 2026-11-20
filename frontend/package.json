@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:layout": "playwright test",
-    "schema": "ts-json-schema-generator --path src/contracts/ui.ts --type Snapshot --out ../contracts/ui.from-ts.schema.json"
+    "schema": "ts-json-schema-generator --additional-properties --path src/contracts/ui.ts --type Snapshot --out ../contracts/ui.from-ts.schema.json"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.6",

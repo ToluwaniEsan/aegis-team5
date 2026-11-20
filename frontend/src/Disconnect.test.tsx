@@ -2,7 +2,7 @@ import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { OperatorScreen } from "./OperatorScreen";
 import { SCREEN_DISCONNECTED_AFTER_MS } from "./config";
-import { idle } from "./mock/fixtures.generated";
+import { idle } from "./test-fixtures/fixtures";
 import { useScreenStore } from "./state/store";
 import { SocketClient } from "./net/socket";
 

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import travelling from "../src/mock/fixtures/travelling.json" with { type: "json" };
+import travelling from "../src/test-fixtures/travelling.json" with { type: "json" };
 
 test("OI-012: blocked route and labels fit the 1366 × 768 panel", async ({
   page,

@@ -5,7 +5,7 @@ import {
   RECONNECT_MAX_MS,
   SCREEN_DISCONNECTED_AFTER_MS,
 } from "../config";
-import { idle, travelling } from "../mock/fixtures.generated";
+import { idle, travelling } from "../test-fixtures/fixtures";
 import { useScreenStore } from "../state/store";
 import { SocketClient } from "./socket";
 

@@ -1,14 +1,56 @@
-import type { Snapshot } from '../contracts/ui';
-import { MOCK_INTERVAL_MS } from '../config';
-import { idle, travelling, fault_shift } from '../mock/fixtures.generated';
+import type { Snapshot } from "../contracts/ui";
+import { MOCK_INTERVAL_MS } from "../config";
+import {
+  idle,
+  assigned,
+  secured,
+  travelling,
+  degraded,
+  link_lost,
+  route_blocked,
+  queued,
+  fault_shift,
+  estop_held,
+  at_destination,
+  delivered,
+} from "../mock/fixtures.generated";
 
-export const fixtures = { idle, travelling, fault_shift };
+export const fixtures = {
+  idle,
+  assigned,
+  secured,
+  travelling,
+  degraded,
+  link_lost,
+  route_blocked,
+  queued,
+  fault_shift,
+  estop_held,
+  at_destination,
+  delivered,
+};
 export type FixtureName = keyof typeof fixtures;
-export const fixtureNames: FixtureName[] = ['idle', 'travelling', 'fault_shift'];
+export const fixtureNames: FixtureName[] = [
+  "idle",
+  "assigned",
+  "secured",
+  "travelling",
+  "degraded",
+  "link_lost",
+  "route_blocked",
+  "queued",
+  "fault_shift",
+  "estop_held",
+  "at_destination",
+  "delivered",
+];
 
-export function startMockFeed(onSnapshot: (snapshot: Snapshot, name: FixtureName) => void) {
+export function startMockFeed(
+  onSnapshot: (snapshot: Snapshot, name: FixtureName) => void,
+) {
   let index = 0;
-  const emit = () => onSnapshot(fixtures[fixtureNames[index]], fixtureNames[index]);
+  const emit = () =>
+    onSnapshot(fixtures[fixtureNames[index]], fixtureNames[index]);
   emit();
   const timer = setInterval(() => {
     index = (index + 1) % fixtureNames.length;
@@ -19,6 +61,8 @@ export function startMockFeed(onSnapshot: (snapshot: Snapshot, name: FixtureName
       index = fixtureNames.indexOf(name);
       emit();
     },
-    stop() { clearInterval(timer); },
+    stop() {
+      clearInterval(timer);
+    },
   };
 }

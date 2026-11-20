@@ -9,7 +9,7 @@ import {
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { CommandPanel } from "./CommandPanel";
 import type { Snapshot } from "./contracts/ui";
-import { idle, travelling } from "./mock/fixtures.generated";
+import { idle, travelling } from "./test-fixtures/fixtures";
 import { sendCommand } from "./net/socket";
 import { useScreenStore } from "./state/store";
 

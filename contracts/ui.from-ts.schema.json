@@ -3,7 +3,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
     "AlertView": {
-      "additionalProperties": false,
       "properties": {
         "acknowledged": {
           "type": "boolean"
@@ -71,7 +70,6 @@
       "type": "string"
     },
     "CommandView": {
-      "additionalProperties": false,
       "properties": {
         "command": {
           "$ref": "#/definitions/CommandName"
@@ -110,7 +108,6 @@
       "type": "object"
     },
     "DeliverySummary": {
-      "additionalProperties": false,
       "properties": {
         "confirm_latency_s": {
           "type": "number"
@@ -150,7 +147,6 @@
       "type": "object"
     },
     "Dims": {
-      "additionalProperties": false,
       "properties": {
         "height": {
           "type": "number"
@@ -179,7 +175,6 @@
       "type": "string"
     },
     "LatLon": {
-      "additionalProperties": false,
       "properties": {
         "lat": {
           "type": "number"
@@ -203,7 +198,6 @@
       "type": "string"
     },
     "LinkView": {
-      "additionalProperties": false,
       "properties": {
         "age_s": {
           "type": [
@@ -247,7 +241,6 @@
       "type": "object"
     },
     "Mission": {
-      "additionalProperties": false,
       "properties": {
         "created_at": {
           "type": "string"
@@ -305,7 +298,6 @@
       "type": "string"
     },
     "NavView": {
-      "additionalProperties": false,
       "properties": {
         "age_s": {
           "type": [
@@ -319,7 +311,6 @@
               "type": "null"
             },
             {
-              "additionalProperties": false,
               "properties": {
                 "at": {
                   "$ref": "#/definitions/LatLon"
@@ -460,7 +451,6 @@
       "type": "string"
     },
     "PayloadView": {
-      "additionalProperties": false,
       "properties": {
         "age_s": {
           "type": [
@@ -518,7 +508,6 @@
           "$ref": "#/definitions/Health"
         },
         "sensors": {
-          "additionalProperties": false,
           "properties": {
             "load_cell": {
               "$ref": "#/definitions/Health"
@@ -577,7 +566,6 @@
       "type": "object"
     },
     "Permission": {
-      "additionalProperties": false,
       "properties": {
         "allowed": {
           "type": "boolean"
@@ -600,7 +588,6 @@
       "type": "object"
     },
     "Place": {
-      "additionalProperties": false,
       "properties": {
         "id": {
           "type": "string"
@@ -640,7 +627,6 @@
       "type": "string"
     },
     "Snapshot": {
-      "additionalProperties": false,
       "properties": {
         "alerts": {
           "items": {
@@ -649,7 +635,6 @@
           "type": "array"
         },
         "allowed": {
-          "additionalProperties": false,
           "properties": {
             "abort": {
               "$ref": "#/definitions/Permission"
@@ -720,7 +705,6 @@
           "type": "string"
         },
         "limits": {
-          "additionalProperties": false,
           "properties": {
             "dims_max_cm": {
               "$ref": "#/definitions/Dims"
@@ -755,7 +739,6 @@
           "$ref": "#/definitions/LinkView"
         },
         "mission": {
-          "additionalProperties": false,
           "properties": {
             "active": {
               "anyOf": [
@@ -768,7 +751,6 @@
               ]
             },
             "next_ids": {
-              "additionalProperties": false,
               "properties": {
                 "mission_id": {
                   "type": "string"
@@ -819,7 +801,6 @@
           "type": "boolean"
         },
         "vehicle_health": {
-          "additionalProperties": false,
           "properties": {
             "overall": {
               "$ref": "#/definitions/OverallHealth"
@@ -859,7 +840,6 @@
       "type": "object"
     },
     "Subsystem": {
-      "additionalProperties": false,
       "properties": {
         "age_s": {
           "type": [

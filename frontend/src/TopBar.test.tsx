@@ -1,6 +1,6 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
-import { travelling } from "./mock/fixtures.generated";
+import { travelling } from "./test-fixtures/fixtures";
 import { useScreenStore } from "./state/store";
 import { TopBar } from "./TopBar";
 
