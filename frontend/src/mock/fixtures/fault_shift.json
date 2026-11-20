@@ -166,12 +166,12 @@
     },
     "start_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": true
     },
     "remove_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": false
     },
     "abort": {

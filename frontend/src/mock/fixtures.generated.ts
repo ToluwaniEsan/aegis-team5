@@ -122,12 +122,12 @@ export const idle: Snapshot = {
     },
     "start_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": true
     },
     "remove_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": false
     },
     "abort": {
@@ -152,12 +152,12 @@ export const idle: Snapshot = {
     },
     "release": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Vehicle is not at the destination",
       "needs_confirmation": true
     },
     "ack_fault": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "No unacknowledged alerts",
       "needs_confirmation": false
     },
     "estop": {
@@ -296,8 +296,8 @@ export const travelling: Snapshot = {
       "shift": "OK"
     },
     "prerelease_authorized": false,
-    "departure_permitted": true,
-    "departure_reason": null
+    "departure_permitted": false,
+    "departure_reason": "Payload is travelling"
   },
   "nav": {
     "updated_at": "2026-11-19T15:04:05.000Z",
@@ -377,12 +377,12 @@ export const travelling: Snapshot = {
     },
     "start_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": true
     },
     "remove_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": false
     },
     "abort": {
@@ -412,7 +412,7 @@ export const travelling: Snapshot = {
     },
     "ack_fault": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "No unacknowledged alerts",
       "needs_confirmation": false
     },
     "estop": {
@@ -632,12 +632,12 @@ export const fault_shift: Snapshot = {
     },
     "start_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": true
     },
     "remove_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": false
     },
     "abort": {

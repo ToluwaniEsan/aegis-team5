@@ -119,12 +119,12 @@
     },
     "start_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": true
     },
     "remove_queued_mission": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Mission queue is empty",
       "needs_confirmation": false
     },
     "abort": {
@@ -149,12 +149,12 @@
     },
     "release": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "Vehicle is not at the destination",
       "needs_confirmation": true
     },
     "ack_fault": {
       "allowed": false,
-      "reason": "No active mission",
+      "reason": "No unacknowledged alerts",
       "needs_confirmation": false
     },
     "estop": {
