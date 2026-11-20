@@ -21,6 +21,7 @@ from aegis.standins.power import PowerStandin
 from aegis.vehicle.link_watch import LinkWatch
 from aegis.vehicle.payload_controller import PayloadController
 from aegis.vehicle.simulator import PayloadSimulator
+from aegis.vehicle.test_agent import TestAgent
 
 if TYPE_CHECKING:
     from aegis.ground.mission_log import MissionLog
@@ -54,6 +55,9 @@ class Vehicle:
         self.power = PowerStandin(bus, clock, cfg, log, moving=lambda: self.nav.moving)
         self.controller = PayloadController(bus, clock, cfg, log)
         self.link_watch = LinkWatch(bus, clock, cfg, log)
+        self.test_agent = TestAgent(
+            bus, log, self.simulator, self.controller, self.nav, self.power
+        )
         # In start order. The simulator first, so the lock state exists before
         # the controller looks at it.
         self.parts = [
@@ -62,9 +66,9 @@ class Vehicle:
             self.power,
             self.controller,
             self.link_watch,
+            self.test_agent,
         ]
-        # A9: Event Buffer (A7, as an outbound filter) and the test agent
-        #     (vehicle.test_agent, with the controller crash hook).
+        # A9: Event Buffer (A7, as an outbound filter).
 
     async def start(self) -> None:
         self.log.record("process.start")
