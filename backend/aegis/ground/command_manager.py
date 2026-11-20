@@ -18,9 +18,10 @@ from aegis.common.ui_models import (
     CommandView,
     Mission,
     NextIds,
+    Permission,
     Place,
 )
-from aegis.ground.permissions import permissions
+from aegis.ground.permissions import NEEDS_CONFIRMATION, permissions
 
 if TYPE_CHECKING:
     from aegis.bus.local_bus import LocalBus
@@ -58,6 +59,7 @@ class CommandManager:
         )
         self.alerts_for = alerts_for
         self.on_failure = on_failure
+        self.on_change: Callable[[], None] | None = None
         self.ack_ground_alert = ack_ground_alert
         self.active: Mission | None = None
         self.queue: list[Mission] = []
@@ -106,6 +108,49 @@ class CommandManager:
         mission = self.missions.get(mission_id)
         return None if mission is None else mission.destination
 
+    def allowed(self) -> dict[str, Permission]:
+        """The same permission decisions for command handling and snapshots."""
+        payload = self.status.payload_view()
+        if payload is None:
+            return {
+                name: Permission(
+                    allowed=name == "estop",
+                    reason=None if name == "estop" else "Payload status unavailable",
+                    needs_confirmation=needs_confirmation,
+                )
+                for name, needs_confirmation in NEEDS_CONFIRMATION.items()
+            }
+        allowed = permissions(
+            payload,
+            self.status.nav_view(),
+            self.status.link_view(),
+            self.alerts_for() if self.alerts_for is not None else [],
+            self.active,
+            self.queue,
+            self.cfg,
+        )
+        if self.status.freshness("nav.state").updated_at is None:
+            for name in ("release", "update_payload"):
+                allowed[name] = Permission(
+                    allowed=False,
+                    reason="Navigation status unavailable",
+                    needs_confirmation=NEEDS_CONFIRMATION[name],
+                )
+        if self.alerts_for is None:
+            for name in ("release", "ack_fault"):
+                # Match B9's check order: missing navigation is reported first.
+                if (
+                    name == "release"
+                    and self.status.freshness("nav.state").updated_at is None
+                ):
+                    continue
+                allowed[name] = Permission(
+                    allowed=False,
+                    reason="Alert status unavailable",
+                    needs_confirmation=NEEDS_CONFIRMATION[name],
+                )
+        return allowed
+
     def _place(self, value: object) -> Place:
         for place in self.cfg.places:
             if place.id == value:
@@ -146,25 +191,7 @@ class CommandManager:
 
         name, args = request.command, request.args
         if name != "estop":
-            payload = self.status.payload_view()
-            if payload is None:
-                return result(False, reason="Payload status unavailable")
-            if (
-                name in {"release", "update_payload"}
-                and self.status.freshness("nav.state").updated_at is None
-            ):
-                return result(False, reason="Navigation status unavailable")
-            if name in {"release", "ack_fault"} and self.alerts_for is None:
-                return result(False, reason="Alert status unavailable")
-            permission = permissions(
-                payload,
-                self.status.nav_view(),
-                self.status.link_view(),
-                self.alerts_for() if self.alerts_for is not None else [],
-                self.active,
-                self.queue,
-                self.cfg,
-            )[name]
+            permission = self.allowed()[name]
             if not permission.allowed:
                 return result(
                     False, reason=permission.reason or "Command not permitted"
@@ -209,6 +236,7 @@ class CommandManager:
                     self.log.record(
                         "mission.change", mission=mission.model_dump(mode="json")
                     )
+                    self._notify_change()
                     return result(True)
                 self.active = mission
                 await self._report_mission(mission)
@@ -226,6 +254,7 @@ class CommandManager:
                     self.log.record(
                         "mission.change", mission_id=queued.mission_id, status="REMOVED"
                     )
+                    self._notify_change()
                     return result(True)
                 if self.active is not None:
                     return result(False, reason="A mission is active")
@@ -335,6 +364,11 @@ class CommandManager:
 
     def _log_command(self, view: CommandView) -> None:
         self.log.record("cmd.lifecycle", command=view.model_dump(mode="json"))
+        self._notify_change()
+
+    def _notify_change(self) -> None:
+        if self.on_change is not None:
+            self.on_change()
 
     async def _transition(
         self, command_id: str, state: str, reason: str | None = None
@@ -384,6 +418,7 @@ class CommandManager:
                     self.log.record(
                         "mission.change", mission=mission.model_dump(mode="json")
                     )
+                    self._notify_change()
 
     async def _timeout(self, command_id: str) -> None:
         sent_at = self.commands[command_id].sent_at
@@ -436,6 +471,7 @@ class CommandManager:
 
     async def _report_mission(self, mission: Mission) -> None:
         self.log.record("mission.change", mission=mission.model_dump(mode="json"))
+        self._notify_change()
         await self.bus.publish(
             make(
                 "t1.mission_report",
