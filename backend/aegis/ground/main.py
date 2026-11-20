@@ -17,6 +17,7 @@ from aegis.bus.local_bus import Link, LocalBus
 from aegis.common.clock import Clock
 from aegis.common.config import Settings
 from aegis.ground.heartbeat import Heartbeat
+from aegis.testing.fault_injector import FaultInjector
 
 if TYPE_CHECKING:
     from aegis.ground.mission_log import MissionLog
@@ -42,13 +43,15 @@ class Ground:
         else:
             self.bus.attach_link(link)
         self.heartbeat = Heartbeat(self.bus, clock, cfg)
+        # B14: the UI server mounts this at POST /api/test/inject (test_mode only).
+        self.fault_injector = FaultInjector(self.bus, clock, cfg, log)
 
         # EMMANUEL: Command Manager (B7). Subscribe it to "ground.command_manager".
         # EMMANUEL: Status Monitor (B9). Subscribe it to "ground.status_monitor".
         # EMMANUEL: Alert Manager (B10/B11). Subscribe it to "ground.alert_manager".
         # EMMANUEL: Team 1 stand-in (standins/team1.py). Subscribe it to "team1.integration".
         # EMMANUEL: UI server (B12), serving the screen and /ws on network.ui_port,
-        #           with the Fault Injector (B14) mounted at POST /api/test/inject.
+        #           with self.fault_injector mounted at POST /api/test/inject.
 
     async def start(self) -> None:
         self.log.record("process.start")
