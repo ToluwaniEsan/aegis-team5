@@ -137,6 +137,127 @@ body {
 .panel-right {
   border-right: 0;
 }
+.payload-card {
+  background: var(--panel-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px var(--s3);
+}
+.payload-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.payload-header h2 {
+  margin: 0;
+  color: var(--text-label);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+}
+.payload-header span {
+  color: var(--text-muted);
+  font: 11px var(--font-num);
+}
+.payload-state {
+  font-size: var(--fs-big);
+  font-weight: 600;
+}
+.payload-stepper {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  margin: var(--s2) 0;
+}
+.payload-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--text-label);
+  font-size: 9px;
+  font-weight: 600;
+}
+.payload-step.current {
+  border-color: var(--action);
+  background: var(--action);
+  color: var(--action-text);
+}
+.payload-held,
+.payload-returning {
+  display: flex;
+  align-items: center;
+  gap: var(--s1);
+  margin: var(--s2) 0;
+  padding: var(--s1);
+  border: 1px solid var(--line);
+}
+.payload-held {
+  border-color: var(--critical);
+  background: var(--critical-bg);
+  color: var(--critical);
+  font-weight: 600;
+}
+.payload-rows {
+  margin: 0;
+}
+.payload-rows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s2);
+  min-height: 24px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+}
+.payload-rows dt {
+  color: var(--text-muted);
+}
+.payload-rows dd {
+  margin: 0;
+  text-align: right;
+  font: 13px var(--font-num);
+}
+.payload-rows svg,
+.payload-held svg {
+  vertical-align: middle;
+  flex: none;
+}
+.payload-rows .payload-sensors {
+  font-size: 11px;
+}
+.payload-warning {
+  color: var(--warning);
+}
+.payload-critical {
+  color: var(--critical);
+}
+.payload-awaiting {
+  padding: var(--s2) 0;
+}
+.payload-stale {
+  background: var(--stale-pattern);
+  color: var(--stale-text);
+}
+.payload-stale .payload-rows dt,
+.payload-stale .payload-warning,
+.payload-stale .payload-critical,
+.payload-stale .payload-held,
+.payload-stale .payload-step {
+  color: var(--stale-text);
+}
+.payload-stale .payload-held,
+.payload-stale .payload-step {
+  background: transparent;
+}
+.payload-stale .payload-step.current {
+  border-color: var(--stale-text);
+  background: transparent;
+  font-weight: 600;
+  text-decoration: underline;
+}
 .bottom {
   grid-column: 1 / 4;
   background: var(--panel);
