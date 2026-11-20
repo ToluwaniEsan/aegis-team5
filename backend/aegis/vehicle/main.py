@@ -1,8 +1,8 @@
 """Vehicle process entry point: `python -m aegis.vehicle`.
 
-Phase 0 skeleton (B4): settings, Mission Log, bus and LinkPort, so heartbeats
-from the ground arrive and are logged. Task A9 completes it with the
-components marked `A9:` below.
+Runs the Payload Simulator, Payload Controller, Link Watch and the Team 2
+and Team 4 stand-ins on the vehicle bus, joined to the ground through the
+link. Task A9 adds the parts still marked `A9:` below.
 """
 
 from __future__ import annotations
@@ -16,6 +16,11 @@ from aegis.bus.link_port import LinkPort
 from aegis.bus.local_bus import Link, LocalBus
 from aegis.common.clock import Clock
 from aegis.common.config import Settings
+from aegis.standins.nav import NavStandin
+from aegis.standins.power import PowerStandin
+from aegis.vehicle.link_watch import LinkWatch
+from aegis.vehicle.payload_controller import PayloadController
+from aegis.vehicle.simulator import PayloadSimulator
 
 if TYPE_CHECKING:
     from aegis.ground.mission_log import MissionLog
@@ -43,18 +48,34 @@ class Vehicle:
         else:
             self.bus.attach_link(link)
 
-        # A9: Payload Simulator (A3), Payload Controller (A4), Link Watch (A5),
-        #     Event Buffer (A7, as an outbound filter), test agent (A9),
-        #     Team 2 stand-in (B5) and Team 4 stand-in (B6).
+        bus = self.bus
+        self.simulator = PayloadSimulator(bus, clock, cfg, log)
+        self.nav = NavStandin(bus, clock, cfg, log)
+        self.power = PowerStandin(bus, clock, cfg, log, moving=lambda: self.nav.moving)
+        self.controller = PayloadController(bus, clock, cfg, log)
+        self.link_watch = LinkWatch(bus, clock, cfg, log)
+        # In start order. The simulator first, so the lock state exists before
+        # the controller looks at it.
+        self.parts = [
+            self.simulator,
+            self.nav,
+            self.power,
+            self.controller,
+            self.link_watch,
+        ]
+        # A9: Event Buffer (A7, as an outbound filter) and the test agent
+        #     (vehicle.test_agent, with the controller crash hook).
 
     async def start(self) -> None:
         self.log.record("process.start")
         if self.link_port is not None:
             await self.link_port.start()
-        # A9: start the components above.
+        for part in self.parts:
+            await part.start()
 
     async def stop(self) -> None:
-        # A9: stop the components above, in reverse order of start.
+        for part in reversed(self.parts):
+            await part.stop()
         if self.link_port is not None:
             await self.link_port.stop()
         self.log.record("process.stop")
