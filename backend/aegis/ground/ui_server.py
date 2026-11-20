@@ -9,6 +9,7 @@ from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
@@ -108,6 +109,12 @@ class UiServer:
             self.app.add_api_route("/api/test/inject", self.not_found, methods=["POST"])
         self.app.add_api_websocket_route("/ws", self.websocket)
         dist = cfg.root / "frontend" / "dist"
+        if cfg.test_mode and (dist / "index.html").is_file():
+            self.app.add_api_route(
+                "/test", lambda: FileResponse(dist / "index.html"), methods=["GET"]
+            )
+        else:
+            self.app.add_api_route("/test", self.not_found, methods=["GET"])
         if dist.is_dir():
             self.app.mount("/", StaticFiles(directory=dist, html=True), name="frontend")
         else:

@@ -288,6 +288,28 @@ async def test_ENV_001_static_files_use_repository_frontend_dist(tmp_path, monke
 
 
 @pytest.mark.asyncio
+async def test_GEN_001_test_page_requires_test_mode(tmp_path):
+    cfg, clock, _, _, _, commands, injector = components(tmp_path)
+    repo = tmp_path / "repo"
+    (repo / "frontend/dist").mkdir(parents=True)
+    (repo / "frontend/dist/index.html").write_text("test screen")
+    cfg._root = repo
+    enabled = UiServer(cfg, clock, None, commands, injector)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=enabled.app), base_url="http://test"
+    ) as client:
+        assert (await client.get("/test")).text == "test screen"
+    disabled_cfg = cfg.model_copy(update={"test_mode": False})
+    disabled_cfg._root = repo
+    disabled = UiServer(disabled_cfg, clock, None, commands, injector)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=disabled.app), base_url="http://test"
+    ) as client:
+        assert (await client.get("/test")).status_code == 404
+    commands.close()
+
+
+@pytest.mark.asyncio
 async def test_OI_005_slow_client_does_not_stall_healthy_client_and_cleans_up(tmp_path):
     import asyncio
     import json

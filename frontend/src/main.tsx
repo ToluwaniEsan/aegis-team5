@@ -8,11 +8,16 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import { OperatorScreen } from "./OperatorScreen";
 import { DataSource } from "./net/DataSource";
+import { TestPanel } from "./TestPanel";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <DataSource mock={import.meta.env.VITE_MOCK === "1"}>
-      <OperatorScreen />
+      {window.location.pathname === "/test" ? (
+        <TestPanel />
+      ) : (
+        <OperatorScreen />
+      )}
     </DataSource>
   </React.StrictMode>,
 );

@@ -943,3 +943,66 @@ body {
   background: var(--panel-raised);
   border: 1px solid var(--line-strong);
 }
+html:has(.test-panel),
+body:has(.test-panel) {
+  overflow: visible;
+}
+.test-panel {
+  min-height: 100vh;
+  padding: var(--s3);
+  background: var(--panel);
+}
+.test-panel header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--panel);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: var(--s2);
+}
+.test-panel h1 {
+  margin: 0;
+  font-size: var(--fs-big);
+}
+.test-panel section {
+  padding: var(--s2) 0;
+  border-bottom: 1px solid var(--line);
+}
+.test-panel h2 {
+  margin: var(--s1) 0;
+  color: var(--text-label);
+  font-size: var(--fs-label);
+}
+.inject-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--s2);
+  margin: var(--s2) 0;
+}
+.inject-form label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  font-size: 12px;
+}
+.inject-form input,
+.inject-form select,
+.inject-form button {
+  min-height: 32px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel-raised);
+  color: var(--text);
+  font: 13px var(--font-ui);
+}
+.inject-form button:enabled {
+  background: var(--action);
+  border-color: var(--action);
+  color: var(--action-text);
+}
+.inject-form button:disabled {
+  color: var(--text-muted);
+}
