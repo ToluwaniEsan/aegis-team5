@@ -256,6 +256,9 @@ it("test_AEG_501_changed_form_limits_require_review_again", () => {
   fireEvent.click(screen.getByRole("button", { name: "Add to queue" }));
   const dialog = screen.getByRole("dialog", { name: "Confirm command" });
   expect(within(dialog).getByText(/FOB Alpha/)).toBeTruthy();
+  expect(within(dialog).getByText("Declared weight: 500 kg")).toBeTruthy();
+  expect(within(dialog).getByText("Dimensions: 10 × 10 × 10 cm")).toBeTruthy();
+  expect(within(dialog).getByText("Pre-authorized release: No")).toBeTruthy();
   act(() =>
     useScreenStore.setState({
       snapshot: {

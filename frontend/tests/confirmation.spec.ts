@@ -29,6 +29,7 @@ test("OI-003 and OI-019: real confirmation keyboard and E-STOP", async ({
     Object.defineProperty(window, "WebSocket", { value: TestSocket });
   }, travelling);
   await page.goto("/");
+  await page.getByRole("button", { name: "Start operator console" }).click();
   await page.getByRole("button", { name: "Abort", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Confirm command" });
   await expect(dialog).toBeVisible();

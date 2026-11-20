@@ -29,6 +29,7 @@ test("OI-019: E-STOP sends while the mission drawer is open", async ({
     Object.defineProperty(window, "WebSocket", { value: TestSocket });
   }, idle);
   await page.goto("/");
+  await page.getByRole("button", { name: "Start operator console" }).click();
   await page.getByRole("button", { name: "New mission" }).click();
   const drawer = page.getByRole("dialog", { name: "Mission form" });
   await expect(drawer).toBeVisible();
