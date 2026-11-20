@@ -2,12 +2,28 @@
   "$defs": {
     "AlertView": {
       "properties": {
+        "acknowledged": {
+          "title": "Acknowledged",
+          "type": "boolean"
+        },
+        "active": {
+          "title": "Active",
+          "type": "boolean"
+        },
         "alert_id": {
           "title": "Alert Id",
           "type": "string"
         },
         "code": {
           "title": "Code",
+          "type": "string"
+        },
+        "raised_at": {
+          "title": "Raised At",
+          "type": "string"
+        },
+        "recommended_action": {
+          "title": "Recommended Action",
           "type": "string"
         },
         "severity": {
@@ -19,29 +35,13 @@
           "title": "Severity",
           "type": "string"
         },
-        "title": {
-          "title": "Title",
-          "type": "string"
-        },
         "source": {
           "title": "Source",
           "type": "string"
         },
-        "recommended_action": {
-          "title": "Recommended Action",
+        "title": {
+          "title": "Title",
           "type": "string"
-        },
-        "raised_at": {
-          "title": "Raised At",
-          "type": "string"
-        },
-        "acknowledged": {
-          "title": "Acknowledged",
-          "type": "boolean"
-        },
-        "active": {
-          "title": "Active",
-          "type": "boolean"
         }
       },
       "required": [
@@ -60,19 +60,8 @@
     },
     "BlockedRoute": {
       "properties": {
-        "reason": {
-          "title": "Reason",
-          "type": "string"
-        },
         "at": {
           "$ref": "#/$defs/LatLon"
-        },
-        "old_route": {
-          "items": {
-            "$ref": "#/$defs/LatLon"
-          },
-          "title": "Old Route",
-          "type": "array"
         },
         "new_eta_s": {
           "anyOf": [
@@ -84,6 +73,17 @@
             }
           ],
           "title": "New Eta S"
+        },
+        "old_route": {
+          "items": {
+            "$ref": "#/$defs/LatLon"
+          },
+          "title": "Old Route",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
         },
         "since": {
           "title": "Since",
@@ -102,10 +102,6 @@
     },
     "CommandView": {
       "properties": {
-        "command_id": {
-          "title": "Command Id",
-          "type": "string"
-        },
         "command": {
           "enum": [
             "assign_mission",
@@ -122,18 +118,12 @@
           "title": "Command",
           "type": "string"
         },
-        "label": {
-          "title": "Label",
+        "command_id": {
+          "title": "Command Id",
           "type": "string"
         },
-        "state": {
-          "enum": [
-            "SENT",
-            "RECEIVED",
-            "COMPLETED",
-            "FAILED"
-          ],
-          "title": "State",
+        "label": {
+          "title": "Label",
           "type": "string"
         },
         "reason": {
@@ -149,6 +139,16 @@
         },
         "sent_at": {
           "title": "Sent At",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "SENT",
+            "RECEIVED",
+            "COMPLETED",
+            "FAILED"
+          ],
+          "title": "State",
           "type": "string"
         },
         "updated_at": {
@@ -170,6 +170,25 @@
     },
     "DeliverySummary": {
       "properties": {
+        "confirm_latency_s": {
+          "title": "Confirm Latency S",
+          "type": "number"
+        },
+        "confirmed_at": {
+          "title": "Confirmed At",
+          "type": "string"
+        },
+        "destination": {
+          "$ref": "#/$defs/Place"
+        },
+        "energy_used_wh": {
+          "title": "Energy Used Wh",
+          "type": "number"
+        },
+        "mass_kg": {
+          "title": "Mass Kg",
+          "type": "number"
+        },
         "mission_id": {
           "title": "Mission Id",
           "type": "string"
@@ -178,28 +197,9 @@
           "title": "Payload Id",
           "type": "string"
         },
-        "destination": {
-          "$ref": "#/$defs/Place"
-        },
         "released_at": {
           "title": "Released At",
           "type": "string"
-        },
-        "confirmed_at": {
-          "title": "Confirmed At",
-          "type": "string"
-        },
-        "confirm_latency_s": {
-          "title": "Confirm Latency S",
-          "type": "number"
-        },
-        "mass_kg": {
-          "title": "Mass Kg",
-          "type": "number"
-        },
-        "energy_used_wh": {
-          "title": "Energy Used Wh",
-          "type": "number"
         }
       },
       "required": [
@@ -217,16 +217,16 @@
     },
     "Dims": {
       "properties": {
+        "height": {
+          "title": "Height",
+          "type": "number"
+        },
         "length": {
           "title": "Length",
           "type": "number"
         },
         "width": {
           "title": "Width",
-          "type": "number"
-        },
-        "height": {
-          "title": "Height",
           "type": "number"
         }
       },
@@ -258,16 +258,20 @@
     },
     "Limits": {
       "properties": {
-        "mass_min_kg": {
-          "title": "Mass Min Kg",
-          "type": "number"
+        "dims_max_cm": {
+          "$ref": "#/$defs/Dims"
         },
         "mass_max_kg": {
           "title": "Mass Max Kg",
           "type": "number"
         },
-        "dims_max_cm": {
-          "$ref": "#/$defs/Dims"
+        "mass_min_kg": {
+          "title": "Mass Min Kg",
+          "type": "number"
+        },
+        "release_energy_wh_max": {
+          "title": "Release Energy Wh Max",
+          "type": "number"
         },
         "stale_after_s": {
           "title": "Stale After S",
@@ -275,10 +279,6 @@
         },
         "unsecured_shift_cm": {
           "title": "Unsecured Shift Cm",
-          "type": "number"
-        },
-        "release_energy_wh_max": {
-          "title": "Release Energy Wh Max",
           "type": "number"
         }
       },
@@ -295,17 +295,6 @@
     },
     "LinkView": {
       "properties": {
-        "updated_at": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Updated At"
-        },
         "age_s": {
           "anyOf": [
             {
@@ -316,19 +305,6 @@
             }
           ],
           "title": "Age S"
-        },
-        "stale": {
-          "title": "Stale",
-          "type": "boolean"
-        },
-        "state": {
-          "enum": [
-            "CONNECTED",
-            "DEGRADED",
-            "LOST"
-          ],
-          "title": "State",
-          "type": "string"
         },
         "latency_ms": {
           "anyOf": [
@@ -351,6 +327,30 @@
             }
           ],
           "title": "Loss Pct"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "CONNECTED",
+            "DEGRADED",
+            "LOST"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "updated_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Updated At"
         }
       },
       "required": [
@@ -366,12 +366,42 @@
     },
     "Mission": {
       "properties": {
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "declared_mass_kg": {
+          "title": "Declared Mass Kg",
+          "type": "number"
+        },
+        "destination": {
+          "$ref": "#/$defs/Place"
+        },
+        "dims_cm": {
+          "$ref": "#/$defs/Dims"
+        },
         "mission_id": {
           "title": "Mission Id",
           "type": "string"
         },
+        "origin": {
+          "$ref": "#/$defs/Place"
+        },
         "payload_id": {
           "title": "Payload Id",
+          "type": "string"
+        },
+        "prerelease_authorized": {
+          "title": "Prerelease Authorized",
+          "type": "boolean"
+        },
+        "priority": {
+          "enum": [
+            "ROUTINE",
+            "PRIORITY",
+            "URGENT"
+          ],
+          "title": "Priority",
           "type": "string"
         },
         "status": {
@@ -383,36 +413,6 @@
             "ABORTED"
           ],
           "title": "Status",
-          "type": "string"
-        },
-        "origin": {
-          "$ref": "#/$defs/Place"
-        },
-        "destination": {
-          "$ref": "#/$defs/Place"
-        },
-        "priority": {
-          "enum": [
-            "ROUTINE",
-            "PRIORITY",
-            "URGENT"
-          ],
-          "title": "Priority",
-          "type": "string"
-        },
-        "declared_mass_kg": {
-          "title": "Declared Mass Kg",
-          "type": "number"
-        },
-        "dims_cm": {
-          "$ref": "#/$defs/Dims"
-        },
-        "prerelease_authorized": {
-          "title": "Prerelease Authorized",
-          "type": "boolean"
-        },
-        "created_at": {
-          "title": "Created At",
           "type": "string"
         }
       },
@@ -443,15 +443,15 @@
             }
           ]
         },
+        "next_ids": {
+          "$ref": "#/$defs/NextIds"
+        },
         "queue": {
           "items": {
             "$ref": "#/$defs/Mission"
           },
           "title": "Queue",
           "type": "array"
-        },
-        "next_ids": {
-          "$ref": "#/$defs/NextIds"
         }
       },
       "required": [
@@ -464,17 +464,6 @@
     },
     "NavView": {
       "properties": {
-        "updated_at": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Updated At"
-        },
         "age_s": {
           "anyOf": [
             {
@@ -486,11 +475,17 @@
           ],
           "title": "Age S"
         },
-        "stale": {
-          "title": "Stale",
-          "type": "boolean"
+        "blocked": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlockedRoute"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
-        "origin": {
+        "destination": {
           "anyOf": [
             {
               "$ref": "#/$defs/Place"
@@ -500,7 +495,22 @@
             }
           ]
         },
-        "destination": {
+        "eta_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Eta S"
+        },
+        "moving": {
+          "title": "Moving",
+          "type": "boolean"
+        },
+        "origin": {
           "anyOf": [
             {
               "$ref": "#/$defs/Place"
@@ -520,13 +530,6 @@
             }
           ]
         },
-        "route": {
-          "items": {
-            "$ref": "#/$defs/LatLon"
-          },
-          "title": "Route",
-          "type": "array"
-        },
         "progress_pct": {
           "anyOf": [
             {
@@ -538,9 +541,12 @@
           ],
           "title": "Progress Pct"
         },
-        "moving": {
-          "title": "Moving",
-          "type": "boolean"
+        "route": {
+          "items": {
+            "$ref": "#/$defs/LatLon"
+          },
+          "title": "Route",
+          "type": "array"
         },
         "speed_mps": {
           "anyOf": [
@@ -553,26 +559,20 @@
           ],
           "title": "Speed Mps"
         },
-        "eta_s": {
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "updated_at": {
           "anyOf": [
             {
-              "type": "number"
+              "type": "string"
             },
             {
               "type": "null"
             }
           ],
-          "title": "Eta S"
-        },
-        "blocked": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/BlockedRoute"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "title": "Updated At"
         }
       },
       "required": [
@@ -612,17 +612,6 @@
     },
     "PayloadView": {
       "properties": {
-        "updated_at": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Updated At"
-        },
         "age_s": {
           "anyOf": [
             {
@@ -634,24 +623,20 @@
           ],
           "title": "Age S"
         },
-        "stale": {
-          "title": "Stale",
+        "departure_permitted": {
+          "title": "Departure Permitted",
           "type": "boolean"
         },
-        "state": {
-          "enum": [
-            "EMPTY",
-            "LOADED",
-            "SECURED",
-            "TRAVELLING",
-            "AT_DESTINATION",
-            "RELEASED",
-            "DELIVERED",
-            "RETURNING",
-            "HELD"
+        "departure_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
           ],
-          "title": "State",
-          "type": "string"
+          "title": "Departure Reason"
         },
         "held_from": {
           "anyOf": [
@@ -675,21 +660,6 @@
           ],
           "title": "Held From"
         },
-        "payload_id": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Payload Id"
-        },
-        "secured": {
-          "title": "Secured",
-          "type": "boolean"
-        },
         "locked": {
           "title": "Locked",
           "type": "boolean"
@@ -705,16 +675,20 @@
           ],
           "title": "Mass Kg"
         },
-        "shift_cm": {
+        "payload_id": {
           "anyOf": [
             {
-              "type": "number"
+              "type": "string"
             },
             {
               "type": "null"
             }
           ],
-          "title": "Shift Cm"
+          "title": "Payload Id"
+        },
+        "prerelease_authorized": {
+          "title": "Prerelease Authorized",
+          "type": "boolean"
         },
         "release_energy_wh": {
           "anyOf": [
@@ -726,6 +700,10 @@
             }
           ],
           "title": "Release Energy Wh"
+        },
+        "secured": {
+          "title": "Secured",
+          "type": "boolean"
         },
         "sensor_health": {
           "enum": [
@@ -740,15 +718,37 @@
         "sensors": {
           "$ref": "#/$defs/Sensors"
         },
-        "prerelease_authorized": {
-          "title": "Prerelease Authorized",
+        "shift_cm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Shift Cm"
+        },
+        "stale": {
+          "title": "Stale",
           "type": "boolean"
         },
-        "departure_permitted": {
-          "title": "Departure Permitted",
-          "type": "boolean"
+        "state": {
+          "enum": [
+            "EMPTY",
+            "LOADED",
+            "SECURED",
+            "TRAVELLING",
+            "AT_DESTINATION",
+            "RELEASED",
+            "DELIVERED",
+            "RETURNING",
+            "HELD"
+          ],
+          "title": "State",
+          "type": "string"
         },
-        "departure_reason": {
+        "updated_at": {
           "anyOf": [
             {
               "type": "string"
@@ -757,7 +757,7 @@
               "type": "null"
             }
           ],
-          "title": "Departure Reason"
+          "title": "Updated At"
         }
       },
       "required": [
@@ -787,6 +787,10 @@
           "title": "Allowed",
           "type": "boolean"
         },
+        "needs_confirmation": {
+          "title": "Needs Confirmation",
+          "type": "boolean"
+        },
         "reason": {
           "anyOf": [
             {
@@ -797,10 +801,6 @@
             }
           ],
           "title": "Reason"
-        },
-        "needs_confirmation": {
-          "title": "Needs Confirmation",
-          "type": "boolean"
         }
       },
       "required": [
@@ -813,34 +813,34 @@
     },
     "Permissions": {
       "properties": {
-        "assign_mission": {
-          "$ref": "#/$defs/Permission"
-        },
-        "start_queued_mission": {
-          "$ref": "#/$defs/Permission"
-        },
-        "remove_queued_mission": {
-          "$ref": "#/$defs/Permission"
-        },
         "abort": {
-          "$ref": "#/$defs/Permission"
-        },
-        "return_to_origin": {
-          "$ref": "#/$defs/Permission"
-        },
-        "change_destination": {
-          "$ref": "#/$defs/Permission"
-        },
-        "update_payload": {
-          "$ref": "#/$defs/Permission"
-        },
-        "release": {
           "$ref": "#/$defs/Permission"
         },
         "ack_fault": {
           "$ref": "#/$defs/Permission"
         },
+        "assign_mission": {
+          "$ref": "#/$defs/Permission"
+        },
+        "change_destination": {
+          "$ref": "#/$defs/Permission"
+        },
         "estop": {
+          "$ref": "#/$defs/Permission"
+        },
+        "release": {
+          "$ref": "#/$defs/Permission"
+        },
+        "remove_queued_mission": {
+          "$ref": "#/$defs/Permission"
+        },
+        "return_to_origin": {
+          "$ref": "#/$defs/Permission"
+        },
+        "start_queued_mission": {
+          "$ref": "#/$defs/Permission"
+        },
+        "update_payload": {
           "$ref": "#/$defs/Permission"
         }
       },
@@ -861,6 +861,10 @@
     },
     "Place": {
       "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
         "lat": {
           "title": "Lat",
           "type": "number"
@@ -868,10 +872,6 @@
         "lon": {
           "title": "Lon",
           "type": "number"
-        },
-        "id": {
-          "title": "Id",
-          "type": "string"
         },
         "name": {
           "title": "Name",
@@ -930,17 +930,6 @@
     },
     "Subsystem": {
       "properties": {
-        "updated_at": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Updated At"
-        },
         "age_s": {
           "anyOf": [
             {
@@ -952,9 +941,9 @@
           ],
           "title": "Age S"
         },
-        "stale": {
-          "title": "Stale",
-          "type": "boolean"
+        "detail": {
+          "title": "Detail",
+          "type": "string"
         },
         "key": {
           "enum": [
@@ -971,15 +960,9 @@
           "title": "Label",
           "type": "string"
         },
-        "team": {
-          "enum": [
-            2,
-            3,
-            4,
-            5
-          ],
-          "title": "Team",
-          "type": "integer"
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
         },
         "status": {
           "enum": [
@@ -991,9 +974,26 @@
           "title": "Status",
           "type": "string"
         },
-        "detail": {
-          "title": "Detail",
-          "type": "string"
+        "team": {
+          "enum": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "title": "Team",
+          "type": "integer"
+        },
+        "updated_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Updated At"
         }
       },
       "required": [
@@ -1037,10 +1037,63 @@
     }
   },
   "properties": {
+    "alerts": {
+      "items": {
+        "$ref": "#/$defs/AlertView"
+      },
+      "title": "Alerts",
+      "type": "array"
+    },
+    "allowed": {
+      "$ref": "#/$defs/Permissions"
+    },
+    "commands": {
+      "items": {
+        "$ref": "#/$defs/CommandView"
+      },
+      "title": "Commands",
+      "type": "array"
+    },
+    "delivery": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DeliverySummary"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "estop_active": {
+      "title": "Estop Active",
+      "type": "boolean"
+    },
     "kind": {
       "const": "snapshot",
       "title": "Kind",
       "type": "string"
+    },
+    "limits": {
+      "$ref": "#/$defs/Limits"
+    },
+    "link": {
+      "$ref": "#/$defs/LinkView"
+    },
+    "mission": {
+      "$ref": "#/$defs/MissionView"
+    },
+    "nav": {
+      "$ref": "#/$defs/NavView"
+    },
+    "payload": {
+      "$ref": "#/$defs/PayloadView"
+    },
+    "places": {
+      "items": {
+        "$ref": "#/$defs/Place"
+      },
+      "title": "Places",
+      "type": "array"
     },
     "seq": {
       "title": "Seq",
@@ -1054,61 +1107,8 @@
       "title": "Test Mode",
       "type": "boolean"
     },
-    "link": {
-      "$ref": "#/$defs/LinkView"
-    },
     "vehicle_health": {
       "$ref": "#/$defs/VehicleHealth"
-    },
-    "payload": {
-      "$ref": "#/$defs/PayloadView"
-    },
-    "nav": {
-      "$ref": "#/$defs/NavView"
-    },
-    "mission": {
-      "$ref": "#/$defs/MissionView"
-    },
-    "commands": {
-      "items": {
-        "$ref": "#/$defs/CommandView"
-      },
-      "title": "Commands",
-      "type": "array"
-    },
-    "allowed": {
-      "$ref": "#/$defs/Permissions"
-    },
-    "alerts": {
-      "items": {
-        "$ref": "#/$defs/AlertView"
-      },
-      "title": "Alerts",
-      "type": "array"
-    },
-    "estop_active": {
-      "title": "Estop Active",
-      "type": "boolean"
-    },
-    "delivery": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/DeliverySummary"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "places": {
-      "items": {
-        "$ref": "#/$defs/Place"
-      },
-      "title": "Places",
-      "type": "array"
-    },
-    "limits": {
-      "$ref": "#/$defs/Limits"
     }
   },
   "required": [

@@ -1,0 +1,101 @@
+# Team 5 settings file (config/config.yaml)
+#
+# Every limit and timing value lives here, never in code (decision A-10).
+# Values come from the Sprint 3 "Finalized TBR Settings" table in the team doc.
+# Lines marked ASSUMED are our working values until the owning team confirms them.
+# Changing a value here must never require a code change.
+
+version: 1
+
+# Enables the Fault Injector, the /test panel and the scenario runner (GEN-001).
+test_mode: true
+
+payload:
+  mass_min_kg: 500            # AEG-503 (Sprint 3 Design Decisions)
+  mass_max_kg: 1000           # AEG-501 (Sprint 3 Design Decisions)
+  dims_max_cm:                # AEG-501
+    length: 60
+    width: 40
+    height: 40
+  unsecured_shift_cm: 2.0     # AEG-502
+  weight_accuracy_kg: 0.5     # AEG-504: simulator noise must stay inside this
+  release_energy_wh_nominal: 3.2   # AEG-509
+  release_energy_wh_max: 5.0       # AEG-509
+  load_time_s: 2.0            # ASSUMED: simulated time to place the payload in the bay
+  secure_time_s: 3.0          # ASSUMED: simulated time for the lock to close
+  release_time_s: 4.0         # ASSUMED: simulated time for the release mechanism
+  reweigh_time_s: 1.0         # ASSUMED: simulated re-weigh after a payload update (keeps AEG-512 within 2 s)
+  sim_noise_kg: 0.3           # simulator weight noise, uniform +/-; must stay below weight_accuracy_kg
+  payload_id_prefix: "PAY"    # AEG-510: format PAY-YYYY-NNN
+  mission_id_prefix: "MSN"    # format MSN-YYYY-NNN
+
+timing:
+  status_rate_hz: 1.0             # OI-005: every status message and the UI snapshot
+  heartbeat_rate_hz: 1.0          # ground to vehicle heartbeat, used by the vehicle to detect link loss
+  command_timeout_s: 5.0          # OI-009: ground marks a command FAILED after this with no RECEIVED ack
+  command_timout_s: 5.0           # BROKEN: unknown key (typo)
+  command_max_age_s: 5.0          # two-sided timeout: vehicle rejects commands older than this
+  command_complete_timeout_s: 60.0  # RECEIVED but not COMPLETED after this: FAILED
+  release_grace_s: 2.0            # release must finish within release_time_s + this, else RELEASE_FAILED
+  route_blocked_clear_s: 120.0    # the reroute notice clears after this, or once the detour point is passed
+  stale_after_s: 5.0              # OI-017: values older than this are OUT OF DATE
+  # The next three are pass thresholds read by tests, scenarios and the verification report
+  ui_command_feedback_max_s: 2.0  # OI-006
+  fault_report_max_s: 2.0         # OI-010, AEG-513
+  delivery_confirm_max_s: 10.0    # AEG-508
+  clock_skew_warn_s: 1.0          # ASSUMED A-17: timestamps further in the future than this raise CLOCK_SKEW
+
+link:                         # ASSUMED A-15 until Team 3 answers
+  degraded_latency_ms: 1000
+  degraded_loss_pct: 10
+  lost_after_s: 5.0
+  prerelease_wait_s: 10.0     # ASSUMED: at destination, link LOST, pre-authorized: wait this long, then release
+
+alerts:
+  power_low_pct: 20           # ASSUMED: Team 4 battery below this raises POWER_LOW
+  power_fault_pct: 5          # ASSUMED: battery at or below this shows the Power row as FAULT
+
+event_buffer:                 # vehicle side, holds messages for the ground while the link is LOST (OI-013)
+  max_events: 5000
+  file: logs/event_buffer.jsonl   # written to disk so a vehicle restart does not lose the backlog
+  batch_size: 200             # events per backlog.batch message on replay
+
+# Named places for the mission form. A dropdown is faster than typing coordinates (OI-014).
+# Replace with Team 2's real waypoints when they answer.
+places:
+  - {id: FOB_ALPHA,  name: "FOB Alpha",        lat: 34.7201, lon: -86.6402}
+  - {id: OP_BRAVO,   name: "Outpost Bravo",    lat: 34.7612, lon: -86.5810}
+  - {id: OP_CHARLIE, name: "Outpost Charlie",  lat: 34.6905, lon: -86.5521}
+  - {id: LZ_DELTA,   name: "Landing Zone Delta", lat: 34.7420, lon: -86.6950}
+
+network:
+  link_host: 127.0.0.1        # host of the link process; change when running in Team 1's environment
+  link_ground_port: 7101      # the link process listens here for the ground process
+  link_vehicle_port: 7102     # the link process listens here for the vehicle process
+  ui_port: 8080               # ground process serves the Operator Screen and /ws here
+  reconnect_min_s: 0.5        # LinkPort reconnect backoff
+  reconnect_max_s: 5.0
+
+ui:
+  snapshot_debounce_ms: 100   # a change triggers a snapshot within this
+  commands_shown: 8           # snapshot.commands length
+
+# Stand-ins for the other teams. Used until each real team's software is connected.
+standins:
+  time_scale: 10              # stand-ins only: travel and battery drain run 10x faster, so a 6 km trip takes about 75 s
+  link:                       # Team 3 stand-in
+    base_latency_ms: 80
+    jitter_ms: 20
+    loss_pct: 0
+  nav:                        # Team 2 stand-in
+    speed_mps: 8.0
+    route_points: 12
+    auto_depart: false        # false: the stand-in departs only on the test "depart" action (scenarios control timing)
+  power:                      # Team 4 stand-in
+    start_battery_pct: 92
+    drain_pct_per_min: 0.8
+
+# Relative paths (logging.dir, event_buffer.file) are resolved from the repository root,
+# the folder that contains config/, never from the current working directory.
+logging:
+  dir: logs                   # one JSON Lines file per process per run: logs/run-<UTC>-<process>.jsonl
