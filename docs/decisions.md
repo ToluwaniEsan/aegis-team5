@@ -40,8 +40,8 @@ Questions found during work go at the bottom, under "Added during the build".
 
 | ID | Blocks | Question | Options | Recommended | Answer | Date |
 |---|---|---|---|---|---|---|
-| D-16 | Phase 1 | Have Zizwe and Emmanuel read `docs/02-contracts.md` together and agreed to freeze it, along with `models.py`, `ui_models.py`, `ui.ts` and `config.yaml`? | Yes, frozen on (date) / Not yet | Do it by the end of day 2 (about 45 minutes) | | |
-| D-17 | no | Payload mass versus box size: 1,000 kg in a 60 × 40 × 40 cm box is about 10,400 kg/m³, which is denser than steel. Reviewers will ask about it. | Keep and explain / Bigger box / Lower max mass | **Keep the config values for now.** The team (Solomon) decides before CDR; it is a config change only. | | |
+| D-16 | Phase 1 | Have Zizwe and Emmanuel read `docs/02-contracts.md` together and agreed to freeze it, along with `models.py`, `ui_models.py`, `ui.ts` and `config.yaml`? | Yes, frozen on (date) / Not yet | Do it by the end of day 2 (about 45 minutes) | Yes, frozen on 2026-11-20; Emmanuel and Zizwe agree. | 2026-11-20 |
+| D-17 | no | Payload mass versus box size: 1,000 kg in a 60 × 40 × 40 cm box is about 10,400 kg/m³, which is denser than steel. Reviewers will ask about it. | Keep and explain / Bigger box / Lower max mass | **Keep the config values for now.** The team (Solomon) decides before CDR; it is a config change only. | Emmanuel and Zizwe agree to keep the config values for now. The team (Solomon) decides before CDR; it is a config change only. | 2026-11-20 |
 
 ## Added during the build
 
