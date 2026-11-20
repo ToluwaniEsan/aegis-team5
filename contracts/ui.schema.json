@@ -1,0 +1,1134 @@
+{
+  "$defs": {
+    "AlertView": {
+      "properties": {
+        "alert_id": {
+          "title": "Alert Id",
+          "type": "string"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "CRITICAL",
+            "WARNING",
+            "CAUTION"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "recommended_action": {
+          "title": "Recommended Action",
+          "type": "string"
+        },
+        "raised_at": {
+          "title": "Raised At",
+          "type": "string"
+        },
+        "acknowledged": {
+          "title": "Acknowledged",
+          "type": "boolean"
+        },
+        "active": {
+          "title": "Active",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "alert_id",
+        "code",
+        "severity",
+        "title",
+        "source",
+        "recommended_action",
+        "raised_at",
+        "acknowledged",
+        "active"
+      ],
+      "title": "AlertView",
+      "type": "object"
+    },
+    "BlockedRoute": {
+      "properties": {
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "at": {
+          "$ref": "#/$defs/LatLon"
+        },
+        "old_route": {
+          "items": {
+            "$ref": "#/$defs/LatLon"
+          },
+          "title": "Old Route",
+          "type": "array"
+        },
+        "new_eta_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "New Eta S"
+        },
+        "since": {
+          "title": "Since",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason",
+        "at",
+        "old_route",
+        "new_eta_s",
+        "since"
+      ],
+      "title": "BlockedRoute",
+      "type": "object"
+    },
+    "CommandView": {
+      "properties": {
+        "command_id": {
+          "title": "Command Id",
+          "type": "string"
+        },
+        "command": {
+          "enum": [
+            "assign_mission",
+            "start_queued_mission",
+            "remove_queued_mission",
+            "abort",
+            "return_to_origin",
+            "change_destination",
+            "update_payload",
+            "release",
+            "ack_fault",
+            "estop"
+          ],
+          "title": "Command",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "SENT",
+            "RECEIVED",
+            "COMPLETED",
+            "FAILED"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        },
+        "sent_at": {
+          "title": "Sent At",
+          "type": "string"
+        },
+        "updated_at": {
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "command_id",
+        "command",
+        "label",
+        "state",
+        "reason",
+        "sent_at",
+        "updated_at"
+      ],
+      "title": "CommandView",
+      "type": "object"
+    },
+    "DeliverySummary": {
+      "properties": {
+        "mission_id": {
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "title": "Payload Id",
+          "type": "string"
+        },
+        "destination": {
+          "$ref": "#/$defs/Place"
+        },
+        "released_at": {
+          "title": "Released At",
+          "type": "string"
+        },
+        "confirmed_at": {
+          "title": "Confirmed At",
+          "type": "string"
+        },
+        "confirm_latency_s": {
+          "title": "Confirm Latency S",
+          "type": "number"
+        },
+        "mass_kg": {
+          "title": "Mass Kg",
+          "type": "number"
+        },
+        "energy_used_wh": {
+          "title": "Energy Used Wh",
+          "type": "number"
+        }
+      },
+      "required": [
+        "mission_id",
+        "payload_id",
+        "destination",
+        "released_at",
+        "confirmed_at",
+        "confirm_latency_s",
+        "mass_kg",
+        "energy_used_wh"
+      ],
+      "title": "DeliverySummary",
+      "type": "object"
+    },
+    "Dims": {
+      "properties": {
+        "length": {
+          "title": "Length",
+          "type": "number"
+        },
+        "width": {
+          "title": "Width",
+          "type": "number"
+        },
+        "height": {
+          "title": "Height",
+          "type": "number"
+        }
+      },
+      "required": [
+        "length",
+        "width",
+        "height"
+      ],
+      "title": "Dims",
+      "type": "object"
+    },
+    "LatLon": {
+      "properties": {
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "LatLon",
+      "type": "object"
+    },
+    "Limits": {
+      "properties": {
+        "mass_min_kg": {
+          "title": "Mass Min Kg",
+          "type": "number"
+        },
+        "mass_max_kg": {
+          "title": "Mass Max Kg",
+          "type": "number"
+        },
+        "dims_max_cm": {
+          "$ref": "#/$defs/Dims"
+        },
+        "stale_after_s": {
+          "title": "Stale After S",
+          "type": "number"
+        },
+        "unsecured_shift_cm": {
+          "title": "Unsecured Shift Cm",
+          "type": "number"
+        },
+        "release_energy_wh_max": {
+          "title": "Release Energy Wh Max",
+          "type": "number"
+        }
+      },
+      "required": [
+        "mass_min_kg",
+        "mass_max_kg",
+        "dims_max_cm",
+        "stale_after_s",
+        "unsecured_shift_cm",
+        "release_energy_wh_max"
+      ],
+      "title": "Limits",
+      "type": "object"
+    },
+    "LinkView": {
+      "properties": {
+        "updated_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Updated At"
+        },
+        "age_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Age S"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "CONNECTED",
+            "DEGRADED",
+            "LOST"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "latency_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Latency Ms"
+        },
+        "loss_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Loss Pct"
+        }
+      },
+      "required": [
+        "updated_at",
+        "age_s",
+        "stale",
+        "state",
+        "latency_ms",
+        "loss_pct"
+      ],
+      "title": "LinkView",
+      "type": "object"
+    },
+    "Mission": {
+      "properties": {
+        "mission_id": {
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "title": "Payload Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "QUEUED",
+            "ASSIGNED",
+            "ACTIVE",
+            "COMPLETE",
+            "ABORTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/$defs/Place"
+        },
+        "destination": {
+          "$ref": "#/$defs/Place"
+        },
+        "priority": {
+          "enum": [
+            "ROUTINE",
+            "PRIORITY",
+            "URGENT"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "declared_mass_kg": {
+          "title": "Declared Mass Kg",
+          "type": "number"
+        },
+        "dims_cm": {
+          "$ref": "#/$defs/Dims"
+        },
+        "prerelease_authorized": {
+          "title": "Prerelease Authorized",
+          "type": "boolean"
+        },
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mission_id",
+        "payload_id",
+        "status",
+        "origin",
+        "destination",
+        "priority",
+        "declared_mass_kg",
+        "dims_cm",
+        "prerelease_authorized",
+        "created_at"
+      ],
+      "title": "Mission",
+      "type": "object"
+    },
+    "MissionView": {
+      "properties": {
+        "active": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Mission"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "queue": {
+          "items": {
+            "$ref": "#/$defs/Mission"
+          },
+          "title": "Queue",
+          "type": "array"
+        },
+        "next_ids": {
+          "$ref": "#/$defs/NextIds"
+        }
+      },
+      "required": [
+        "active",
+        "queue",
+        "next_ids"
+      ],
+      "title": "MissionView",
+      "type": "object"
+    },
+    "NavView": {
+      "properties": {
+        "updated_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Updated At"
+        },
+        "age_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Age S"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "origin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Place"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Place"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LatLon"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "route": {
+          "items": {
+            "$ref": "#/$defs/LatLon"
+          },
+          "title": "Route",
+          "type": "array"
+        },
+        "progress_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Progress Pct"
+        },
+        "moving": {
+          "title": "Moving",
+          "type": "boolean"
+        },
+        "speed_mps": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Speed Mps"
+        },
+        "eta_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Eta S"
+        },
+        "blocked": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlockedRoute"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "updated_at",
+        "age_s",
+        "stale",
+        "origin",
+        "destination",
+        "position",
+        "route",
+        "progress_pct",
+        "moving",
+        "speed_mps",
+        "eta_s",
+        "blocked"
+      ],
+      "title": "NavView",
+      "type": "object"
+    },
+    "NextIds": {
+      "properties": {
+        "mission_id": {
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "payload_id": {
+          "title": "Payload Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mission_id",
+        "payload_id"
+      ],
+      "title": "NextIds",
+      "type": "object"
+    },
+    "PayloadView": {
+      "properties": {
+        "updated_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Updated At"
+        },
+        "age_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Age S"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "EMPTY",
+            "LOADED",
+            "SECURED",
+            "TRAVELLING",
+            "AT_DESTINATION",
+            "RELEASED",
+            "DELIVERED",
+            "RETURNING",
+            "HELD"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "held_from": {
+          "anyOf": [
+            {
+              "enum": [
+                "EMPTY",
+                "LOADED",
+                "SECURED",
+                "TRAVELLING",
+                "AT_DESTINATION",
+                "RELEASED",
+                "DELIVERED",
+                "RETURNING",
+                "HELD"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Held From"
+        },
+        "payload_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Payload Id"
+        },
+        "secured": {
+          "title": "Secured",
+          "type": "boolean"
+        },
+        "locked": {
+          "title": "Locked",
+          "type": "boolean"
+        },
+        "mass_kg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mass Kg"
+        },
+        "shift_cm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Shift Cm"
+        },
+        "release_energy_wh": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Release Energy Wh"
+        },
+        "sensor_health": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT",
+            "UNKNOWN"
+          ],
+          "title": "Sensor Health",
+          "type": "string"
+        },
+        "sensors": {
+          "$ref": "#/$defs/Sensors"
+        },
+        "prerelease_authorized": {
+          "title": "Prerelease Authorized",
+          "type": "boolean"
+        },
+        "departure_permitted": {
+          "title": "Departure Permitted",
+          "type": "boolean"
+        },
+        "departure_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Departure Reason"
+        }
+      },
+      "required": [
+        "updated_at",
+        "age_s",
+        "stale",
+        "state",
+        "held_from",
+        "payload_id",
+        "secured",
+        "locked",
+        "mass_kg",
+        "shift_cm",
+        "release_energy_wh",
+        "sensor_health",
+        "sensors",
+        "prerelease_authorized",
+        "departure_permitted",
+        "departure_reason"
+      ],
+      "title": "PayloadView",
+      "type": "object"
+    },
+    "Permission": {
+      "properties": {
+        "allowed": {
+          "title": "Allowed",
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        },
+        "needs_confirmation": {
+          "title": "Needs Confirmation",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "allowed",
+        "reason",
+        "needs_confirmation"
+      ],
+      "title": "Permission",
+      "type": "object"
+    },
+    "Permissions": {
+      "properties": {
+        "assign_mission": {
+          "$ref": "#/$defs/Permission"
+        },
+        "start_queued_mission": {
+          "$ref": "#/$defs/Permission"
+        },
+        "remove_queued_mission": {
+          "$ref": "#/$defs/Permission"
+        },
+        "abort": {
+          "$ref": "#/$defs/Permission"
+        },
+        "return_to_origin": {
+          "$ref": "#/$defs/Permission"
+        },
+        "change_destination": {
+          "$ref": "#/$defs/Permission"
+        },
+        "update_payload": {
+          "$ref": "#/$defs/Permission"
+        },
+        "release": {
+          "$ref": "#/$defs/Permission"
+        },
+        "ack_fault": {
+          "$ref": "#/$defs/Permission"
+        },
+        "estop": {
+          "$ref": "#/$defs/Permission"
+        }
+      },
+      "required": [
+        "assign_mission",
+        "start_queued_mission",
+        "remove_queued_mission",
+        "abort",
+        "return_to_origin",
+        "change_destination",
+        "update_payload",
+        "release",
+        "ack_fault",
+        "estop"
+      ],
+      "title": "Permissions",
+      "type": "object"
+    },
+    "Place": {
+      "properties": {
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lat",
+        "lon",
+        "id",
+        "name"
+      ],
+      "title": "Place",
+      "type": "object"
+    },
+    "Sensors": {
+      "properties": {
+        "load_cell": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT",
+            "UNKNOWN"
+          ],
+          "title": "Load Cell",
+          "type": "string"
+        },
+        "lock": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT",
+            "UNKNOWN"
+          ],
+          "title": "Lock",
+          "type": "string"
+        },
+        "shift": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT",
+            "UNKNOWN"
+          ],
+          "title": "Shift",
+          "type": "string"
+        }
+      },
+      "required": [
+        "load_cell",
+        "lock",
+        "shift"
+      ],
+      "title": "Sensors",
+      "type": "object"
+    },
+    "Subsystem": {
+      "properties": {
+        "updated_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Updated At"
+        },
+        "age_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Age S"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "key": {
+          "enum": [
+            "power",
+            "mobility",
+            "navigation",
+            "comms",
+            "payload_sensors"
+          ],
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "team": {
+          "enum": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "title": "Team",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "OK",
+            "WARN",
+            "FAULT",
+            "UNKNOWN"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        }
+      },
+      "required": [
+        "updated_at",
+        "age_s",
+        "stale",
+        "key",
+        "label",
+        "team",
+        "status",
+        "detail"
+      ],
+      "title": "Subsystem",
+      "type": "object"
+    },
+    "VehicleHealth": {
+      "properties": {
+        "overall": {
+          "enum": [
+            "NOMINAL",
+            "DEGRADED",
+            "FAULT"
+          ],
+          "title": "Overall",
+          "type": "string"
+        },
+        "subsystems": {
+          "items": {
+            "$ref": "#/$defs/Subsystem"
+          },
+          "title": "Subsystems",
+          "type": "array"
+        }
+      },
+      "required": [
+        "overall",
+        "subsystems"
+      ],
+      "title": "VehicleHealth",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "kind": {
+      "const": "snapshot",
+      "title": "Kind",
+      "type": "string"
+    },
+    "seq": {
+      "title": "Seq",
+      "type": "number"
+    },
+    "server_time": {
+      "title": "Server Time",
+      "type": "string"
+    },
+    "test_mode": {
+      "title": "Test Mode",
+      "type": "boolean"
+    },
+    "link": {
+      "$ref": "#/$defs/LinkView"
+    },
+    "vehicle_health": {
+      "$ref": "#/$defs/VehicleHealth"
+    },
+    "payload": {
+      "$ref": "#/$defs/PayloadView"
+    },
+    "nav": {
+      "$ref": "#/$defs/NavView"
+    },
+    "mission": {
+      "$ref": "#/$defs/MissionView"
+    },
+    "commands": {
+      "items": {
+        "$ref": "#/$defs/CommandView"
+      },
+      "title": "Commands",
+      "type": "array"
+    },
+    "allowed": {
+      "$ref": "#/$defs/Permissions"
+    },
+    "alerts": {
+      "items": {
+        "$ref": "#/$defs/AlertView"
+      },
+      "title": "Alerts",
+      "type": "array"
+    },
+    "estop_active": {
+      "title": "Estop Active",
+      "type": "boolean"
+    },
+    "delivery": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DeliverySummary"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "places": {
+      "items": {
+        "$ref": "#/$defs/Place"
+      },
+      "title": "Places",
+      "type": "array"
+    },
+    "limits": {
+      "$ref": "#/$defs/Limits"
+    }
+  },
+  "required": [
+    "kind",
+    "seq",
+    "server_time",
+    "test_mode",
+    "link",
+    "vehicle_health",
+    "payload",
+    "nav",
+    "mission",
+    "commands",
+    "allowed",
+    "alerts",
+    "estop_active",
+    "delivery",
+    "places",
+    "limits"
+  ],
+  "title": "Snapshot",
+  "type": "object"
+}
