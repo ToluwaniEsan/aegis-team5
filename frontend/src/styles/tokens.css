@@ -1,0 +1,48 @@
+:root {
+  /* surfaces */
+  --canvas: #DCE0E5;          /* screen background */
+  --panel: #F3F4F6;           /* panels */
+  --panel-raised: #FAFAFB;    /* cards inside panels, inputs */
+  --line: #B8BFC8;            /* panel and card borders */
+  --line-strong: #8A939E;     /* dividers that must be seen */
+
+  /* text */
+  --text: #17202B;
+  --text-muted: #4D5764;      /* secondary values */
+  --text-label: #5F6874;      /* small uppercase labels */
+
+  /* the only interactive color */
+  --action: #1D4E89;
+  --action-hover: #163E6E;
+  --action-text: #FFFFFF;
+  --focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px #1D4E89;
+
+  /* abnormal states */
+  --critical: #B42318;  --critical-bg: #FCE9E7;
+  --warning: #A6480C;   --warning-bg: #FDEEE3;
+  --caution-fill: #F0C33C; --caution-text: #5C4500; --caution-bg: #FFF6D6;
+
+  /* the only "good news" color, used for delivery confirmed and nothing else */
+  --done: #2E6B45;  --done-bg: #E6F2EA;
+
+  /* emergency stop */
+  --estop: #C4161C;  --estop-border: #8C0F14;  --estop-text: #FFFFFF;
+
+  /* out of date */
+  --stale-text: #525A64;
+  --stale-pattern: repeating-linear-gradient(135deg, #ECEEF1 0 6px, #E2E5E9 6px 12px);
+
+  /* type */
+  --font-ui: "IBM Plex Sans", Arial, sans-serif;
+  --font-num: "IBM Plex Mono", "Courier New", monospace;
+  --fs-label: 11px;   /* uppercase, letter-spacing 0.06em, weight 600 */
+  --fs-body: 13px;
+  --fs-value: 15px;   /* mono, tabular */
+  --fs-big: 22px;     /* payload state, ETA */
+  --fs-title: 14px;   /* panel titles, weight 600 */
+
+  /* space and shape */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px;
+  --radius: 4px;
+  --row-h: 26px;      /* list and table rows; alert rows are 32px */
+}

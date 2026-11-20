@@ -1,0 +1,12 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; overflow: hidden; background: var(--canvas); color: var(--text); font-family: var(--font-ui); font-size: var(--fs-body); }
+#app { width: 1366px; height: 768px; display: grid; grid-template-columns: 420px 526px 420px; grid-template-rows: 64px 544px 160px; }
+.top { grid-column: 1 / 4; background: var(--panel); border-bottom: 1px solid var(--line-strong); }
+.panel { background: var(--panel); border-right: 1px solid var(--line); padding: var(--s3); overflow: hidden; }
+.panel-right { border-right: 0; }
+.bottom { grid-column: 1 / 4; background: var(--panel); border-top: 1px solid var(--line-strong); }
+.window-warning { display: none; }
+@media (max-width: 1365px), (max-height: 767px) {
+  #app { display: none; }
+  .window-warning { display: block; margin: var(--s4); }
+}
