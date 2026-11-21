@@ -19,6 +19,7 @@ from aegis.bus.link_port import LinkPort
 from aegis.bus.local_bus import Link, LocalBus
 from aegis.common.clock import Clock
 from aegis.common.config import Settings
+from aegis.ground.alert_manager import AlertManager
 from aegis.ground.command_manager import CommandManager
 from aegis.ground.heartbeat import Heartbeat
 from aegis.ground.snapshot import SnapshotBuilder
@@ -55,10 +56,19 @@ class Ground:
         self.fault_injector = FaultInjector(self.bus, clock, cfg, log)
 
         self.status_monitor = StatusMonitor(self.bus, clock, cfg, log, lambda _: None)
-        # B11 has not landed: no alert source is injected, so B9 refuses
-        # release and fault acknowledgement while continuing to allow E-STOP.
-        self.command_manager = CommandManager(
+        self.alert_manager = AlertManager(
             self.bus, clock, cfg, log, self.status_monitor
+        )
+        self.command_manager = CommandManager(
+            self.bus,
+            clock,
+            cfg,
+            log,
+            self.status_monitor,
+            alerts_for=self.alert_manager.views,
+            on_failure=self.alert_manager.command_failed,
+            ack_ground_alert=self.alert_manager.acknowledge_ground,
+            on_fault_ack=self.alert_manager.acknowledge_vehicle,
         )
         self.team1 = Team1Standin(self.bus, clock, cfg, log)
         self.snapshot_builder = SnapshotBuilder(
@@ -67,15 +77,16 @@ class Ground:
         self.ui = UiServer(
             cfg, clock, self.snapshot_builder, self.command_manager, self.fault_injector
         )
+        self.alert_manager.on_change = self.ui.changed
         self._ui_server: uvicorn.Server | None = None
         self._ui_task: asyncio.Task | None = None
-        # EMMANUEL: Alert Manager (B10/B11). Subscribe it to "ground.alert_manager".
 
     async def start(self) -> None:
         self.log.record("process.start")
         if self.link_port is not None:
             await self.link_port.start()
         await self.team1.start()
+        await self.alert_manager.start()
         config = uvicorn.Config(
             self.ui.app,
             host=self.cfg.network.link_host,
@@ -96,6 +107,7 @@ class Ground:
 
     async def stop(self) -> None:
         await self.heartbeat.stop()
+        await self.alert_manager.stop()
         self.command_manager.close()
         await self.team1.stop()
         if self._ui_server is not None:
