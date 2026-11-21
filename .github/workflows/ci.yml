@@ -150,3 +150,15 @@ jobs:
           python -m aegis.testing.scenario_runner
           scenarios/iron_hawk.yaml
           --fast
+
+      - name: Run destination link loss scenario
+        run: >
+          python -m aegis.testing.scenario_runner
+          scenarios/link_loss_at_destination.yaml
+          --fast
+
+      - name: Run travelling E-STOP recovery scenario
+        run: >
+          python -m aegis.testing.scenario_runner
+          scenarios/estop.yaml
+          --fast

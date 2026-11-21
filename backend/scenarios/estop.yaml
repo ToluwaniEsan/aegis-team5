@@ -84,3 +84,19 @@ steps:
     alert:
       code: ESTOP_ACTIVE
       severity: CRITICAL
+- id: E02
+  title: Acknowledge the stop and recover the previous payload state
+  reqs:
+  - OI-019
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.ESTOP_ACTIVE
+  expect:
+    within_s: 5
+    snapshot:
+      payload.state: TRAVELLING
+      estop_active: false
+    no_alert:
+      code: ESTOP_ACTIVE
