@@ -99,12 +99,9 @@ it("test_OI_004_no_snapshot_or_connection_never_enables_commands", () => {
 
 it("test_OI_003_forms_and_confirmations_do_not_send_without_integrations", () => {
   show(travelling);
-  expect(screen.getByText("Mission form unavailable")).toBeTruthy();
-  expect(
-    (screen.getByRole("button", { name: "Queue mission" }) as HTMLButtonElement)
-      .disabled,
-  ).toBe(true);
   fireEvent.click(screen.getByRole("button", { name: "Abort" }));
+  fireEvent.click(screen.getByRole("button", { name: "Queue mission" }));
+  expect(screen.getByRole("dialog", { name: "Mission form" })).toBeTruthy();
   expect(sendCommand).not.toHaveBeenCalled();
 });
 

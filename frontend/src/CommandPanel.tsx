@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { CommandName, Snapshot } from "./contracts/ui";
 import { sendCommand } from "./net/socket";
 import { SeverityShape } from "./SeverityShape";
 import { useScreenStore } from "./state/store";
+import { MissionDrawer } from "./MissionDrawer";
+import type { DrawerIntent, DrawerMode } from "./MissionDrawer";
 
 type Intent = { command: CommandName; args: Record<string, unknown> };
 export type CommandPanelProps = {
@@ -61,6 +63,53 @@ export function CommandPanel({
   const [pickerOpen, setPickerOpen] = useState(false);
   const [destination, setDestination] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [drawer, setDrawer] = useState<DrawerMode | null>(null);
+  const [drawerPending, setDrawerPending] = useState(false);
+  const sending = useRef(false);
+  const opener = useRef<HTMLElement | null>(null);
+
+  function openDrawer(mode: DrawerMode) {
+    if (onOpenMissionDrawer) {
+      onOpenMissionDrawer(mode);
+      return;
+    }
+    opener.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setFeedback(null);
+    setDrawer(mode);
+  }
+  function closeDrawer() {
+    setDrawer(null);
+    opener.current?.focus();
+  }
+  async function submitDrawer(
+    intent: DrawerIntent,
+    needsConfirmation: boolean,
+  ) {
+    if (sending.current) return;
+    if (needsConfirmation) {
+      onRequestConfirmation?.(intent);
+      return;
+    }
+    sending.current = true;
+    setDrawerPending(true);
+    setFeedback(null);
+    try {
+      const result = await sendCommand(intent.command, intent.args, false);
+      setFeedback(
+        result.accepted
+          ? "Request accepted. Check the command tracker for progress."
+          : (result.reason ?? "Command refused"),
+      );
+    } catch {
+      setFeedback("Command result unavailable. Check the command tracker.");
+    } finally {
+      sending.current = false;
+      setDrawerPending(false);
+    }
+  }
 
   async function execute(intent: Intent) {
     const state = useScreenStore.getState();
@@ -121,9 +170,7 @@ export function CommandPanel({
     }
   }
 
-  const formReason =
-    unavailable(snapshot, connected, "assign_mission") ??
-    (!onOpenMissionDrawer ? "Mission form unavailable" : null);
+  const formReason = unavailable(snapshot, connected, "assign_mission");
   const options =
     snapshot?.places.filter(
       (place) =>
@@ -137,18 +184,17 @@ export function CommandPanel({
         label={snapshot?.mission.active ? "Queue mission" : "New mission"}
         reason={formReason}
         onClick={() =>
-          onOpenMissionDrawer?.(snapshot?.mission.active ? "queue" : "assign")
+          openDrawer(snapshot?.mission.active ? "queue" : "assign")
         }
       />
       <h2>MISSION CONTROLS</h2>
       <div className="command-grid">
         {controls.map(({ command, label }) => {
           let reason = unavailable(snapshot, connected, command);
-          if (!reason && command === "update_payload" && !onOpenMissionDrawer)
-            reason = "Payload form unavailable";
           if (
             !reason &&
             command !== "change_destination" &&
+            command !== "update_payload" &&
             snapshot?.allowed[command].needs_confirmation &&
             !onRequestConfirmation
           )
@@ -162,8 +208,7 @@ export function CommandPanel({
                 if (command === "change_destination") {
                   setDestination("");
                   setPickerOpen(true);
-                } else if (command === "update_payload")
-                  onOpenMissionDrawer?.("update");
+                } else if (command === "update_payload") openDrawer("update");
                 else void execute({ command, args: {} });
               }}
             />
@@ -212,7 +257,7 @@ export function CommandPanel({
           </button>
         </div>
       )}
-      {feedback && (
+      {feedback && !drawer && (
         <div className="command-feedback" role="alert">
           <SeverityShape severity="WARNING" />
           {feedback}
@@ -295,6 +340,16 @@ export function CommandPanel({
           );
         })}
       </div>
+      {drawer && (
+        <MissionDrawer
+          mode={drawer}
+          onClose={closeDrawer}
+          pending={drawerPending}
+          feedback={feedback}
+          onSubmit={submitDrawer}
+          confirmationAvailable={Boolean(onRequestConfirmation)}
+        />
+      )}
     </div>
   );
 }

@@ -237,6 +237,96 @@ body {
   gap: var(--s2);
   margin-top: var(--s1);
 }
+.drawer-backdrop {
+  position: fixed;
+  inset: 64px 0 0;
+  z-index: 2;
+  background: var(--canvas);
+}
+.mission-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 420px;
+  height: 100%;
+  overflow-y: auto;
+  padding: var(--s3);
+  border-left: 1px solid var(--line-strong);
+  background: var(--panel-raised);
+  color: var(--text);
+}
+.mission-drawer h2 {
+  margin: 0 0 var(--s3);
+  color: var(--text);
+  font-size: var(--fs-title);
+}
+.mission-drawer form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.mission-drawer input[type="checkbox"],
+.mission-drawer input[type="radio"] {
+  accent-color: var(--action);
+}
+.mission-drawer label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  font-size: 12px;
+  font-weight: 600;
+}
+.mission-drawer input:not([type="checkbox"]):not([type="radio"]),
+.mission-drawer select {
+  width: 100%;
+  min-height: 32px;
+  padding: var(--s1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel-raised);
+  color: var(--text);
+  font: 13px var(--font-ui);
+}
+.mission-drawer fieldset {
+  margin: 0;
+  padding: var(--s1) var(--s2) var(--s2);
+  border: 1px solid var(--line);
+}
+.mission-drawer legend {
+  font-size: 12px;
+  font-weight: 600;
+}
+.mission-drawer fieldset:not(.drawer-dims) label,
+.mission-drawer .drawer-check {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: var(--s2);
+}
+.drawer-dims {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s2);
+}
+.drawer-reasons {
+  margin: 0;
+  padding-left: var(--s4);
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.drawer-feedback {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+}
+.drawer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s2);
+}
+.drawer-actions button {
+  padding: var(--s1) var(--s3);
+}
 .panel-left,
 .panel-route {
   overflow-y: auto;
