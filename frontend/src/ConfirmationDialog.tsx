@@ -203,6 +203,10 @@ export function ConfirmationDialog({
   const confirmButton = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLElement>(null);
   const sending = useRef(false);
+  // Set once the command is sent. The command itself changes the snapshot
+  // (a release moves the payload to RELEASED), so after sending we stop
+  // treating snapshot changes as "the context changed under the operator".
+  const sent = useRef(false);
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -213,6 +217,7 @@ export function ConfirmationDialog({
   useEffect(
     () =>
       useScreenStore.subscribe((state) => {
+        if (sent.current) return;
         if (
           !state.snapshot ||
           context(review.intent, state.snapshot) !== review.context
@@ -303,6 +308,7 @@ export function ConfirmationDialog({
       return;
     }
     sending.current = true;
+    sent.current = true;
     setPending(true);
     setError(null);
     try {
