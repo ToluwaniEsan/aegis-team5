@@ -91,6 +91,18 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+      - name: Check generated fixture literals
+        if: steps.frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: git diff --exit-code -- src/mock/fixtures.generated.ts
+
+      - name: Check generated TypeScript schema
+        if: steps.frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: |
+          npm run schema
+          git diff --exit-code -- ../contracts/ui.from-ts.schema.json
+
   smoke:
     name: IRON HAWK smoke test
     runs-on: ubuntu-latest

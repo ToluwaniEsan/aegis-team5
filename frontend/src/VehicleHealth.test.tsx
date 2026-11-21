@@ -1,7 +1,7 @@
 import { act, cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
 import type { Health, Snapshot } from "./contracts/ui";
-import { travelling } from "./mock/fixtures.generated";
+import { travelling } from "./test-fixtures/fixtures";
 import { useScreenStore } from "./state/store";
 import { VehicleHealth } from "./VehicleHealth";
 

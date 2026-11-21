@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
 import { LinkBadge } from "./LinkBadge";
-import { travelling } from "./mock/fixtures.generated";
+import { travelling } from "./test-fixtures/fixtures";
 
 afterEach(cleanup);
 

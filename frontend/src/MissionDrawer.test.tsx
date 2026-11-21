@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { CommandPanel } from "./CommandPanel";
-import { idle, travelling } from "./mock/fixtures.generated";
+import { idle, travelling } from "./test-fixtures/fixtures";
 import { sendCommand } from "./net/socket";
 import { useScreenStore } from "./state/store";
 

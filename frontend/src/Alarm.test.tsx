@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { OperatorScreen } from "./OperatorScreen";
-import { travelling } from "./mock/fixtures.generated";
+import { travelling } from "./test-fixtures/fixtures";
 import { useScreenStore } from "./state/store";
 import { ALARM_INTERVAL_MS } from "./config";
 
