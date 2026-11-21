@@ -5,6 +5,8 @@ import { SeverityShape } from "./SeverityShape";
 import { useScreenStore } from "./state/store";
 import { MissionDrawer } from "./MissionDrawer";
 import type { DrawerIntent, DrawerMode } from "./MissionDrawer";
+import { ConfirmationDialog, createReview } from "./ConfirmationDialog";
+import type { Review } from "./ConfirmationDialog";
 
 type Intent = { command: CommandName; args: Record<string, unknown> };
 export type CommandPanelProps = {
@@ -37,14 +39,21 @@ function CommandButton({
   label,
   reason,
   onClick,
+  primary = false,
 }: {
   label: string;
   reason: string | null;
   onClick: () => void;
+  primary?: boolean;
 }) {
   return (
     <div className="command-control">
-      <button type="button" disabled={reason !== null} onClick={onClick}>
+      <button
+        className={primary ? "command-primary" : undefined}
+        type="button"
+        disabled={reason !== null}
+        onClick={onClick}
+      >
         {label}
       </button>
       {reason && <div className="command-reason">{reason}</div>}
@@ -67,6 +76,29 @@ export function CommandPanel({
   const [drawerPending, setDrawerPending] = useState(false);
   const sending = useRef(false);
   const opener = useRef<HTMLElement | null>(null);
+  const confirmationOpener = useRef<HTMLElement | null>(null);
+  const [review, setReview] = useState<Review | null>(null);
+
+  function requestConfirmation(intent: Intent) {
+    if (onRequestConfirmation) {
+      onRequestConfirmation(intent);
+      return;
+    }
+    const current = useScreenStore.getState().snapshot;
+    if (!current) {
+      setFeedback("Awaiting ground station data");
+      return;
+    }
+    confirmationOpener.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setReview(createReview(intent, current));
+  }
+  function closeConfirmation() {
+    setReview(null);
+    confirmationOpener.current?.focus();
+  }
 
   function openDrawer(mode: DrawerMode) {
     if (onOpenMissionDrawer) {
@@ -90,7 +122,7 @@ export function CommandPanel({
   ) {
     if (sending.current) return;
     if (needsConfirmation) {
-      onRequestConfirmation?.(intent);
+      requestConfirmation(intent);
       return;
     }
     sending.current = true;
@@ -157,8 +189,7 @@ export function CommandPanel({
       return;
     }
     if (current.allowed[intent.command].needs_confirmation) {
-      if (onRequestConfirmation) onRequestConfirmation(intent);
-      else setFeedback("Confirmation dialog unavailable");
+      requestConfirmation(intent);
       return;
     }
     setFeedback(null);
@@ -190,19 +221,12 @@ export function CommandPanel({
       <h2>MISSION CONTROLS</h2>
       <div className="command-grid">
         {controls.map(({ command, label }) => {
-          let reason = unavailable(snapshot, connected, command);
-          if (
-            !reason &&
-            command !== "change_destination" &&
-            command !== "update_payload" &&
-            snapshot?.allowed[command].needs_confirmation &&
-            !onRequestConfirmation
-          )
-            reason = "Confirmation dialog unavailable";
+          const reason = unavailable(snapshot, connected, command);
           return (
             <CommandButton
               key={command}
               label={label}
+              primary={command === "abort" || command === "release"}
               reason={reason}
               onClick={() => {
                 if (command === "change_destination") {
@@ -240,10 +264,7 @@ export function CommandPanel({
               (!destination ||
               !options.some((place) => place.id === destination)
                 ? "Select an available destination"
-                : snapshot?.allowed.change_destination.needs_confirmation &&
-                    !onRequestConfirmation
-                  ? "Confirmation dialog unavailable"
-                  : null)
+                : null)
             }
             onClick={() =>
               void execute({
@@ -298,16 +319,12 @@ export function CommandPanel({
               ? "Finish or abort the active mission first"
               : index !== 0
                 ? "Start the first queued mission"
-                : snapshot.allowed.start_queued_mission.needs_confirmation &&
-                    !onRequestConfirmation
-                  ? "Confirmation dialog unavailable"
-                  : null);
-          const removeReason =
-            unavailable(snapshot, connected, "remove_queued_mission") ??
-            (snapshot.allowed.remove_queued_mission.needs_confirmation &&
-            !onRequestConfirmation
-              ? "Confirmation dialog unavailable"
-              : null);
+                : null);
+          const removeReason = unavailable(
+            snapshot,
+            connected,
+            "remove_queued_mission",
+          );
           return (
             <div className="queued-mission" key={mission.mission_id}>
               <div>
@@ -347,8 +364,11 @@ export function CommandPanel({
           pending={drawerPending}
           feedback={feedback}
           onSubmit={submitDrawer}
-          confirmationAvailable={Boolean(onRequestConfirmation)}
+          confirmationAvailable
         />
+      )}
+      {review && (
+        <ConfirmationDialog review={review} onClose={closeConfirmation} />
       )}
     </div>
   );

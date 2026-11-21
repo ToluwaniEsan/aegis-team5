@@ -161,6 +161,56 @@ body {
   color: var(--text-muted);
   cursor: not-allowed;
 }
+.commands-panel button.command-primary:enabled {
+  background: var(--action);
+  border-color: var(--action);
+  color: var(--action-text);
+}
+.confirmation-backdrop {
+  position: fixed;
+  inset: 64px 0 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--canvas);
+}
+.confirmation-dialog {
+  width: 480px;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--s4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel-raised);
+  color: var(--text);
+}
+.confirmation-dialog h2 {
+  margin: 0 0 var(--s2);
+  color: var(--text);
+  font-size: var(--fs-title);
+}
+.confirmation-dialog p,
+.confirmation-dialog ul {
+  font-size: var(--fs-body);
+  overflow-wrap: anywhere;
+}
+.confirmation-dialog [role="alert"] {
+  color: var(--critical);
+}
+.confirmation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s2);
+}
+.confirmation-actions button {
+  padding: var(--s2) var(--s3);
+}
+.confirmation-actions button:last-child:enabled {
+  background: var(--action);
+  border-color: var(--action);
+  color: var(--action-text);
+}
 .commands-panel > .command-control > button {
   width: 100%;
   background: var(--action);
