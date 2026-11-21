@@ -916,8 +916,46 @@ steps:
     action: outage
     params:
       seconds: 12
+- id: F_COMMAND_TIMEOUT
+  title: Command times out while the link is down
+  reqs:
+  - OI-006
+  - OI-009
+  ui:
+    command: change_destination
+    confirmed: true
+    args:
+      destination_id: OP_CHARLIE
   expect:
     within_s: 8
+    result:
+      accepted: true
+    snapshot:
+      commands.0.state: FAILED
+    alert:
+      code: COMMAND_FAILED
+      severity: CAUTION
+      recommended_action:
+        not: ''
+- id: F_ACK_COMMAND
+  title: Acknowledge the failed-command alert
+  reqs:
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.COMMAND_FAILED
+  expect:
+    within_s: 2
+    no_alert:
+      code: COMMAND_FAILED
+- id: F_LOST
+  title: Link loss produces a warning
+  reqs:
+  - OI-007
+  expect:
+    within_s: 3
     alert:
       code: LINK_LOST
       severity: WARNING
