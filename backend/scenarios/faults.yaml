@@ -56,6 +56,8 @@ steps:
 - id: RAISE_PAYLOAD_SHIFT
   title: Raise PAYLOAD_SHIFT
   reqs:
+  - AEG-502
+  - AEG-505
   - OI-010
   inject:
     target: payload
@@ -70,9 +72,13 @@ steps:
       acknowledged: false
       recommended_action:
         not: ''
+    snapshot:
+      payload.secured: false
 - id: ACK_PAYLOAD_SHIFT
   title: Acknowledge PAYLOAD_SHIFT
   reqs:
+  - AEG-502
+  - AEG-505
   - OI-010
   ui:
     command: ack_fault
@@ -87,6 +93,8 @@ steps:
 - id: CLEAR_PAYLOAD_SHIFT
   title: Clear PAYLOAD_SHIFT
   reqs:
+  - AEG-502
+  - AEG-505
   - OI-010
   inject:
     target: payload
@@ -97,6 +105,494 @@ steps:
     within_s: 4
     no_alert:
       code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_02
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_02
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_02
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_03
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_03
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_03
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_04
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_04
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_04
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_05
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_05
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_05
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_06
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_06
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_06
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_07
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_07
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_07
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_08
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_08
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_08
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_09
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_09
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_09
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
+- id: RAISE_PAYLOAD_SHIFT_10
+  title: Raise PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 3.1
+  expect:
+    within_s: 2
+    alert:
+      code: PAYLOAD_SHIFT
+      severity: WARNING
+      acknowledged: false
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.secured: false
+- id: ACK_PAYLOAD_SHIFT_10
+  title: Acknowledge PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.PAYLOAD_SHIFT
+  expect:
+    within_s: 3
+    alert:
+      code: PAYLOAD_SHIFT
+      acknowledged: true
+- id: CLEAR_PAYLOAD_SHIFT_10
+  title: Clear PAYLOAD_SHIFT
+  reqs:
+  - AEG-502
+  - AEG-505
+  - OI-010
+  inject:
+    target: payload
+    action: shift
+    params:
+      cm: 0.2
+  expect:
+    within_s: 4
+    no_alert:
+      code: PAYLOAD_SHIFT
+    snapshot:
+      payload.secured: true
 - id: RAISE_WEIGHT_OUT_OF_RANGE
   title: Raise WEIGHT_OUT_OF_RANGE
   reqs:
@@ -411,3 +907,76 @@ steps:
     within_s: 4
     no_alert:
       code: LINK_DEGRADED
+- id: F_LINK_OUTAGE
+  title: Inject link outage
+  reqs:
+  - OI-007
+  inject:
+    target: link
+    action: outage
+    params:
+      seconds: 12
+  expect:
+    within_s: 8
+    alert:
+      code: LINK_LOST
+      severity: WARNING
+      recommended_action:
+        not: ''
+- id: F_STALE
+  title: Outage marks retained values stale
+  reqs:
+  - OI-008
+  expect:
+    within_s: 3
+    alert:
+      code: STALE_DATA
+      severity: CAUTION
+      recommended_action:
+        not: ''
+- id: F_ACK_LINK
+  title: Acknowledge lost link
+  reqs:
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.LINK_LOST
+  expect:
+    within_s: 2
+    alert:
+      code: LINK_LOST
+      acknowledged: true
+- id: F_ACK_STALE
+  title: Acknowledge stale data
+  reqs:
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.STALE_DATA
+  expect:
+    within_s: 2
+    alert:
+      code: STALE_DATA
+      acknowledged: true
+- id: F_CLEAR_LINK
+  title: Link recovers and acknowledged link alert clears
+  reqs:
+  - OI-007
+  expect:
+    within_s: 15
+    no_alert:
+      code: LINK_LOST
+    snapshot:
+      link.state: CONNECTED
+- id: F_CLEAR_STALE
+  title: Fresh status clears acknowledged stale alert
+  reqs:
+  - OI-008
+  expect:
+    within_s: 5
+    no_alert:
+      code: STALE_DATA
