@@ -1,1 +1,5 @@
 export const MOCK_INTERVAL_MS = 3_000;
+export const COMMAND_RESULT_TIMEOUT_MS = 3_000;
+export const SCREEN_DISCONNECTED_AFTER_MS = 2_000;
+export const RECONNECT_INITIAL_MS = 500;
+export const RECONNECT_MAX_MS = 5_000;
