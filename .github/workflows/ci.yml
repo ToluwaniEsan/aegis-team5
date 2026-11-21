@@ -162,3 +162,9 @@ jobs:
           python -m aegis.testing.scenario_runner
           scenarios/estop.yaml
           --fast
+
+      - name: Run abort and return scenario
+        run: >
+          python -m aegis.testing.scenario_runner
+          scenarios/abort_return.yaml
+          --fast
