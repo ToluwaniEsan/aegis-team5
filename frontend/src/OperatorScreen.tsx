@@ -1,4 +1,5 @@
 import { useScreenStore } from "./state/store";
+import { TopBar } from "./TopBar";
 
 export function OperatorScreen() {
   const disconnected = useScreenStore((state) => state.screenDisconnected);
@@ -10,7 +11,7 @@ export function OperatorScreen() {
         aria-label="Operator Screen"
         className={disconnected ? "screen-disconnected" : undefined}
       >
-        <header className="top" aria-label="Top bar" />
+        <TopBar />
         {disconnected && (
           <div className="disconnect-bar" role="alert">
             <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">

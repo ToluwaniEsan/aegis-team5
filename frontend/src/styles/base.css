@@ -20,8 +20,113 @@ body {
 }
 .top {
   grid-column: 1 / 4;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  padding: 0 var(--s3) 0 var(--s4);
   background: var(--panel);
   border-bottom: 1px solid var(--line-strong);
+}
+.top-mission {
+  width: 380px;
+  flex: none;
+  min-width: 0;
+}
+.mission-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-title);
+  font-weight: 600;
+}
+.mission-payload {
+  margin-top: var(--s1);
+  color: var(--text-muted);
+  font: 12px var(--font-num);
+}
+.top-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.top-clock {
+  white-space: nowrap;
+  font: 18px var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--s1);
+  min-height: 30px;
+  padding: var(--s1) var(--s2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel-raised);
+  color: var(--text);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+.status-badge.warning {
+  border-color: var(--warning);
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+.status-badge.critical {
+  border-color: var(--critical);
+  background: var(--critical-bg);
+  color: var(--critical);
+}
+.status-badge.out-of-date {
+  background: var(--stale-pattern);
+}
+.estop-control {
+  margin-left: auto;
+}
+.estop {
+  width: 152px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--estop-border);
+  border-radius: var(--radius);
+  background: var(--estop);
+  color: var(--estop-text);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  line-height: 1.1;
+}
+.estop strong {
+  font-size: var(--fs-title);
+}
+.estop span {
+  font-size: 10px;
+}
+.estop:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+}
+.estop-feedback {
+  position: absolute;
+  top: 64px;
+  right: var(--s3);
+  display: flex;
+  align-items: start;
+  gap: var(--s2);
+  max-width: 420px;
+  padding: var(--s2);
+  border: 1px solid var(--critical);
+  background: var(--critical-bg);
+  color: var(--critical);
+  font-weight: 600;
+}
+.estop-feedback svg {
+  flex: none;
 }
 .panel {
   background: var(--panel);
