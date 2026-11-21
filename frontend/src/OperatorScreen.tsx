@@ -1,5 +1,6 @@
 import { useScreenStore } from "./state/store";
 import { TopBar } from "./TopBar";
+import { PayloadStatus } from "./PayloadStatus";
 
 export function OperatorScreen() {
   const disconnected = useScreenStore((state) => state.screenDisconnected);
@@ -23,7 +24,9 @@ export function OperatorScreen() {
               : "data unavailable"}
           </div>
         )}
-        <section className="panel" aria-label="Payload and vehicle health" />
+        <section className="panel" aria-label="Payload and vehicle health">
+          <PayloadStatus />
+        </section>
         <section className="panel" aria-label="Route and navigation" />
         <section className="panel panel-right" aria-label="Mission controls" />
         <footer className="bottom" aria-label="Alerts and delivery" />
