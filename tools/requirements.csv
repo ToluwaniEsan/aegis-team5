@@ -1,0 +1,41 @@
+ID,short text,method
+AEG-501,Payload size and weight limit,Test
+AEG-502,Report payload shift,"Analysis, Test"
+AEG-503,Accept 15 to 25 kg,Test
+AEG-504,Weight accurate to 0.5 kg,Test
+AEG-505,Show secured status,Test
+AEG-506,No release while moving,Test
+AEG-507,Release only at destination with authorization,Demo
+AEG-508,Delivery confirmation within 10 s,Test
+AEG-509,Release energy 5 Wh or less,Analysis
+AEG-510,Payload ID in every message,"Inspection, Test"
+AEG-511,No departure unless secured,Test
+AEG-512,Update payload details,"Test, Demo"
+AEG-513,Report payload faults,Test
+AEG-514,Hold payload if link lost at destination,Test
+OI-001,Assign a mission,Demo
+OI-002,Full command set,Demo
+OI-003,Confirm risky commands,Demo
+OI-004,Refuse invalid commands,Test
+OI-005,Live status display,Test
+OI-006,Show command status,Test
+OI-007,Show link state,Test
+OI-008,Last known status on link loss,Test
+OI-009,Failed commands never resent,Test
+OI-010,Show faults with severity,Test
+OI-011,Critical alerts can't be missed,"Demo, Inspection"
+OI-012,Show blocked route,Demo
+OI-013,Record everything,"Test, Inspection"
+OI-014,Easy to learn,Test
+OI-015,New mission mid-mission,Demo
+OI-016,Show delivery summary,Demo
+OI-017,Mark out-of-date values,Test
+OI-018,Not color alone,Inspection
+OI-019,Emergency stop,"Demo, Test"
+GEN-001,Trigger faults for testing,Test
+GEN-002,Metric units and UTC time,Inspection
+GEN-003,Runs in Team 1's environment,Demo
+GEN-004,Fail safe,Test
+GEN-005,Payload simulator with failures,"Inspection, Test"
+ENV-001,Runs on a standard laptop,Demo
+ENV-002,Fits a 1366 × 768 screen,Inspection
