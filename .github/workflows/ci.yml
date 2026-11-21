@@ -95,9 +95,6 @@ jobs:
     name: IRON HAWK smoke test
     runs-on: ubuntu-latest
 
-    # Remove this allowance when B15 is ready.
-    continue-on-error: true
-
     defaults:
       run:
         working-directory: backend
@@ -116,4 +113,10 @@ jobs:
         run: >
           python -m aegis.testing.scenario_runner
           scenarios/iron_hawk_short.yaml
+          --fast
+
+      - name: Run full IRON HAWK scenario
+        run: >
+          python -m aegis.testing.scenario_runner
+          scenarios/iron_hawk.yaml
           --fast
