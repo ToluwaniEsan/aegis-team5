@@ -137,8 +137,145 @@ body {
 .panel-right {
   border-right: 0;
 }
-.panel-left {
+.panel-left,
+.panel-route {
   overflow-y: auto;
+}
+.navigation-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--s2);
+}
+.navigation-header h2 {
+  margin: 0;
+  font-size: var(--fs-title);
+}
+.navigation-header span {
+  color: var(--text-muted);
+  font: 11px var(--font-num);
+}
+.route-map,
+.route-placeholder {
+  display: block;
+  width: 100%;
+  height: 330px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-raised);
+}
+.route-placeholder {
+  padding: var(--s3);
+  color: var(--text-muted);
+}
+.route-map text {
+  fill: var(--text);
+  font: 600 11px var(--font-ui);
+}
+.route-line,
+.route-travelled,
+.route-old {
+  fill: none;
+  stroke-width: 2;
+}
+.route-line {
+  stroke: var(--line-strong);
+}
+.route-old {
+  stroke: var(--line-strong);
+  stroke-dasharray: 6 4;
+}
+.route-travelled {
+  stroke: var(--action);
+}
+.route-origin {
+  fill: var(--panel-raised);
+  stroke: var(--text);
+  stroke-width: 2;
+}
+.route-destination,
+.route-vehicle {
+  fill: var(--text);
+}
+.route-cross {
+  fill: none;
+  stroke: var(--critical);
+  stroke-width: 2;
+}
+.route-blocked {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: var(--s2);
+  padding: var(--s2);
+  border: 1px solid var(--caution-text);
+  border-radius: var(--radius);
+  background: var(--caution-bg);
+  color: var(--caution-text);
+  font-size: 11px;
+}
+.route-blocked svg {
+  flex: none;
+}
+.route-progress {
+  margin-top: var(--s2);
+}
+.route-progress > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  font: 11px var(--font-num);
+}
+.route-progress-track {
+  height: 10px;
+  margin-top: var(--s1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--canvas);
+}
+.route-progress-track > div {
+  height: 100%;
+  background: var(--action);
+}
+.navigation-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s1);
+  margin-top: var(--s2);
+}
+.navigation-values > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 64px;
+  padding: var(--s2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-raised);
+}
+.navigation-values span {
+  color: var(--text-label);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+.navigation-values strong {
+  font: 600 var(--fs-big) var(--font-num);
+}
+.navigation-values small {
+  font: 11px var(--font-num);
+  overflow-wrap: anywhere;
+}
+.navigation-stale {
+  background: var(--stale-pattern);
+  color: var(--stale-text);
+}
+.navigation-stale .route-map,
+.navigation-stale .route-placeholder,
+.navigation-stale .route-blocked,
+.navigation-stale .navigation-values > div {
+  background: transparent;
+  color: var(--stale-text);
+}
+.navigation-stale .route-map text {
+  fill: var(--stale-text);
 }
 .health-card {
   margin-top: var(--s2);
