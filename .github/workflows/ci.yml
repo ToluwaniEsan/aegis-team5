@@ -174,3 +174,9 @@ jobs:
           python -m aegis.testing.scenario_runner
           scenarios/faults.yaml
           --fast
+
+      - name: Run repeatability scenario
+        run: >
+          python -m aegis.testing.scenario_runner
+          scenarios/repeatability.yaml
+          --fast
