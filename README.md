@@ -59,6 +59,8 @@ Faults to show from the test panel: **Inject shift** (payload moves, HELD), **St
 | [`docs/05-workstream-C-operator-screen.md`](docs/05-workstream-C-operator-screen.md) | Design tokens, layout, tasks C0 to C12 (Emmanuel) |
 | [`docs/06-integration-and-test.md`](docs/06-integration-and-test.md) | Connecting Teams 1 to 4, scenario format, IRON HAWK, verification evidence, CDR, TRR and demo checklists |
 | [`docs/decisions.md`](docs/decisions.md) | Open questions each builder answers first, and the answers |
+| [`docs/team5-interface-sheet.md`](docs/team5-interface-sheet.md) | Team 5's side of every interface: messages we send and expect, rates, assumed values |
+| [`docs/risk-register.md`](docs/risk-register.md) | Risk register, updated for CDR |
 | [`config/config.yaml`](config/config.yaml) | Every limit and timing value |
 | [`backend/scenarios/iron_hawk.yaml`](backend/scenarios/iron_hawk.yaml) | The full IRON HAWK scenario, tied to requirement IDs |
 | [`design/`](design/) | Operator screen reference image, its HTML source and the bundled fonts |
