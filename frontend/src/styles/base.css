@@ -173,7 +173,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--canvas);
+  /* See-through: the panels stay readable behind the dialog (still not clickable). */
+  background: color-mix(in srgb, var(--canvas) 65%, transparent);
 }
 .confirmation-dialog {
   width: 480px;
@@ -291,7 +292,8 @@ body {
   position: fixed;
   inset: 64px 0 0;
   z-index: 2;
-  background: var(--canvas);
+  /* C8: the drawer covers the right panel only; status panels stay visible. */
+  background: color-mix(in srgb, var(--canvas) 45%, transparent);
 }
 .mission-drawer {
   position: absolute;

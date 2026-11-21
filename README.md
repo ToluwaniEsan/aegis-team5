@@ -19,6 +19,34 @@ Team 5's subsystem for **Project AEGIS** (Autonomous Expeditionary Ground Suppor
 
 Every coding agent follows [`AGENTS.md`](AGENTS.md); `CLAUDE.md` points Claude Code at it.
 
+## Run it and demo a mission
+
+You need Python 3.11+ and Node 22. Build the screen once, then start everything with one command:
+
+```bash
+cd frontend && npm install && npm run build && cd ..
+cd backend && python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+python -m aegis.run_all             # ground + link + vehicle + stand-ins for Teams 1 to 4
+```
+
+Open two browser windows (a second monitor works best):
+
+| Window | Address | Who uses it |
+|---|---|---|
+| Operator Screen | http://localhost:8080 | The operator. Click **Start operator console** (it unlocks the alarm sound). |
+| Test panel | http://localhost:8080/test | The presenter or instructor, to trigger events and faults live. Only available while `test_mode: true` in `config/config.yaml`. |
+
+**A full mission (the CDR demo):**
+1. Operator Screen: **New mission** → pick origin and destination, weight 226.8 to 1000 kg, dimensions within 60 × 40 × 40 cm → **Assign mission**. The payload goes LOADED → SECURED.
+2. Test panel: **Depart**. The Team 2 stand-in waits for this on purpose (`standins.nav.auto_depart: false`), so scenarios and demos control when the trip starts. The payload goes TRAVELLING → AT_DESTINATION.
+3. Operator Screen: **Release payload** → confirm in the dialog. The payload goes RELEASED → DELIVERED, and the delivery confirmation appears bottom right.
+
+Faults to show from the test panel: **Inject shift** (payload moves, HELD), **Start outage** (link loss), **Set battery**, **Block route**.
+
+**Automated checks:** `pytest` in `backend/`; `npm run test`, `npm run lint` and `npm run test:layout` in `frontend/`; and the full IRON HAWK scenario: `python -m aegis.testing.scenario_runner scenarios/iron_hawk.yaml --fast` from `backend/`.
+
 ## Build plan
 
 | File | What it covers |

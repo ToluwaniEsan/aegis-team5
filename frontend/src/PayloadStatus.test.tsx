@@ -208,3 +208,43 @@ it("test_AEG_504_and_AEG_505_thresholds_use_snapshot_limits_inclusively", () => 
     screen.getByText("9.9 kg").querySelector('[data-severity="WARNING"]'),
   ).toBeTruthy();
 });
+
+function row(label: string) {
+  return screen.getByText(label, { selector: "dt" })
+    .nextElementSibling as HTMLElement;
+}
+
+it.each(["EMPTY", "RELEASED", "DELIVERED"] as PayloadState[])(
+  "test_AEG_505_open_lock_and_zero_mass_are_normal_when_%s",
+  (state) => {
+    show({
+      ...travelling,
+      payload: { ...travelling.payload, state, locked: false, mass_kg: 0 },
+    });
+    expect(row("Lock").className).not.toContain("payload-critical");
+    expect(row("Lock").textContent).toBe("OPEN");
+    expect(row("Weight").className).not.toContain("payload-warning");
+  },
+);
+
+it.each([
+  ["TRAVELLING", null],
+  ["HELD", "AT_DESTINATION"],
+  ["HELD", null],
+] as [PayloadState, PayloadState | null][])(
+  "test_AEG_505_open_lock_and_bad_mass_alarm_while_aboard_%s_from_%s",
+  (state, held_from) => {
+    show({
+      ...travelling,
+      payload: {
+        ...travelling.payload,
+        state,
+        held_from,
+        locked: false,
+        mass_kg: 0,
+      },
+    });
+    expect(row("Lock").className).toContain("payload-critical");
+    expect(row("Weight").className).toContain("payload-warning");
+  },
+);

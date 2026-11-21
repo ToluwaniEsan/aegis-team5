@@ -12,6 +12,14 @@ const steps: { state: PayloadState; label: string }[] = [
   { state: "DELIVERED", label: "DELIVERED" },
 ];
 
+const LOCKED_STATES: PayloadState[] = [
+  "SECURED",
+  "TRAVELLING",
+  "AT_DESTINATION",
+  "RETURNING",
+];
+const ABOARD_STATES: PayloadState[] = ["LOADED", ...LOCKED_STATES];
+
 function Sensor({ label, health }: { label: string; health: Health }) {
   const severity =
     health === "FAULT" ? "CRITICAL" : health === "WARN" ? "WARNING" : null;
@@ -28,7 +36,16 @@ function Sensor({ label, health }: { label: string; health: Health }) {
 function PayloadBody({ snapshot }: { snapshot: Snapshot }) {
   const { payload, limits } = snapshot;
   const current = steps.findIndex((step) => step.state === payload.state);
+  // An open lock or an out-of-range weight is abnormal only while a payload
+  // should be aboard. EMPTY, RELEASED and DELIVERED are normal with the lock
+  // open and 0 kg. HELD uses the state it was held from; unknown counts as aboard.
+  const effective =
+    payload.state === "HELD" ? payload.held_from : payload.state;
+  const lockExpected = effective === null || LOCKED_STATES.includes(effective);
+  const aboard = effective === null || ABOARD_STATES.includes(effective);
+  const badLock = !payload.locked && lockExpected;
   const badMass =
+    aboard &&
     payload.mass_kg !== null &&
     (payload.mass_kg < limits.mass_min_kg ||
       payload.mass_kg > limits.mass_max_kg);
@@ -60,8 +77,8 @@ function PayloadBody({ snapshot }: { snapshot: Snapshot }) {
       <dl className="payload-rows">
         <div>
           <dt>Lock</dt>
-          <dd className={payload.locked ? undefined : "payload-critical"}>
-            {!payload.locked && <SeverityShape severity="CRITICAL" />}
+          <dd className={badLock ? "payload-critical" : undefined}>
+            {badLock && <SeverityShape severity="CRITICAL" />}
             {payload.locked ? "Closed" : "OPEN"}
           </dd>
         </div>
