@@ -41,10 +41,12 @@ Questions found during work go at the bottom, under "Added during the build".
 | ID | Blocks | Question | Options | Recommended | Answer | Date |
 |---|---|---|---|---|---|---|
 | D-16 | Phase 1 | Have Zizwe and Emmanuel read `docs/02-contracts.md` together and agreed to freeze it, along with `models.py`, `ui_models.py`, `ui.ts` and `config.yaml`? | Yes, frozen on (date) / Not yet | Do it by the end of day 2 (about 45 minutes) | Not yet, build anyway | 2026-11-20 |
-| D-17 | no | Payload mass versus box size: 1,000 kg in a 60 × 40 × 40 cm box is about 10,400 kg/m³, which is denser than steel. Reviewers will ask about it. | Keep and explain / Bigger box / Lower max mass | **Keep the config values for now.** The team (Solomon) decides before CDR; it is a config change only. | | |
+| D-17 | no | Payload mass versus box size: 1,000 kg in a 60 × 40 × 40 cm box is about 10,400 kg/m³, which is denser than steel. Reviewers will ask about it. | Keep and explain / Bigger box / Lower max mass | **Keep the config values for now.** The team (Solomon) decides before CDR; it is a config change only. | Emmanuel and Zizwe agree to keep the config values for now. The team (Solomon) decides before CDR; it is a config change only. | 2026-11-20 |
 
 ## Added during the build
 
 | ID | Asked by | Question | Answer | Date |
 |---|---|---|---|---|
 | D-18 | Toluwani (Scrum Master) | Payload minimum mass: `config.yaml` had 500 kg, the requirements doc said "up to 500 lb". Which is right? | Minimum 500 lb (226.8 kg). `mass_min_kg` changed from 500 to 226.8; `mass_max_kg` stays 1000 (D-17 still open). | 2026-11-20 |
+| D-19 | Emmanuel | B10 says to clear a route-blocked notice once the vehicle passes the detour point, but `nav.route_blocked` defines no detour point or passing rule. How should B10 determine that? | Interim: use the configured timeout to expire the notice. Expiry does not confirm the route is clear or change command permissions. Detour-passed clearing remains outstanding until Team 2 supplies an agreed signal and both builders approve a CONTRACT CHANGE. | 2026-11-20 |
+| D-20 | Emmanuel | `payload.delivered` has a position but no destination `Place`, while `DeliverySummary.destination` is required. How should B10 obtain it when the Command Manager is not yet available? | Inject a mission destination lookup (Recommended) | 2026-11-20 |
