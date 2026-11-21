@@ -31,3 +31,7 @@ htmlcov/
 .DS_Store
 # Generated accessibility evidence (retained as a CI artifact)
 /reports/grayscale/
+
+/frontend/reports/
+/reports/verification.csv
+/reports/verification.md
