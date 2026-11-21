@@ -168,3 +168,9 @@ jobs:
           python -m aegis.testing.scenario_runner
           scenarios/abort_return.yaml
           --fast
+
+      - name: Run injectable fault scenarios
+        run: >
+          python -m aegis.testing.scenario_runner
+          scenarios/faults.yaml
+          --fast
