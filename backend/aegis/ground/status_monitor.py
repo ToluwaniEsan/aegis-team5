@@ -62,6 +62,7 @@ class StatusMonitor:
         self.bus, self.clock, self.cfg, self.log = bus, clock, cfg, log
         self.destination_for = destination_for
         self.on_fault, self.on_ack = on_fault, on_ack
+        self.on_mission_event: Callable[[Envelope], Awaitable[None]] | None = None
         self.latest: dict[str, Envelope] = {}
         self.seen: set[UUID] = set()
         self._last_link_received: datetime | None = None
@@ -75,6 +76,7 @@ class StatusMonitor:
         self._delivery_order: dict[UUID, tuple[datetime, int]] = {}
         self._selected_delivery_order: tuple[datetime, int] | None = None
         self._confirmations: dict[UUID, Envelope] = {}
+        self._confirmation_published: set[UUID] = set()
         self._replay_logged: set[UUID] = set()
         self.replayed_faults: list[Envelope] = []
         self.acks: list[Envelope] = []
@@ -101,6 +103,11 @@ class StatusMonitor:
                     )
                     self._replay_logged.add(event.msg_id)
                 await self._apply(event, replayed=True)
+                if (
+                    event.type in {"payload.status", "payload.delivered"}
+                    and self.on_mission_event is not None
+                ):
+                    await self.on_mission_event(event)
                 self.seen.add(event.msg_id)
         else:
             await self._apply(env, replayed=False)
@@ -167,7 +174,9 @@ class StatusMonitor:
                     mission_id=env.body.mission_id,
                     payload_id=env.body.payload_id,
                 )
-            await self.bus.publish(self._confirmations[env.msg_id])
+            if env.msg_id not in self._confirmation_published:
+                await self.bus.publish(self._confirmations[env.msg_id])
+                self._confirmation_published.add(env.msg_id)
         elif env.type in {"fault.raised", "fault.cleared"} and replayed:
             if self.on_fault is not None:
                 await self.on_fault(env)
