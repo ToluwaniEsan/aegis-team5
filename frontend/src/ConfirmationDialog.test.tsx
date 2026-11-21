@@ -109,6 +109,44 @@ it("test_OI_003_explicit_confirmation_sends_once_without_inventing_lifecycle", a
   expect(screen.queryByText("SENT")).toBeNull();
 });
 
+it("test_OI_003_accepted_command_that_changes_the_snapshot_shows_no_stale_error", async () => {
+  vi.mocked(sendCommand).mockResolvedValue({
+    kind: "command_result",
+    client_req_id: "1",
+    accepted: true,
+    command_id: "c",
+    reason: null,
+  });
+  const { dialog } = open();
+  await act(async () => {
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Abort mission" }),
+    );
+  });
+  // The command itself changes the snapshot and makes it no longer allowed.
+  act(() =>
+    useScreenStore.setState({
+      snapshot: {
+        ...travelling,
+        payload: { ...travelling.payload, state: "RETURNING" },
+        allowed: {
+          ...travelling.allowed,
+          abort: {
+            ...travelling.allowed.abort,
+            allowed: false,
+            reason: "Payload is RETURNING",
+          },
+        },
+      },
+    }),
+  );
+  expect(within(dialog).queryByRole("alert")).toBeNull();
+  expect(within(dialog).getByRole("status").textContent).toBe(
+    "Request accepted. Check the command tracker for progress.",
+  );
+  expect(within(dialog).getByRole("button", { name: "Close" })).toBeTruthy();
+});
+
 it.each(["permission", "mission", "payload", "destination", "disconnect"])(
   "test_OI_004_%s_change_prevents_confirmation",
   (change) => {
