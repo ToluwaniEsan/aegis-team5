@@ -91,6 +91,24 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+      - name: Install Playwright browser
+        if: steps.frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Run layout and accessibility checks
+        if: steps.frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm run test:layout
+
+      - name: Upload grayscale evidence
+        if: always() && steps.frontend.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: grayscale-evidence
+          path: reports/grayscale/*.png
+          if-no-files-found: warn
+
       - name: Check generated fixture literals
         if: steps.frontend.outputs.exists == 'true'
         working-directory: frontend
