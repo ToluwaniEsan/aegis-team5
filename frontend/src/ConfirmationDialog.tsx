@@ -155,7 +155,31 @@ export function createReview(
       key === "origin_id" || key === "destination_id"
         ? snapshot.places.find((item) => item.id === value)
         : undefined;
-    return `${key}: ${place ? `${place.name} (${place.id})` : typeof value === "object" ? JSON.stringify(value) : String(value)}`;
+    const labels: Record<string, string> = {
+      origin_id: "Origin",
+      destination_id: "Destination",
+      mission_id: "Mission",
+      priority: "Priority",
+      declared_mass_kg: "Declared weight",
+      dims_cm: "Dimensions",
+      prerelease_authorized: "Pre-authorized release",
+      alert_id: "Alert",
+    };
+    const label = labels[key] ?? key.replaceAll("_", " ");
+    if (key === "dims_cm" && value && typeof value === "object") {
+      const dims = value as Record<string, unknown>;
+      return `${label}: ${dims.length} × ${dims.width} × ${dims.height} cm`;
+    }
+    const text = place
+      ? `${place.name} (${place.id})`
+      : typeof value === "boolean"
+        ? value
+          ? "Yes"
+          : "No"
+        : typeof value === "object"
+          ? "Unavailable"
+          : String(value);
+    return `${label}: ${text}${key === "declared_mass_kg" ? " kg" : ""}`;
   });
   return {
     intent: structuredClone(intent),

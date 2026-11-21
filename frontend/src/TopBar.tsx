@@ -3,7 +3,10 @@ import { LinkBadge } from "./LinkBadge";
 import { useScreenStore } from "./state/store";
 import { VehicleBadge } from "./VehicleBadge";
 
-export function TopBar() {
+export function TopBar({
+  alarmBlocked,
+  enableAlarm,
+}: { alarmBlocked?: boolean; enableAlarm?: () => void } = {}) {
   const snapshot = useScreenStore((state) => state.snapshot);
   const disconnected = useScreenStore((state) => state.screenDisconnected);
   const mission = snapshot?.mission.active;
@@ -33,6 +36,11 @@ export function TopBar() {
         <LinkBadge snapshot={snapshot} disconnected={disconnected} />
         <VehicleBadge snapshot={snapshot} disconnected={disconnected} />
       </div>
+      {alarmBlocked && (
+        <button type="button" className="alarm-blocked" onClick={enableAlarm}>
+          <span aria-hidden="true">▲</span> Alarm sound is off. Click to enable
+        </button>
+      )}
       <EStopButton active={snapshot?.estop_active === true} />
     </header>
   );

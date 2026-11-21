@@ -6,9 +6,11 @@ describe("C0 scaffold", () => {
   it("renders five named screen regions", () => {
     render(<OperatorScreen />);
     const app = screen.getByRole("main", { name: "Operator Screen" });
-    expect(app.children).toHaveLength(5);
+    expect(app.children).toHaveLength(6);
     expect(
-      Array.from(app.children).map((node) => node.getAttribute("aria-label")),
+      Array.from(app.children)
+        .slice(0, 5)
+        .map((node) => node.getAttribute("aria-label")),
     ).toEqual([
       "Top bar",
       "Payload and vehicle health",
@@ -17,9 +19,7 @@ describe("C0 scaffold", () => {
       "Alerts and delivery",
     ]);
     expect(
-      Array.from(app.children)
-        .slice(4)
-        .every((node) => node.textContent === ""),
-    ).toBe(true);
+      screen.getByRole("button", { name: "Start operator console" }),
+    ).toBeTruthy();
   });
 });
