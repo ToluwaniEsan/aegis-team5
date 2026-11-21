@@ -49,6 +49,14 @@ jobs:
             echo "No backend test files yet; tests skipped during initial setup."
           fi
 
+      - name: Upload pytest evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-evidence
+          path: backend/reports/pytest.xml
+          if-no-files-found: warn
+
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
@@ -99,14 +107,18 @@ jobs:
       - name: Run layout and accessibility checks
         if: steps.frontend.outputs.exists == 'true'
         working-directory: frontend
-        run: npm run test:layout
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: reports/playwright.json
+        run: npm run test:layout -- --reporter=line,json
 
       - name: Upload grayscale evidence
         if: always() && steps.frontend.outputs.exists == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: grayscale-evidence
-          path: reports/grayscale/*.png
+          path: |
+            reports/grayscale/*.png
+            frontend/reports/playwright.json
           if-no-files-found: warn
 
       - name: Check generated fixture literals
