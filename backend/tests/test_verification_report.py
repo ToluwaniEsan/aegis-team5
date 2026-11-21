@@ -82,3 +82,31 @@ def test_OI_018_screenshot_does_not_substitute_for_human_review(tmp_path):
     assert "Mercy" in rows[0]["Evidence"]
     report.add(evidence, ["OI-018"], "failed test", False)
     assert report.make_report(requirements, evidence)[0]["Result"] == "FAIL"
+
+
+def test_OI_014_automated_tests_cannot_pass_required_manual_evidence(tmp_path):
+    requirements = tmp_path / "requirements.csv"
+    requirements.write_text(
+        "ID,short text,method\n"
+        "OI-014,Usability,Test\n"
+        "AEG-509,Release energy,Analysis\n"
+        "GEN-003,Team 1 environment,Demo\n"
+        "ENV-001,Standard laptop,Demo\n"
+        "ENV-002,Layout,Inspection\n"
+    )
+    evidence = defaultdict(list)
+    keys = ["OI-014", "AEG-509", "GEN-003", "ENV-001", "ENV-002"]
+    for key in keys:
+        report.add(evidence, [key], "automated check", True)
+    rows = report.make_report(requirements, evidence)
+    assert [row["Result"] for row in rows] == [
+        "NO EVIDENCE",
+        "NO EVIDENCE",
+        "NO EVIDENCE",
+        "NO EVIDENCE",
+        "PASS",
+    ]
+    report.add(evidence, ["OI-014"], "named usability trial", True, source="manual")
+    assert report.make_report(requirements, evidence)[0]["Result"] == "PASS"
+    report.add(evidence, ["OI-014"], "failed automated check", False)
+    assert report.make_report(requirements, evidence)[0]["Result"] == "FAIL"

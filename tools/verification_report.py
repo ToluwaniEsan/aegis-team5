@@ -10,6 +10,8 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from pathlib import Path
 
+MANUAL_REQUIRED = {"AEG-509", "OI-014", "OI-018", "GEN-003", "ENV-001"}
+
 REQ = re.compile(r"(?<![A-Za-z0-9])(AEG|OI|ENV|GEN)[_-](\d{3})(?!\d)")
 
 
@@ -102,7 +104,9 @@ def make_report(requirements, evidence):
         for req in csv.DictReader(stream):
             key = req["ID"].strip()
             entries = evidence.get(key, [])
-            eligible = [e for e in entries if key != "OI-018" or e[4] == "manual"]
+            eligible = [
+                e for e in entries if key not in MANUAL_REQUIRED or e[4] == "manual"
+            ]
             result = (
                 "FAIL"
                 if any(not entry[1] for entry in entries)

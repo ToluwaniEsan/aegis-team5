@@ -4,8 +4,9 @@
 invent a requirements list. Supply `tools/requirements.csv` with columns `ID`,
 `short text`, and `method`. Optionally supply `tools/manual_evidence.csv` with
 columns `requirement`, `evidence file`, `checked by`, `date`, and `result`.
-Only complete manual rows with PASS or FAIL are counted. OI-018 requires a
-human-reviewed manual row; screenshot generation alone is not inspection.
+Only complete manual rows with PASS or FAIL are counted. AEG-509, OI-014,
+OI-018, GEN-003 and ENV-001 require human-attributed evidence before a PASS;
+automated tests and screenshot generation alone cannot establish those results.
 
 From the repository root, run:
 
