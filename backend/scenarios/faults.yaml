@@ -980,3 +980,87 @@ steps:
     within_s: 5
     no_alert:
       code: STALE_DATA
+- id: S07
+  title: Vehicle departs
+  reqs:
+  - AEG-511
+  inject:
+    target: nav
+    action: depart
+    params: {}
+  expect:
+    within_s: 3
+    snapshot:
+      payload.state: TRAVELLING
+      nav.moving: true
+- id: S21
+  title: Vehicle arrives and stops at the destination
+  reqs:
+  - AEG-507
+  inject:
+    target: nav
+    action: arrive
+    params: {}
+  expect:
+    within_s: 3
+    snapshot:
+      payload.state: AT_DESTINATION
+      nav.moving: false
+      allowed.release.allowed: true
+- id: F_JAM
+  title: Jam release mechanism
+  reqs:
+  - OI-010
+  inject:
+    target: payload
+    action: release_jam
+    params:
+      'on': true
+- id: F_RELEASE
+  title: Start release with the mechanism jammed
+  reqs:
+  - OI-010
+  ui:
+    command: release
+    confirmed: true
+    args: {}
+  expect:
+    within_s: 9
+    alert:
+      code: RELEASE_FAILED
+      severity: CRITICAL
+      recommended_action:
+        not: ''
+    snapshot:
+      payload.state: HELD
+- id: F_ACK_RELEASE
+  title: Acknowledge the release failure
+  reqs:
+  - OI-010
+  ui:
+    command: ack_fault
+    confirmed: false
+    args:
+      alert_id: $alert.RELEASE_FAILED
+  expect:
+    within_s: 3
+    alert:
+      code: RELEASE_FAILED
+      acknowledged: true
+- id: F_RESET_JAM
+  title: Removing the simulated jam alone does not claim recovery
+  reqs:
+  - OI-010
+  inject:
+    target: payload
+    action: release_jam
+    params:
+      'on': false
+  wait_s: 2
+  expect:
+    within_s: 2
+    alert:
+      code: RELEASE_FAILED
+      active: true
+    snapshot:
+      payload.state: HELD
