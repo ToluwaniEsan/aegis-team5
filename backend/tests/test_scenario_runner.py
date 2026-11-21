@@ -127,3 +127,59 @@ async def test_OI_013_full_mission_with_fault_records_envelopes(tmp_path):
         )
     finally:
         await system.stop()
+
+
+@pytest.mark.asyncio
+async def test_AEG_508_each_repeated_delivery_matches_its_mission(tmp_path):
+    from datetime import datetime
+    from pathlib import Path
+
+    import yaml
+
+    from aegis.ground.mission_log import MissionLog
+    from aegis.run_all import build_system
+    from aegis.testing.scenario_runner import read_logs
+
+    cfg = load_settings().model_copy(
+        update={
+            "logging": load_settings().logging.model_copy(update={"dir": str(tmp_path)})
+        }
+    )
+    clock = ManualClock(FAKE_START)
+    system = build_system(cfg, clock, "repeat-delivery", MissionLog)
+    document = yaml.safe_load(
+        (
+            Path(__file__).resolve().parents[1] / "scenarios/repeatability.yaml"
+        ).read_text()
+    )
+    await system.start()
+    try:
+        runner = Runner(cfg, clock, "repeat-delivery", system=system)
+        results = await runner.run(document)
+        assert all(item["passed"] for item in results), [
+            item for item in results if not item["passed"]
+        ]
+        sent = [
+            record["env"]
+            for record in read_logs(runner.log_paths)
+            if record["kind"] == "msg.sent"
+        ]
+        delivered = [env for env in sent if env["type"] == "payload.delivered"]
+        confirmations = [
+            env for env in sent if env["type"] == "t1.delivery_confirmation"
+        ]
+        assert len(delivered) == len(confirmations) == 10
+        assert len({env["mission_id"] for env in delivered}) == 10
+        for event, confirmation in zip(delivered, confirmations, strict=True):
+            assert confirmation["mission_id"] == event["mission_id"]
+            assert confirmation["payload_id"] == event["payload_id"]
+            assert confirmation["body"] == event["body"]
+            released = datetime.fromisoformat(event["body"]["released_at"])
+            sent_at = datetime.fromisoformat(confirmation["sent_at"])
+            assert (
+                0
+                <= (sent_at - released).total_seconds()
+                < (cfg.timing.delivery_confirm_max_s)
+            )
+    finally:
+        await system.stop()
