@@ -192,3 +192,61 @@ jobs:
           python -m aegis.testing.scenario_runner
           scenarios/repeatability.yaml
           --fast
+
+      - name: Upload scenario evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scenario-evidence
+          path: |
+            backend/reports/scenario-*.json
+            logs/run-*.jsonl
+          if-no-files-found: error
+
+  verification:
+    name: Verification report
+    needs: [backend, frontend, smoke]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Download pytest evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: pytest-evidence
+          path: backend/reports
+
+      - name: Download browser evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: grayscale-evidence
+          path: .
+
+      - name: Download scenario evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: scenario-evidence
+          path: .
+
+      - name: Verify evidence inputs exist
+        run: |
+          test -s backend/reports/pytest.xml
+          test -s frontend/reports/playwright.json
+          compgen -G 'backend/reports/scenario-*.json' > /dev/null
+
+      - name: Generate verification report
+        run: python tools/verification_report.py
+
+      - name: Upload verification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-report
+          path: |
+            reports/verification.md
+            reports/verification.csv
+          if-no-files-found: error

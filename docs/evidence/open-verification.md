@@ -8,4 +8,4 @@
 
 ## Traceability discrepancy
 
-AEG-503 in the supplied Traceability table says “Accept 15 to 25 kg.” The repository's D-18 decision sets the minimum at 500 lb (226.8 kg), and the current configuration and tests apply that minimum. The generated report matches evidence by ID, so it prints PASS for AEG-503 even though the evidence does not verify the supplied wording. Reconcile the Traceability requirement with D-18 before using this row for sign-off.
+AEG-503 in the supplied Traceability table says “Accept 15 to 25 kg.” The repository's D-18 decision sets the minimum at 500 lb (226.8 kg), and the current configuration and tests apply that minimum. The report retains the ID-matched evidence but marks this wording NO EVIDENCE until it is reconciled; failed evidence still reports FAIL. Reconcile the Traceability requirement with D-18 before using this row for sign-off.
