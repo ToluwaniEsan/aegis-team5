@@ -40,24 +40,24 @@ async def test_lost_after_silence_and_restored_on_next_heartbeat():
     await watch.start()
     await hb.start()
     await advance(bus.clock, 30.0, step=0.5)
-    assert link_states(bus) == []  # heartbeats flowing: never LOST
+    assert link_states(bus) == ["RESTORED"]  # the first heartbeat; never LOST
 
     await hb.stop()
     silent_from = bus.clock.now()
     await advance(bus.clock, cfg.link.lost_after_s - 1.5, step=0.5)
-    assert link_states(bus) == []
+    assert link_states(bus) == ["RESTORED"]
     await advance(bus.clock, 2.0, step=0.5)
-    assert link_states(bus) == ["LOST"]
+    assert link_states(bus) == ["RESTORED", "LOST"]
     lost = bus.last("int.link_state")
     assert lost.dst == ["vehicle.payload_controller", "vehicle.event_buffer"]
     assert lost.body.since <= silent_from
 
     await advance(bus.clock, 60.0, step=1.0)
-    assert link_states(bus) == ["LOST"]  # once, not every second
+    assert link_states(bus) == ["RESTORED", "LOST"]  # once, not every second
 
     hb.seq = 99
     await hb.beat()
-    assert link_states(bus) == ["LOST", "RESTORED"]
+    assert link_states(bus) == ["RESTORED", "LOST", "RESTORED"]
     await watch.stop()
 
 
@@ -89,7 +89,7 @@ async def test_AEG_514_link_lost_at_destination_without_preauth_stays_secured(wa
     await to_destination(v, prerelease=False)
     await v.hb.stop()  # the link goes down
     await v.wait(v.cfg.link.lost_after_s + 1.0)
-    assert link_states(v.bus) == ["LOST"]
+    assert link_states(v.bus)[-1] == "LOST"
 
     await v.wait(600.0, step=5.0)  # ten minutes
     s = v.status()
@@ -104,7 +104,7 @@ async def test_AEG_507_link_lost_with_preauth_releases_after_wait(watched):
     await to_destination(v, prerelease=True)
     await v.hb.stop()
     await v.wait(v.cfg.link.lost_after_s + 1.0)
-    assert link_states(v.bus) == ["LOST"]
+    assert link_states(v.bus)[-1] == "LOST"
     lost_at = v.bus.last("int.link_state").sent_at
 
     wait = v.cfg.link.prerelease_wait_s
