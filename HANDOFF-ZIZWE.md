@@ -96,8 +96,8 @@ Tick each box when its pull request is merged. Days are working days from day 1.
 ### Phase 2: off-nominal (days 8 to 13)
 
 - [ ] **A6. Faults on the vehicle** (doc 03).
-- [ ] **A7. Event Buffer** (doc 03).
-- [ ] **A9. Vehicle entry point and `vehicle.test_agent`** (doc 03).
+- [x] **A7. Event Buffer** (doc 03).
+- [x] **A9. Vehicle entry point and `vehicle.test_agent`** (doc 03).
 - [x] **B14. Fault Injector** (doc 04), as a plain class:
   - `FaultInjector(bus, clock, cfg, log).inject(target, action, params)` raises `ValueError` with a reason on bad params.
   - Test every row of contracts section 10 by calling `inject()` directly.
