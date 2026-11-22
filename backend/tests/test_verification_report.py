@@ -110,3 +110,33 @@ def test_OI_014_automated_tests_cannot_pass_required_manual_evidence(tmp_path):
     assert report.make_report(requirements, evidence)[0]["Result"] == "PASS"
     report.add(evidence, ["OI-014"], "failed automated check", False)
     assert report.make_report(requirements, evidence)[0]["Result"] == "FAIL"
+
+
+def test_AEG_503_disputed_traceability_wording_cannot_pass_by_id(tmp_path):
+    requirements = tmp_path / "requirements.csv"
+    requirements.write_text("ID,short text,method\nAEG-503,Accept 15 to 25 kg,Test\n")
+    evidence = defaultdict(list)
+    report.add(evidence, ["AEG-503"], "test_AEG_503_load", True)
+    row = report.make_report(requirements, evidence)[0]
+    assert row["Result"] == "NO EVIDENCE"
+    assert "conflicts with D-18" in row["Evidence"]
+    report.add(evidence, ["AEG-503"], "failed test", False)
+    assert report.make_report(requirements, evidence)[0]["Result"] == "FAIL"
+    requirements.write_text(
+        "ID,short text,method\nAEG-503,Reconciled requirement,Test\n"
+    )
+    evidence["AEG-503"].pop()
+    assert report.make_report(requirements, evidence)[0]["Result"] == "PASS"
+
+
+def test_GEN_002_incomplete_ci_evidence_cannot_produce_a_pass(tmp_path):
+    requirements = tmp_path / "requirements.csv"
+    requirements.write_text(
+        "ID,short text,method\nOI-009,Timeout,Test\nOI-019,Stop,Test\n"
+    )
+    evidence = defaultdict(list)
+    report.add(evidence, ["OI-009"], "passing test", True)
+    report.add(evidence, ["OI-019"], "failing test", False)
+    rows = report.make_report(requirements, evidence, incomplete=True)
+    assert [row["Result"] for row in rows] == ["NO EVIDENCE", "FAIL"]
+    assert all("CI evidence incomplete" in row["Evidence"] for row in rows)

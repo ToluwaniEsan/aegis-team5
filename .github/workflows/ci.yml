@@ -192,3 +192,87 @@ jobs:
           python -m aegis.testing.scenario_runner
           scenarios/repeatability.yaml
           --fast
+
+      - name: Upload scenario evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scenario-evidence
+          path: |
+            backend/reports/scenario-*.json
+            logs/run-*.jsonl
+          if-no-files-found: error
+
+  verification:
+    name: Verification report
+    needs: [backend, frontend, smoke]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Download pytest evidence
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: pytest-evidence
+          path: backend/reports
+
+      - name: Download browser evidence
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: grayscale-evidence
+          path: .
+
+      - name: Download scenario evidence
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: scenario-evidence
+          path: .
+
+      - name: Check evidence completeness
+        id: evidence
+        env:
+          BACKEND_RESULT: ${{ needs.backend.result }}
+          FRONTEND_RESULT: ${{ needs.frontend.result }}
+          SMOKE_RESULT: ${{ needs.smoke.result }}
+        run: |
+          if [[ "$BACKEND_RESULT" == success && "$FRONTEND_RESULT" == success && "$SMOKE_RESULT" == success ]] &&
+             test -s backend/reports/pytest.xml &&
+             test -s frontend/reports/playwright.json &&
+             compgen -G 'backend/reports/scenario-*.json' > /dev/null; then
+            echo 'incomplete=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'incomplete=true' >> "$GITHUB_OUTPUT"
+            echo 'Evidence is incomplete; the report cannot establish PASS.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Generate verification report
+        env:
+          INCOMPLETE: ${{ steps.evidence.outputs.incomplete }}
+        run: |
+          if [[ "$INCOMPLETE" == true ]]; then
+            python tools/verification_report.py --incomplete-inputs
+          else
+            python tools/verification_report.py
+          fi
+
+      - name: Upload verification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-report
+          path: |
+            reports/verification.md
+            reports/verification.csv
+          if-no-files-found: error
+
+      - name: Fail when evidence is incomplete
+        if: steps.evidence.outputs.incomplete == 'true'
+        run: exit 1

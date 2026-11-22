@@ -98,27 +98,58 @@ def manual_evidence(path, evidence):
             )
 
 
-def make_report(requirements, evidence):
+def make_report(requirements, evidence, *, incomplete=False):
     rows = []
     with requirements.open(newline="", encoding="utf-8-sig") as stream:
         for req in csv.DictReader(stream):
             key = req["ID"].strip()
             entries = evidence.get(key, [])
+            # The supplied Traceability wording conflicts with D-18; ID-only
+            # matches cannot verify the 15–25 kg requirement. Remove this gate
+            # when the authoritative wording is reconciled.
+            disputed = (
+                key == "AEG-503"
+                and req.get("short text", "").strip() == "Accept 15 to 25 kg"
+            )
             eligible = [
-                e for e in entries if key not in MANUAL_REQUIRED or e[4] == "manual"
+                e
+                for e in entries
+                if not disputed and (key not in MANUAL_REQUIRED or e[4] == "manual")
             ]
             result = (
                 "FAIL"
                 if any(not entry[1] for entry in entries)
                 else "PASS"
-                if eligible
+                if eligible and not incomplete
                 else "NO EVIDENCE"
             )
+            if incomplete:
+                entries = [
+                    *entries,
+                    (
+                        "CI evidence incomplete; review source jobs",
+                        True,
+                        "",
+                        "",
+                        "notice",
+                    ),
+                ]
             rows.append(
                 {
                     "Requirement": key,
                     "Method": req["method"].strip(),
-                    "Evidence": "; ".join(e[0] for e in entries),
+                    "Evidence": "; ".join(
+                        [
+                            *(e[0] for e in entries),
+                            *(
+                                [
+                                    "Traceability wording conflicts with D-18; reconciliation required"
+                                ]
+                                if disputed
+                                else []
+                            ),
+                        ]
+                    ),
                     "Result": result,
                     "Measured value": "; ".join(e[2] for e in entries if e[2]),
                     "Log file": "; ".join(dict.fromkeys(e[3] for e in entries if e[3])),
@@ -143,6 +174,11 @@ def main():
     )
     parser.add_argument("--scenarios", type=Path, default=Path("backend/reports"))
     parser.add_argument("--output", type=Path, default=Path("reports"))
+    parser.add_argument(
+        "--incomplete-inputs",
+        action="store_true",
+        help="Prevent PASS when CI evidence is missing or a source job failed",
+    )
     args = parser.parse_args()
     if not args.requirements.is_file():
         parser.error(
@@ -153,7 +189,7 @@ def main():
     playwright_evidence(args.playwright, evidence)
     scenario_evidence(sorted(args.scenarios.glob("scenario-*.json")), evidence)
     manual_evidence(args.manual, evidence)
-    rows = make_report(args.requirements, evidence)
+    rows = make_report(args.requirements, evidence, incomplete=args.incomplete_inputs)
     fields = [
         "Requirement",
         "Method",
