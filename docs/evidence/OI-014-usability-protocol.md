@@ -11,3 +11,9 @@ Status: open. Mercy confirmed she is the Sprint 5 Test Lead and deferred listing
 5. Log every participant's elapsed seconds, whether the correct mission was assigned unassisted, and any observations in `reports/usability.csv`. Record the build, date, moderator, and trial conditions with the results.
 
 Pass if at least 90% of participants correctly assign the mission unassisted in under 120 seconds after the training. Include every valid attempt in the denominator. With three participants, all three must succeed. Record the measured result and reviewer in the evidence index after the trial.
+
+## Recording a session
+
+Copy [the empty CSV template](usability-template.csv) to `reports/usability.csv` before the first session. Add one row per valid attempt, including unsuccessful attempts. Use participant IDs rather than names. Record the elapsed time in seconds when available, and use `true` or `false` for `correct_unassisted`, `timeout`, and `assisted`. Record a timeout or assisted attempt as `correct_unassisted=false`; leave `elapsed_seconds` blank only if no elapsed time was recorded. Record the session date, build, moderator, training minutes and trial conditions for each row.
+
+Calculate the pass rate using all valid rows: count only unassisted, correct, non-timeout attempts with `elapsed_seconds` strictly less than 120 seconds as successes. At least three outside-team participants are required. The test lead records the completed evidence file, reviewer, date and result in `tools/manual_evidence.csv`; an empty template is not trial evidence.
