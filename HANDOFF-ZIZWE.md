@@ -91,19 +91,19 @@ Tick each box when its pull request is merged. Days are working days from day 1.
   - Signature: `permissions(payload, nav, link, alerts, active, queue, cfg)`, using only Emmanuel's `ui_models` types (`PayloadView`, `NavView`, `LinkView`, `AlertView`, `Mission`).
   - Use the same release guard order and reason texts as `rules.py`.
 - [x] **A5. Link loss on the vehicle** (doc 03).
-- [ ] **Day 7, with Emmanuel:** a happy-path mission works from the real screen.
+- [x] **Day 7, with Emmanuel:** a happy-path mission works from the real screen.
 
 ### Phase 2: off-nominal (days 8 to 13)
 
-- [ ] **A6. Faults on the vehicle** (doc 03).
+- [x] **A6. Faults on the vehicle** (doc 03).
 - [x] **A7. Event Buffer** (doc 03).
 - [x] **A9. Vehicle entry point and `vehicle.test_agent`** (doc 03).
 - [x] **B14. Fault Injector** (doc 04), as a plain class:
   - `FaultInjector(bus, clock, cfg, log).inject(target, action, params)` raises `ValueError` with a reason on bad params.
   - Test every row of contracts section 10 by calling `inject()` directly.
   - Emmanuel's UI server mounts it at `POST /api/test/inject`.
-- [ ] **Day 10 hand-off:** A6, A7, A9 and B14 merged, so Emmanuel's scenario runner can drive every fault.
-- [ ] **A8. Safety property test** (doc 03). It needs 2,000 examples passing in CI. Any failure hypothesis finds becomes a named regression test.
+- [x] **Day 10 hand-off:** A6, A7, A9 and B14 merged, so Emmanuel's scenario runner can drive every fault.
+- [x] **A8. Safety property test** (doc 03). It needs 2,000 examples passing in CI. Any failure hypothesis finds becomes a named regression test.
 
 ### Phase 3: real teams (day 14 onward)
 

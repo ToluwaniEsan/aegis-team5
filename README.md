@@ -47,6 +47,8 @@ Faults to show from the test panel: **Inject shift** (payload moves, HELD), **St
 
 **Automated checks:** `pytest` in `backend/`; `npm run test`, `npm run lint` and `npm run test:layout` in `frontend/`; and the full IRON HAWK scenario: `python -m aegis.testing.scenario_runner scenarios/iron_hawk.yaml --fast` from `backend/`.
 
+**Verification report:** after those runs, `python tools/verification_report.py` from the repo root writes `reports/verification.md`, one row per requirement with its evidence and result. CI builds it on every merge. Human-checked requirements are signed off in `tools/manual_evidence.csv` (see `tools/README.md`).
+
 ## Build plan
 
 | File | What it covers |

@@ -88,58 +88,58 @@ Tick each box when its pull request is merged. Days are working days from day 1.
 
 ### Phase 0: foundations (days 1 to 2)
 
-- [ ] **B0. Repo, CI and CODEOWNERS** (doc 04). Do this first, in the first hour, because Zizwe needs `pyproject.toml`.
+- [x] **B0. Repo, CI and CODEOWNERS** (doc 04). Do this first, in the first hour, because Zizwe needs `pyproject.toml`.
   - Zizwe writes `tests/fakes.py`, so skip that part of B0.
   - `CODEOWNERS` follows the "You own" lists in both handoffs, using the usernames from D-09.
   - Add the frontend CI job now, even before `frontend/` exists, and let it skip if the folder is missing.
-- [ ] **B2. Mission Log** (doc 04). Deliver the `MissionLog` class on day 1; Zizwe's code calls it. The Done-when test needs a full mission, so finish it in Phase 2.
-- [ ] **`ui_models.py`:** pydantic v2 models that produce exactly the `Snapshot`, `UiCommand` and `CommandResult` shapes in contracts section 9. Add the UI half of `export_schemas.py` (writes `contracts/ui.schema.json`).
-- [ ] **C0. Scaffold** (doc 05). Copy `ui.ts` from contracts section 9 unchanged. Copy the tokens from doc 05 into `tokens.css` unchanged.
-- [ ] **C1. Mock feed** (doc 05). Hand-write the three placeholder fixtures.
+- [x] **B2. Mission Log** (doc 04). Deliver the `MissionLog` class on day 1; Zizwe's code calls it. The Done-when test needs a full mission, so finish it in Phase 2.
+- [x] **`ui_models.py`:** pydantic v2 models that produce exactly the `Snapshot`, `UiCommand` and `CommandResult` shapes in contracts section 9. Add the UI half of `export_schemas.py` (writes `contracts/ui.schema.json`).
+- [x] **C0. Scaffold** (doc 05). Copy `ui.ts` from contracts section 9 unchanged. Copy the tokens from doc 05 into `tokens.css` unchanged.
+- [x] **C1. Mock feed** (doc 05). Hand-write the three placeholder fixtures.
 - [ ] **Contract freeze with Zizwe** by the end of day 2. Answer D-16.
 
 **Phase 0 exit:** the screen renders a mock snapshot at exactly 1366 × 768, matching the reference grid.
 
 ### Phase 1: walking skeleton (days 3 to 7)
 
-- [ ] **B10. Status Monitor** (doc 04). Builds against Zizwe's day-3 `payload.status` and day-4 `nav.state` and `power.status`.
-- [ ] **B9. Command Manager** (doc 04).
+- [x] **B10. Status Monitor** (doc 04). Builds against Zizwe's day-3 `payload.status` and day-4 `nav.state` and `power.status`.
+- [x] **B9. Command Manager** (doc 04).
   - Until Zizwe's `permissions.py` lands on day 4, use a stub that allows everything.
   - Don't send `hb.ground`; Zizwe's `heartbeat.py` does that.
-- [ ] **B12. UI server and snapshot builder** (doc 04). Put the snapshot builder in `aegis/ground/snapshot.py`; the scenario runner reads it directly.
+- [x] **B12. UI server and snapshot builder** (doc 04). Put the snapshot builder in `aegis/ground/snapshot.py`; the scenario runner reads it directly.
   - Mount Zizwe's `FaultInjector` at `POST /api/test/inject` (404 when `test_mode` is false, 400 with the reason on `ValueError`).
   - Add a test of the HTTP route.
   - Until B14 lands, mount a stub that only logs `test.inject`.
-- [ ] **B7. Team 1 stand-in** (doc 04).
-- [ ] **C2. WebSocket client and store** (doc 05).
-- [ ] **C3. Top bar and E-STOP** (doc 05).
-- [ ] **C4. Payload Status card** (doc 05).
-- [ ] **C5. Vehicle Health card** (doc 05).
-- [ ] **C6. Route and Navigation panel** (doc 05).
-- [ ] **C7. Command panel** (doc 05).
-- [ ] **C8. Mission form drawer** (doc 05).
-- [ ] **C9. Confirmation dialog** (doc 05).
-- [ ] **Day 7, with Zizwe:** a happy-path mission works from the real screen. Commands show SENT, RECEIVED, COMPLETED.
+- [x] **B7. Team 1 stand-in** (doc 04).
+- [x] **C2. WebSocket client and store** (doc 05).
+- [x] **C3. Top bar and E-STOP** (doc 05).
+- [x] **C4. Payload Status card** (doc 05).
+- [x] **C5. Vehicle Health card** (doc 05).
+- [x] **C6. Route and Navigation panel** (doc 05).
+- [x] **C7. Command panel** (doc 05).
+- [x] **C8. Mission form drawer** (doc 05).
+- [x] **C9. Confirmation dialog** (doc 05).
+- [x] **Day 7, with Zizwe:** a happy-path mission works from the real screen. Commands show SENT, RECEIVED, COMPLETED.
 
 ### Phase 2: off-nominal and evidence (days 8 to 13)
 
-- [ ] **B11. Alert Manager** (doc 04). Also add `test_POWER_LOW_raised_below_threshold`, which was moved here from B6.
-- [ ] **C10. Alerts feed and alarm** (doc 05).
-- [ ] **B15. Scenario runner** (doc 04 and doc 06 section 2).
+- [x] **B11. Alert Manager** (doc 04). Also add `test_POWER_LOW_raised_below_threshold`, which was moved here from B6.
+- [x] **C10. Alerts feed and alarm** (doc 05).
+- [x] **B15. Scenario runner** (doc 04 and doc 06 section 2).
   - Start the runner and `iron_hawk_short.yaml` early.
   - The full `iron_hawk.yaml` needs Zizwe's day-10 hand-off (all vehicle faults, Event Buffer, Fault Injector).
   - Make the CI smoke job required once it passes.
-- [ ] **B13. Contract test and fixtures** (doc 04). Do the schema comparison by day 5 and the 12 real fixtures once B15 runs.
-- [ ] **C11. Test panel `/test`** (doc 05).
-- [ ] **C12. Layout and accessibility checks** (doc 05).
-- [ ] **The other scenario files** from doc 06 section 2: link loss at destination, E-STOP, faults, abort/return, repeatability.
-- [ ] **Day 12:** `iron_hawk.yaml` passes in `--fast` mode in CI.
-- [ ] **Day 13:** the screen is ready for Mercy's usability test (OI-014), with the grayscale screenshots.
+- [x] **B13. Contract test and fixtures** (doc 04). Do the schema comparison by day 5 and the 12 real fixtures once B15 runs.
+- [x] **C11. Test panel `/test`** (doc 05).
+- [x] **C12. Layout and accessibility checks** (doc 05).
+- [x] **The other scenario files** from doc 06 section 2: link loss at destination, E-STOP, faults, abort/return, repeatability.
+- [x] **Day 12:** `iron_hawk.yaml` passes in `--fast` mode in CI.
+- [x] **Day 13:** the screen is ready for Mercy's usability test (OI-014), with the grayscale screenshots.
 
 ### Phase 3: real teams and evidence (day 14 onward)
 
 - [ ] **B16. Team 1 adapter.** Run our three processes in Team 1's environment first (doc 06 section 1).
-- [ ] **`tools/verification_report.py`** (doc 06 section 3).
+- [x] **`tools/verification_report.py`** (doc 06 section 3).
 
 ## What you give Zizwe, and when
 
