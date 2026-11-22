@@ -2,8 +2,10 @@
 
 Endpoint `vehicle.link_watch` watches `hb.ground`. With none for
 `link.lost_after_s` it publishes `int.link_state LOST` to the controller and
-the Event Buffer; the next heartbeat publishes `RESTORED`. It never trusts the
-ground to say the link is down (AEG-507, AEG-514).
+the Event Buffer; the next heartbeat publishes `RESTORED`. The first heartbeat
+after start-up also publishes `RESTORED`, so the Event Buffer can send a
+backlog it saved before a restart. It never trusts the ground to say the link
+is down (AEG-507, AEG-514).
 """
 
 from __future__ import annotations
@@ -52,8 +54,9 @@ class LinkWatch:
             self._task = None
 
     async def _on_heartbeat(self, env: Envelope) -> None:
+        first = self.last_heartbeat is None
         self.last_heartbeat = self.clock.now()
-        if self.lost:
+        if self.lost or first:
             self.lost = False
             await self._publish("RESTORED", self.last_heartbeat)
 

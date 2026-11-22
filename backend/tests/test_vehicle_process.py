@@ -96,9 +96,10 @@ async def test_happy_path_from_the_ground_through_the_link():
     assert acks == ["RECEIVED", "COMPLETED"]
 
     # Heartbeats kept flowing, so the vehicle never saw the link as lost.
-    assert [
-        r
+    states = [
+        r["env"]["body"]["state"]
         for r in logs["vehicle"].of("msg.sent")
         if r["env"]["type"] == "int.link_state"
-    ] == []
+    ]
+    assert states == ["RESTORED"]  # the first heartbeat only; never LOST
     await system.stop()

@@ -2,7 +2,7 @@
 
 Runs the Payload Simulator, Payload Controller, Link Watch and the Team 2
 and Team 4 stand-ins on the vehicle bus, joined to the ground through the
-link. Task A9 adds the parts still marked `A9:` below.
+link, with the Event Buffer holding ground-bound messages during an outage.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from aegis.common.clock import Clock
 from aegis.common.config import Settings
 from aegis.standins.nav import NavStandin
 from aegis.standins.power import PowerStandin
+from aegis.vehicle.event_buffer import EventBuffer
 from aegis.vehicle.link_watch import LinkWatch
 from aegis.vehicle.payload_controller import PayloadController
 from aegis.vehicle.simulator import PayloadSimulator
@@ -50,6 +51,7 @@ class Vehicle:
             self.bus.attach_link(link)
 
         bus = self.bus
+        self.event_buffer = EventBuffer(bus, clock, cfg, log)
         self.simulator = PayloadSimulator(bus, clock, cfg, log)
         self.nav = NavStandin(bus, clock, cfg, log)
         self.power = PowerStandin(bus, clock, cfg, log, moving=lambda: self.nav.moving)
@@ -58,9 +60,11 @@ class Vehicle:
         self.test_agent = TestAgent(
             bus, log, self.simulator, self.controller, self.nav, self.power
         )
-        # In start order. The simulator first, so the lock state exists before
-        # the controller looks at it.
+        # In start order. The Event Buffer first, so its filter is in place
+        # before anyone sends; the simulator before the controller, so the
+        # lock state exists before the controller looks at it.
         self.parts = [
+            self.event_buffer,
             self.simulator,
             self.nav,
             self.power,
@@ -68,7 +72,6 @@ class Vehicle:
             self.link_watch,
             self.test_agent,
         ]
-        # A9: Event Buffer (A7, as an outbound filter).
 
     async def start(self) -> None:
         self.log.record("process.start")
