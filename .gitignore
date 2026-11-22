@@ -35,3 +35,6 @@ htmlcov/
 /frontend/reports/
 /reports/verification.csv
 /reports/verification.md
+
+# Local participant trial results
+/reports/usability.csv
