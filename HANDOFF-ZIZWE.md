@@ -73,7 +73,7 @@ Tick each box when its pull request is merged. Days are working days from day 1.
 - [x] **B1. Bus and link port** (doc 04), **plus `tests/fakes.py`** with `FakeBus` and `FakeLog` matching the B1 and B2 interfaces exactly.
   - Emmanuel's B2 Mission Log lands on day 1. Until then, use `FakeLog`.
 - [x] **B3. Link stand-in, Team 3** (doc 04).
-- [ ] **B4. Run everything** (doc 04). Also create:
+- [x] **B4. Run everything** (doc 04). Also create:
   - **`aegis/ground/heartbeat.py`:** publishes `hb.ground` with `seq` at `timing.heartbeat_rate_hz`, `src = ground.command_manager`, `dst = [vehicle.link_watch]`.
   - **`aegis/ground/main.py`:** loads settings, starts the Mission Log, the bus, the LinkPort and the heartbeat. Leave clearly marked places where Emmanuel adds the Command Manager, Status Monitor, Alert Manager, Team 1 stand-in and UI server.
 - [ ] **Contract freeze with Emmanuel** by the end of day 2. Answer D-16.
@@ -82,15 +82,15 @@ Tick each box when its pull request is merged. Days are working days from day 1.
 
 ### Phase 1: walking skeleton (days 3 to 7)
 
-- [ ] **A4 stub first (day 3).** The Payload Controller accepts `cmd.assign_mission` and emits `payload.status` at 1 Hz. Hand it to Emmanuel. Then:
-- [ ] **A3. Payload Simulator** (doc 03).
-- [ ] **A4. Payload Controller core state machine** (doc 03). `departure_permitted` uses the one definition in contracts section 4: SECURED, `secured` true and a mission open.
-- [ ] **B5. Team 2 stand-in** (doc 04). Due day 4, because Emmanuel's Status Monitor needs `nav.state`.
-- [ ] **B6. Team 4 stand-in** (doc 04). Done when mass reports are logged and `power.status` reaches `ground.status_monitor`. The `POWER_LOW` alert test is Emmanuel's (B11).
-- [ ] **B8. Permissions** (doc 04). Due day 4.
+- [x] **A4 stub first (day 3).** The Payload Controller accepts `cmd.assign_mission` and emits `payload.status` at 1 Hz. Hand it to Emmanuel. Then:
+- [x] **A3. Payload Simulator** (doc 03).
+- [x] **A4. Payload Controller core state machine** (doc 03). `departure_permitted` uses the one definition in contracts section 4: SECURED, `secured` true and a mission open.
+- [x] **B5. Team 2 stand-in** (doc 04). Due day 4, because Emmanuel's Status Monitor needs `nav.state`.
+- [x] **B6. Team 4 stand-in** (doc 04). Done when mass reports are logged and `power.status` reaches `ground.status_monitor`. The `POWER_LOW` alert test is Emmanuel's (B11).
+- [x] **B8. Permissions** (doc 04). Due day 4.
   - Signature: `permissions(payload, nav, link, alerts, active, queue, cfg)`, using only Emmanuel's `ui_models` types (`PayloadView`, `NavView`, `LinkView`, `AlertView`, `Mission`).
   - Use the same release guard order and reason texts as `rules.py`.
-- [ ] **A5. Link loss on the vehicle** (doc 03).
+- [x] **A5. Link loss on the vehicle** (doc 03).
 - [ ] **Day 7, with Emmanuel:** a happy-path mission works from the real screen.
 
 ### Phase 2: off-nominal (days 8 to 13)
@@ -98,7 +98,7 @@ Tick each box when its pull request is merged. Days are working days from day 1.
 - [ ] **A6. Faults on the vehicle** (doc 03).
 - [ ] **A7. Event Buffer** (doc 03).
 - [ ] **A9. Vehicle entry point and `vehicle.test_agent`** (doc 03).
-- [ ] **B14. Fault Injector** (doc 04), as a plain class:
+- [x] **B14. Fault Injector** (doc 04), as a plain class:
   - `FaultInjector(bus, clock, cfg, log).inject(target, action, params)` raises `ValueError` with a reason on bad params.
   - Test every row of contracts section 10 by calling `inject()` directly.
   - Emmanuel's UI server mounts it at `POST /api/test/inject`.
