@@ -1,7 +1,7 @@
 ID,short text,method
 AEG-501,Payload size and weight limit,Test
 AEG-502,Report payload shift,"Analysis, Test"
-AEG-503,Accept 15 to 25 kg,Test
+AEG-503,"Accept at least 227 kg (500 lb), up to 1,000 kg",Test
 AEG-504,Weight accurate to 0.5 kg,Test
 AEG-505,Show secured status,Test
 AEG-506,No release while moving,Test
