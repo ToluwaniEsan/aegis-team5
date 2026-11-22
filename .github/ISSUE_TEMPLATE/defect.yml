@@ -1,0 +1,50 @@
+name: Defect
+
+description: Record a requirement failure for the TRR defect list.
+
+title: "[DEFECT] "
+
+labels: [defect]
+
+body:
+  - type: input
+    id: requirement
+    attributes:
+      label: Requirement ID
+      description: Identify the affected requirement, such as AEG-508.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Scenario step or test
+      description: Name the failing test or scenario step and describe how to reproduce it.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and observed behavior
+    validations:
+      required: true
+  - type: input
+    id: log
+    attributes:
+      label: Log file or evidence
+      description: Provide a path or link to the relevant log, or explain why none is available.
+    validations:
+      required: true
+  - type: input
+    id: severity
+    attributes:
+      label: Severity
+      description: State the agreed severity and its impact.
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      description: Identify the person responsible for investigating or resolving the defect.
+    validations:
+      required: true
