@@ -127,3 +127,16 @@ def test_AEG_503_disputed_traceability_wording_cannot_pass_by_id(tmp_path):
     )
     evidence["AEG-503"].pop()
     assert report.make_report(requirements, evidence)[0]["Result"] == "PASS"
+
+
+def test_GEN_002_incomplete_ci_evidence_cannot_produce_a_pass(tmp_path):
+    requirements = tmp_path / "requirements.csv"
+    requirements.write_text(
+        "ID,short text,method\nOI-009,Timeout,Test\nOI-019,Stop,Test\n"
+    )
+    evidence = defaultdict(list)
+    report.add(evidence, ["OI-009"], "passing test", True)
+    report.add(evidence, ["OI-019"], "failing test", False)
+    rows = report.make_report(requirements, evidence, incomplete=True)
+    assert [row["Result"] for row in rows] == ["NO EVIDENCE", "FAIL"]
+    assert all("CI evidence incomplete" in row["Evidence"] for row in rows)

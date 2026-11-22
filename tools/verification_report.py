@@ -98,7 +98,7 @@ def manual_evidence(path, evidence):
             )
 
 
-def make_report(requirements, evidence):
+def make_report(requirements, evidence, *, incomplete=False):
     rows = []
     with requirements.open(newline="", encoding="utf-8-sig") as stream:
         for req in csv.DictReader(stream):
@@ -120,9 +120,20 @@ def make_report(requirements, evidence):
                 "FAIL"
                 if any(not entry[1] for entry in entries)
                 else "PASS"
-                if eligible
+                if eligible and not incomplete
                 else "NO EVIDENCE"
             )
+            if incomplete:
+                entries = [
+                    *entries,
+                    (
+                        "CI evidence incomplete; review source jobs",
+                        True,
+                        "",
+                        "",
+                        "notice",
+                    ),
+                ]
             rows.append(
                 {
                     "Requirement": key,
@@ -163,6 +174,11 @@ def main():
     )
     parser.add_argument("--scenarios", type=Path, default=Path("backend/reports"))
     parser.add_argument("--output", type=Path, default=Path("reports"))
+    parser.add_argument(
+        "--incomplete-inputs",
+        action="store_true",
+        help="Prevent PASS when CI evidence is missing or a source job failed",
+    )
     args = parser.parse_args()
     if not args.requirements.is_file():
         parser.error(
@@ -173,7 +189,7 @@ def main():
     playwright_evidence(args.playwright, evidence)
     scenario_evidence(sorted(args.scenarios.glob("scenario-*.json")), evidence)
     manual_evidence(args.manual, evidence)
-    rows = make_report(args.requirements, evidence)
+    rows = make_report(args.requirements, evidence, incomplete=args.incomplete_inputs)
     fields = [
         "Requirement",
         "Method",
